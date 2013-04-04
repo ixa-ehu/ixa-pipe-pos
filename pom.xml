@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ixa</groupId>
-	<artifactId>ixa-opennlp-pos</artifactId>
+	<artifactId>ixa-pipe-pos</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0</version>
-	<name>ixa-opennlp-pos</name>
-	<description>POS tagging module of IXA-OpenNLP, the multilingual Natural Language Processing 
+	<name>ixa-pipe-pos</name>
+	<description>POS tagging module of IXA-Pipeline, a multilingual Natural Language Processing 
 	Pipeline based on Apache OpenNLP API. Currently English and Spanish annotation is available, 
 	but it can be easily extended to deal with other languages too. All models have been trained 
 	by the IXA NLP Group of the University of the Basque Country (ixa.si.ehu.es).
@@ -98,7 +98,7 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
-										<Main-Class>ixa.opennlp.pos.CLI</Main-Class>
+										<Main-Class>ixa.pipe.pos.CLI</Main-Class>
 										<!-- <Class-Path>../models/models.jar</Class-Path> -->
 									</manifestEntries>
 								</transformer>
@@ -116,7 +116,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
 				<configuration>
-					<mainClass>ixa.opennlp.pos.CLI</mainClass>
+					<mainClass>ixa.pipe.pos.CLI</mainClass>
 				</configuration>
 			</plugin>
 

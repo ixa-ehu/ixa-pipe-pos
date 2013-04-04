@@ -1,11 +1,11 @@
 
-IXA-OpenNLP-POS
-===========
+IXA-pipe-pos
+============
 
-This module provides a simple wrapper that uses Apache OpenNLP
-programatically to perform POS tagging.
-Models have been for English trained using WSJ treebank (performance 96.48%)
-by the IXA NLP Group (ixa.si.ehu.es).
+This module uses Apache OpenNLP programatically to perform POS tagging.
+Models for English have been trained using the WSJ treebank (performance 96.48%).
+This module is part of IXA-Pipeline ("is a pipeline"), a multilingual NLP pipeline
+developed by the IXA NLP Group (ixa.si.ehu.es).
 
 Contents
 ========
@@ -23,7 +23,7 @@ The contents of the module are the following:
 INSTALLATION
 ============
 
-Installing the ixa-opennlp-pos requires the following steps:
+Installing the ixa-pipe-pos requires the following steps:
 
 If you already have installed in your machine JDK6 and MAVEN 3, please go to step 3
 directly. Otherwise, follow these steps:
@@ -88,7 +88,7 @@ You should see reference to the MAVEN version you have just installed plus the J
 -------------------------
 
 ````shell
-hg clone ssh://hg@bitbucket.org/ragerri/ixa-opennlp-pos
+hg clone ssh://hg@bitbucket.org/ragerri/ixa-pipe-pos
 ````
 
 4. Download models and other resources
@@ -97,15 +97,15 @@ hg clone ssh://hg@bitbucket.org/ragerri/ixa-opennlp-pos
 The POS tagger needs the trained models to work properly. They can be downloaded from
 
 ````shell
-http://ixa2.si.ehu.es/ragerri/ixa-opennlp-models
+http://ixa2.si.ehu.es/ragerri/ixa-pipe-models
 ````
 
-Two models are to be copied to ixa-opennlp-pos/src/main/resources/: en-pos-perceptron-1000-dev.bin, and es-pos-perceptron-1000-dev.bin
+Two models are to be copied to ixa-pipe-pos/src/main/resources/: en-pos-perceptron-1000-dev.bin, and es-pos-perceptron-1000-dev.bin
 Note that if you change the name of the models the source code in Models.java will need to be modified accordingly.
 
 
 To perform English lemmatization the module currently uses WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as
-a value of the -w option when running ixa-opennlp-pos (see point 7. below).
+a value of the -w option when running ixa-pipe-pos (see point 7. below).
 
 ````shell
 wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
@@ -115,7 +115,7 @@ wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
 ---------------------------
 
 ````shell
-cd ixa-opennlp-pos
+cd ixa-pipe-pos
 ````
 
 6. Install module using maven
@@ -128,7 +128,7 @@ mvn clean package
 This step will create a directory called target/ which contains various directories and files.
 Most importantly, there you will find the module executable:
 
-ixa-opennlp-pos-1.0.jar
+ixa-pipe-pos-1.0.jar
 
 This executable contains every dependency the module needs, so it is completely portable as long
 as you have a JVM 1.6 installed.
@@ -147,7 +147,7 @@ The program accepts tokenized text in KAF format as standard input and outputs K
 To run the program execute:
 
 ````shell
-cat wordforms.kaf | java -jar $PATH/target/ixa-opennlp-pos-1.0.jar -l $lang -w $wn30/dict
+cat wordforms.kaf | java -jar $PATH/target/ixa-pipe-pos-1.0.jar -l $lang -w $wn30/dict
 ````
 
 Current paramaters for specifying the language (to load the relevant models) and the location
@@ -162,7 +162,7 @@ You can also generate the javadoc of the module by executing:
 mvn javadoc:jar
 ````
 
-Which will create a jar file target/ixa-opennlp-pos-1.0-javadoc.jar
+Which will create a jar file target/ixa-pipe-pos-1.0-javadoc.jar
 
 
 Contact information
