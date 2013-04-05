@@ -1,0 +1,2 @@
+- The JWNLproperties file is here to solve a locale bug wrt to JWNL API. Otherwise, JWNL asks for english locale only. 
+- Copy to this directory the trained POS models (see README of module). 
