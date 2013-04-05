@@ -84,11 +84,19 @@ mvn -version
 
 You should see reference to the MAVEN version you have just installed plus the JDK 6 that is using.
 
-3. Get module from bitbucket
--------------------------
+3. Get module source code
+--------------------------
+
+ixa-pipe-tok original repo is hosted at Bitbucket, and can be cloned as follows:
 
 ````shell
-hg clone ssh://hg@bitbucket.org/ragerri/ixa-pipe-pos
+hg clone ssh://hg@bitbucket.org/ragerri/ixa-pipe-tok
+````
+
+If you are a github user, we provide a github mirror of the original repo:
+
+````shell
+git clone git@github.com:ragerri/ixa-pipe-tok.git
 ````
 
 4. Download models and other resources
@@ -97,7 +105,7 @@ hg clone ssh://hg@bitbucket.org/ragerri/ixa-pipe-pos
 The POS tagger needs the trained models to work properly. They can be downloaded from
 
 ````shell
-http://ixa2.si.ehu.es/ragerri/ixa-pipe-models
+http://ixa3.si.ehu.es/~ragerri/ixa-pipeline-models/
 ````
 
 Two models are to be copied to ixa-pipe-pos/src/main/resources/: en-pos-perceptron-1000-dev.bin, and es-pos-perceptron-1000-dev.bin
