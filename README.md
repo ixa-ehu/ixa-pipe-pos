@@ -147,12 +147,14 @@ To install the module in the local maven repository, usually located at ~/.m2/, 
 mvn clean install
 ````
 
+7. USING ixa-pipe-pos
+=====================
+
 The program accepts tokenized text in KAF format as standard input and outputs KAF.
 
-7. USING the module
-===================
+http://kyoto-project.eu/www2.let.vu.nl/twiki/pub/Kyoto/TechnicalPapers/WP002_TR009_KAF_Framework.pdf
 
-To run the program execute:
+You can get the tokenized input for this module from ixa-pipe-tok. To run the program execute:
 
 ````shell
 cat wordforms.kaf | java -jar $PATH/target/ixa-pipe-pos-1.0.jar -l $lang -w $wn30/dict
