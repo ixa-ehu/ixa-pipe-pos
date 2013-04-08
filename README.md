@@ -105,7 +105,7 @@ git clone git@github.com:ragerri/ixa-pipe-tok.git
 The POS tagger needs the trained models to work properly. They can be downloaded from
 
 ````shell
-http://ixa3.si.ehu.es/~ragerri/ixa-pipeline-models/
+http://ixa2.si.ehu.es/ragerri/ixa-pipeline-models/
 ````
 
 Two models are to be copied to ixa-pipe-pos/src/main/resources/: en-pos-perceptron-1000-dev.bin, and es-pos-perceptron-1000-dev.bin
