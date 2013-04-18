@@ -1,5 +1,6 @@
 syntax: glob
 target
+*.dict 
 *.bin
 *.patch
 *.pyc

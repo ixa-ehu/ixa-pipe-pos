@@ -16,6 +16,13 @@
 
 package ixa.pipe.pos;
 
+import ixa.pipe.kaf.KAF;
+import ixa.pipe.kaf.KAFReader;
+import ixa.pipe.lemmatize.Dictionary;
+import ixa.pipe.lemmatize.JWNLemmatizer;
+import ixa.pipe.lemmatize.MorfologikLemmatizer;
+import ixa.pipe.lemmatize.SimpleLemmatizer;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -23,13 +30,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.LinkedHashMap;
+import java.net.URL;
 import java.util.List;
 
 import net.didion.jwnl.JWNLException;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.MutuallyExclusiveGroup;
 import net.sourceforge.argparse4j.inf.Namespace;
 
 import org.jdom2.Element;
@@ -69,10 +77,10 @@ public class CLI {
 
     // create Argument Parser
     ArgumentParser parser = ArgumentParsers
-        .newArgumentParser("ixa-opennlp-pos-1.0.jar")
+        .newArgumentParser("ixa-pipe-pos-1.0.jar")
         .description(
             "ixa-opennlp-pos-1.0 is a multilingual POS tagger module developed by IXA NLP Group based on Apache OpenNLP.\n");
-
+    MutuallyExclusiveGroup group = parser.addMutuallyExclusiveGroup("group"); 
     // specify language
     parser
         .addArgument("-l", "--lang")
@@ -80,17 +88,21 @@ public class CLI {
         .required(true)
         .help(
             "It is REQUIRED to choose a language to perform annotation with IXA-OpenNLP");
-    // parser.addArgument("-f","--format").choices("kaf","plain").setDefault("kaf").help("output annotation in plain native "
-    // +
-    // "Apache OpenNLP format or in KAF format. The default is KAF");
 
-    // specify wordnet dict path
-    parser
+    // specify lemmatization method
+    
+    group.addArgument("-lem","--lemmatize").choices("bin","plain").setDefault("bin").help("Lemmatization method." +
+    		"Choose 'bin' for fast binary Morfologik dictionary (this is the default) " +
+    		"; 'plain' for plain text dictionary. ");
+    
+    group
         .addArgument("-w", "--wordnet")
-        .required(true)
+        .required(false)
         .help(
-            "Provide path to WordNet dict directory. WordNet is used to provide lemmatization");
+            "Provide path to a dictionary to perform lemmatization with WordNet 3.0. Choices are between WordNet 3.0 and " +
+            "an in-house created dictionary");
 
+    
     /*
      * Parse the command line arguments
      */
@@ -101,7 +113,7 @@ public class CLI {
     } catch (ArgumentParserException e) {
       parser.handleError(e);
       System.out
-          .println("Run java -jar target/ixa-opennlp-pos-1.0.jar -help for details");
+          .println("Run java -jar target/ixa-pipe-pos-1.0.jar -help for details");
       System.exit(1);
     }
 
@@ -111,10 +123,11 @@ public class CLI {
      */
 
     // String wnDirectory = args[0];
+    
     String lang = parsedArguments.getString("lang");
-    String wnDirectory = parsedArguments.getString("wordnet");
+    String lemMethod = parsedArguments.getString("lemmatize");
+    String dictionary = parsedArguments.getString("wordnet");
     KAFReader kafReader = new KAFReader();
-    Annotate annotator = new Annotate(lang, wnDirectory);
     StringBuilder sb = new StringBuilder();
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
@@ -133,19 +146,45 @@ public class CLI {
       Element rootNode = kafReader.getRootNode(kafIn);
       List<Element> lingProc = kafReader.getKafHeader(rootNode);
       List<Element> wfs = kafReader.getWfs(rootNode);
-      LinkedHashMap<String, List<String>> sentencesMap = kafReader
-          .getSentencesMap(wfs);
-      LinkedHashMap<String, List<String>> sentences = kafReader
-          .getSentsFromWfs(sentencesMap, wfs);
 
+      // choosing Dictionary for lemmatization
+      // WordNet lemmatization available for English only
+      // Default: MorfologikLemmatizer
+      
+      Dictionary lemmatizer = null;
+      Resources resourceRetriever = new Resources();
+	
+      if (lemMethod.equalsIgnoreCase("plain")) {
+    	  System.err.println("Using plain text dictionary");
+	    	InputStream dictLemmatizer = resourceRetriever.getDictionary(lang);
+	    	lemmatizer = new SimpleLemmatizer(dictLemmatizer);
+	  }
+      
+      else if (dictionary != null && lang.equalsIgnoreCase("en")) {
+    	  lemmatizer = new JWNLemmatizer(dictionary);
+      }
+      
+      else if (dictionary != null && lang.equalsIgnoreCase("en") == false) { 
+    	  System.err.println("WordNet lemmatization available for English only. Using" +
+    	  		" default Morfologik binary dictionary.");
+    	  URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
+	      lemmatizer = new MorfologikLemmatizer(dictLemmatizer);
+      }
+    	  
+      else { 
+		  System.err.println("Using default Morfologik binary dictionary.");
+    	  URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
+	      lemmatizer = new MorfologikLemmatizer(dictLemmatizer);
+	  }  
+      
       // add already contained header plus this module linguistic
       // processor
-      annotator.addKafHeader(lingProc, kaf);
-      kaf.addlps("terms", "ixa-opennlp-pos-" + lang, kaf.getTimestamp(), "1.0");
+      Annotate annotator = new Annotate(lang);
+      kaf.addKafHeader(lingProc, kaf);
+      kaf.addlps("terms", "ixa-pipe-pos-" + lang, kaf.getTimestamp(), "1.0");
 
       // annotate POS tags to KAF and lemmatize
-      annotator.annotatePOSToKAF(sentences, kaf);
-
+      annotator.annotatePOSToKAF(wfs, kaf, lemmatizer, lang);
       XMLOutputter xout = new XMLOutputter(Format.getPrettyFormat());
       xout.output(kaf.createKAFDoc(), bwriter);
       bwriter.close();

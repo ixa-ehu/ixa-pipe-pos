@@ -27,10 +27,6 @@
 	<url>http://maven.apache.org</url>
 
 	<repositories>
-		<repository>
-			<id>org.apache.opennlp</id>
-			<url>https://repository.apache.org/content/groups/snapshots</url>
-		</repository>
 	</repositories>
 
 	<dependencies>
@@ -53,32 +49,25 @@
 			<version>2.4</version>
 			<scope>compile</scope>
 		</dependency>
-         <dependency>
-         <groupId>org.jdom</groupId>
-         <artifactId>jdom2</artifactId>
-         <version>2.0.4</version>
-        </dependency>
-         
+
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.carrot2</groupId>
+			<artifactId>morfologik-stemming</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.opennlp</groupId>
 			<artifactId>opennlp-tools</artifactId>
-			<version>1.5.3-SNAPSHOT</version>
-			<exclusions>
-				<!-- only needed for coreference -->
-				<exclusion>
-					<groupId>jwnl</groupId>
-					<artifactId>jwnl</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.5.3</version>
 			<scope>compile</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>net.sf.jwordnet</groupId>
-			<artifactId>jwnl</artifactId>
-			<version>1.4_rc3</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -104,7 +93,7 @@
 								</transformer>
 							</transformers>
 							<artifactSet>
-							<excludes></excludes>
+								<excludes></excludes>
 							</artifactSet>
 						</configuration>
 					</execution>

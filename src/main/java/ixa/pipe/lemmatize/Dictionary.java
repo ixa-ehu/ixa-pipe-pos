@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Rodrigo Agerri
+ *Copyright 2013 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,26 +14,24 @@
    limitations under the License.
  */
 
-package ixa.pipe.pos;
+package ixa.pipe.lemmatize;
 
-import java.io.InputStream;
+/**
+ * @author ragerri
+ *
+ */
+/** 
+ * Interface to provide dictionary information for lemmatization.
+ */
+public interface Dictionary {
 
-public class Models {
-
-  private InputStream posModel;
-
-  public InputStream getPOSModel(String cmdOption) {
-
-    if (cmdOption.equals("en")) {
-      posModel = getClass().getResourceAsStream(
-          "/en-pos-perceptron-1000-dev.bin");
-    }
-
-    if (cmdOption.equals("es")) {
-      posModel = getClass().getResourceAsStream(
-          "/en-pos-perceptron-1000-dev.bin");
-    }
-    return posModel;
-  }
+  /**
+   * Returns the lemma of the specified word with the specified part-of-speech.
+   * 
+   * @param word The word whose lemmas are desired.
+   * @param pos The part-of-speech of the specified word.
+   * @return The lemma of the specified word given the specified part-of-speech.
+   */
+  public String lemmatize(String lang, String word, String postag);
 
 }

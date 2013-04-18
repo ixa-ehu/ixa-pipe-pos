@@ -14,7 +14,9 @@
    limitations under the License.
  */
 
-package ixa.pipe.pos;
+package ixa.pipe.lemmatize;
+
+import ixa.pipe.pos.Resources;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -46,11 +48,10 @@ import net.didion.jwnl.princeton.file.PrincetonRandomAccessDictionaryFile;
  *         Class to obtain English lemmas using JWNL API.
  * 
  */
-public class JWNLemmatizer {
+public class JWNLemmatizer implements Dictionary {
 
   private net.didion.jwnl.dictionary.Dictionary dict;
   private MorphologicalProcessor morphy;
-  private HashMap<String, String> allLemmas;
 
   /**
    * Creates JWNL dictionary and morphological processor objects in
@@ -64,7 +65,6 @@ public class JWNLemmatizer {
    * @throws JWNLException
    */
   public JWNLemmatizer(String wnDirectory) throws IOException, JWNLException {
-    allLemmas = new HashMap<String, String>();
     PointerType.initialize();
     Adjective.initialize();
     VerbFrame.initialize();
@@ -97,6 +97,9 @@ public class JWNLemmatizer {
     morphy = dict.getMorphologicalProcessor();
   }
 
+  Resources tagRetriever = new Resources();
+  
+  
   /**
    * It takes a word and a POS tag and obtains word's lemma from WordNet.
    * 
@@ -104,7 +107,8 @@ public class JWNLemmatizer {
    * @param postag
    * @return lemma
    */
-  public String lemmatize(String word, String postag) {
+  public String lemmatize(String lang, String word, String postag) {
+    String constantTag = tagRetriever.setTagConstant(lang, postag);
     IndexWord baseForm;
     String lemma = null;
     try {
@@ -124,7 +128,7 @@ public class JWNLemmatizer {
       if (baseForm != null) {
         lemma = baseForm.getLemma().toString();
       }
-      else if (baseForm == null && postag.startsWith("NNP")) {
+      else if (baseForm == null && postag.startsWith(String.valueOf(constantTag))) {
           lemma = word;
         }
         else {
