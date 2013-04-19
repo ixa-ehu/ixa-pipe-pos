@@ -87,7 +87,7 @@ public class CLI {
         .choices("en", "es")
         .required(true)
         .help(
-            "It is REQUIRED to choose a language to perform annotation with IXA-OpenNLP");
+            "It is REQUIRED to choose a language to perform annotation with ixa-pipe-pos");
 
     // specify lemmatization method
     
