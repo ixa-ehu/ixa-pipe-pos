@@ -159,7 +159,7 @@ public class Annotate {
 	        String termId = "t" + Integer.toString(realTermCounter); // termId
 	        String posTag = posTagged[j];
 	        String posId = this.getKafTagSet(lang, posTag); // posId
-	        String type = kafUtils.getTermType(posId); // type
+	        String type = kafUtils.setTermType(posId); // type
 	        String lemma = dictLemmatizer.lemmatize(lang, tokens[j], posTag); // lemma
 	        String spanString = tokens[j]; // spanString
 	        ArrayList<String> tokenIds = new ArrayList<String>();

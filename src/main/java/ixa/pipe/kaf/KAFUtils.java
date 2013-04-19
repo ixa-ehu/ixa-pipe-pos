@@ -152,12 +152,12 @@ public class KAFUtils {
   }
 
   /**
-   * It obtains the term type attribute
+   * Set the term type attribute based on the pos value
    * 
    * @param kaf postag
    * @return type
    */
-  public String getTermType(String postag) {
+  public String setTermType(String postag) {
     if (postag.startsWith("N") || postag.startsWith("V")
         || postag.startsWith("G") || postag.startsWith("A")) {
       return "open";
@@ -165,7 +165,39 @@ public class KAFUtils {
       return "close";
     }
   }
+  
+  public String getTermMorphofeat(List<Element> termList, int realTermCounter) { 
+	  String morphFeat = null;
+	  if (termList.get(realTermCounter).getAttributeValue("morphofeat") == null) { 
+	      morphFeat = "";
+	    }
+	    else {
+	      morphFeat = termList.get(realTermCounter).getAttributeValue("morphofeat");
+	    }
+	    return morphFeat;
+  }
 
+  public String getTermType(List<Element> termList, int realTermCounter) { 
+	  String termType = null;
+	  if (termList.get(realTermCounter).getAttributeValue("type") == null) { 
+	      termType = "";
+	    }
+	    else {
+	      termType = termList.get(realTermCounter).getAttributeValue("type");
+	    }
+	    return termType;
+  }
+  
+  public String getTermLemma(List<Element> termList, int realTermCounter) { 
+	  String lemma = null;
+	  if (termList.get(realTermCounter).getAttributeValue("lemma") == null) { 
+	      lemma = "";
+	    }
+	    else {
+	      lemma = termList.get(realTermCounter).getAttributeValue("lemma");
+	    }
+	    return lemma;
+  }
   
   /**
    * From a termSpan Element in KAF returns the comment inside the Span Element.
