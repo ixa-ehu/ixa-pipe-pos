@@ -102,18 +102,29 @@ git clone git@github.com:ragerri/ixa-pipe-tok.git
 4. Download models and other resources
 --------------------------------------
 
-The POS tagger needs the trained models to work properly. They can be downloaded from
+The POS tagger needs the trained models and dictionaries to do the lemmatization. They can be downloaded from
 
 ````shell
 http://ixa2.si.ehu.es/ragerri/ixa-pipeline-models/
 ````
 
-Two models are to be copied to ixa-pipe-pos/src/main/resources/: en-pos-perceptron-1000-dev.bin, and es-pos-perceptron-1000-dev.bin
+Two models are to be copied to ixa-pipe-pos/src/main/resources/: en-pos-perceptron-500-dev.bin, and es-pos-perceptron-500-0.bin
 Note that if you change the name of the models the source code in Models.java will need to be modified accordingly.
 
 
-To perform English lemmatization the module currently uses WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as
-a value of the -w option when running ixa-pipe-pos (see point 7. below).
+To perform English lemmatization the module uses three different methods for English and two for Spanish:
+- English:
+    + WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as a value of the -w option when running ixa-pipe-pos (see point 7. below).
+    + Plain text dictionary: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
+    + Morfologik-stemming: english.dict is the same as en-lemmas.dict but binarized as a finite state automata using the
+      morfologik-stemming project (see NOTICE file for details) This method uses 10% of RAM with respect to the plain text
+     dictionary and works 2x faster.
+
+- Spanish:
+    + Plain text dictionary: es-lemmas.dict.
+    + Morfologik stemming: spanish.dict.
+
+To get WordNet go to:
 
 ````shell
 wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
@@ -157,11 +168,17 @@ http://kyoto-project.eu/www2.let.vu.nl/twiki/pub/Kyoto/TechnicalPapers/WP002_TR0
 You can get the tokenized input for this module from ixa-pipe-tok. To run the program execute:
 
 ````shell
-cat wordforms.kaf | java -jar $PATH/target/ixa-pipe-pos-1.0.jar -l $lang -w $wn30/dict
+cat wordforms.kaf | java -jar $PATH/target/ixa-pipe-pos-1.0.jar -l $lang
 ````
 
-Current paramaters for specifying the language (to load the relevant models) and the location
-of the WordNet/dict directory (required for lemmatization) are mandatory.
+Current paramaters for specifying the language (to load the relevant models) is mandatory. See
+
+````shell
+java -jar $PATH/target/ixa-pipe-pos-1.0.jar -help
+````
+
+for more options running the module
+
 
 GENERATING JAVADOC
 ==================
