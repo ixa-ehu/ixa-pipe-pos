@@ -25,7 +25,7 @@ public class Resources {
   private InputStream dict;
   private URL dictURL;
   private String constantTag;
-  
+
 
   public InputStream getPOSModel(String cmdOption) {
 
@@ -36,42 +36,42 @@ public class Resources {
 
     if (cmdOption.equals("es")) {
       posModel = getClass().getResourceAsStream(
-          "/en-pos-perceptron-500-dev.bin");
+          "/es-pos-perceptron-500-0.bin");
     }
     return posModel;
   }
-  
-  public InputStream getDictionary(String cmdOption) { 
-	  if (cmdOption.equalsIgnoreCase("en")) { 
+
+  public InputStream getDictionary(String cmdOption) {
+	  if (cmdOption.equalsIgnoreCase("en")) {
 		  dict = getClass().getResourceAsStream("/en-lemmas.dict");
 	  }
-	  
-	  if (cmdOption.equalsIgnoreCase("es")) { 
+
+	  if (cmdOption.equalsIgnoreCase("es")) {
 		  dict = getClass().getResourceAsStream("/es-lemmas.dict");
 	  }
 	  return dict;
   }
-  
+
   public URL getBinaryDict(String cmdOption) {
-	  if (cmdOption.equalsIgnoreCase("en")) { 
-		  dictURL = getClass().getResource("/english.dict");  
+	  if (cmdOption.equalsIgnoreCase("en")) {
+		  dictURL = getClass().getResource("/english.dict");
   }
 
-	  if (cmdOption.equalsIgnoreCase("es")) { 
+	  if (cmdOption.equalsIgnoreCase("es")) {
 		  dictURL = getClass().getResource("/spanish.dict");
 	  }
 	  return dictURL;
   }
-  
+
   public String setTagConstant(String lang, String postag) {
     if (lang.equalsIgnoreCase("en")) {
-      if (postag.equalsIgnoreCase("NNP")) { 
+      if (postag.equalsIgnoreCase("NNP")) {
         constantTag = "NNP";
       }
     }
     if (lang.equalsIgnoreCase("es")) {
-      if (postag.equalsIgnoreCase("NP")){
-        constantTag = "NP";
+      if (postag.startsWith("NP")){
+        constantTag = "NP00000";
       }
     }
     return constantTag;

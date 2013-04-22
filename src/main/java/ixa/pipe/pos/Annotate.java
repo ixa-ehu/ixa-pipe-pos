@@ -80,7 +80,27 @@ public class Annotate {
   }
   
   private String mapSpanishTagSetToKaf(String postag) { 
-    return "O";
+    if (postag.equalsIgnoreCase("RB") || postag.equalsIgnoreCase("RN")) {
+      return "A"; // adverb
+    } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
+      return "C"; // conjunction
+    } else if (postag.startsWith("D")) {
+      return "D"; // determiner and predeterminer
+    } else if (postag.startsWith("A")) {
+      return "G"; // adjective
+    } else if (postag.startsWith("NC")) {
+      return "N"; // common noun
+    } else if (postag.startsWith("NP")) {
+      return "R"; // proper noun
+    } else if (postag.startsWith("SP")) {
+      return "P"; // preposition
+    } else if (postag.startsWith("P")) {
+      return "Q"; // pronoun
+    } else if (postag.startsWith("V")) {
+      return "V"; // verb
+    } else {
+      return "O"; // other
+    }
   }
   
   public String getKafTagSet(String lang, String postag) {
