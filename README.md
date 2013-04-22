@@ -113,14 +113,15 @@ Note that if you change the name of the models the source code in Models.java wi
 
 
 To perform English lemmatization the module uses three different methods for English and two for Spanish:
-- English:
+
++ English:
     + WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as a value of the -w option when running ixa-pipe-pos (see point 7. below).
     + Plain text dictionary: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
     + Morfologik-stemming: english.dict is the same as en-lemmas.dict but binarized as a finite state automata using the
       morfologik-stemming project (see NOTICE file for details) This method uses 10% of RAM with respect to the plain text
      dictionary and works 2x faster.
 
-- Spanish:
++ Spanish:
     + Plain text dictionary: es-lemmas.dict.
     + Morfologik stemming: spanish.dict.
 
