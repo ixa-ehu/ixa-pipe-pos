@@ -3,9 +3,16 @@ IXA-pipe-pos
 ============
 
 This module uses Apache OpenNLP programatically to perform POS tagging.
-Models for English have been trained using the WSJ treebank (performance 96.48%).
 This module is part of IXA-Pipeline ("is a pipeline"), a multilingual NLP pipeline
 developed by the IXA NLP Group (ixa.si.ehu.es).
+
++ English perceptron models have been trained and evaluated using the WSJ treebank as explained in
+  K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic dependency network.
+  In Proceedings of HLT-NAACL’03, 2003. Currently we obtain a performance of 96.48% vs 97.24% obtained by Toutanova et al. (2003).
+
++ Spanish Maximum Entropy models have been trained and evaluated using the Ancora corpus; it was randomly
+  divided in 90% for training (440K words) and 10% testing (70K words), obtaining a performance of 98.88%.
+
 
 Contents
 ========
