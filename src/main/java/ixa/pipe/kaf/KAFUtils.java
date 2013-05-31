@@ -31,10 +31,10 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
 public class KAFUtils {
-  
+
   public String getWfOffset(List<Element> wfs, int origWfCounter) {
     String offset=null;
-    if (wfs.get(origWfCounter).getAttributeValue("offset") == null) { 
+    if (wfs.get(origWfCounter).getAttributeValue("offset") == null) {
       offset = "";
     }
     else {
@@ -42,10 +42,10 @@ public class KAFUtils {
     }
     return offset;
   }
-  
+
   public String getWfLength(List<Element> wfs, int origWfCounter) {
     String tokLength=null;
-    if (wfs.get(origWfCounter).getAttributeValue("length") == null) { 
+    if (wfs.get(origWfCounter).getAttributeValue("length") == null) {
       tokLength = "";
     }
     else {
@@ -53,10 +53,10 @@ public class KAFUtils {
     }
     return tokLength;
   }
-  
+
   public String getWfPara(List<Element> wfs, int origWfCounter) {
     String para=null;
-    if (wfs.get(origWfCounter).getAttributeValue("para") == null) { 
+    if (wfs.get(origWfCounter).getAttributeValue("para") == null) {
       para = "";
     }
     else {
@@ -64,10 +64,10 @@ public class KAFUtils {
     }
     return para;
   }
-  
+
   public String getWfXpath(List<Element> wfs, int origWfCounter) {
     String page=null;
-    if (wfs.get(origWfCounter).getAttributeValue("page") == null) { 
+    if (wfs.get(origWfCounter).getAttributeValue("page") == null) {
       page = "";
     }
     else {
@@ -75,10 +75,10 @@ public class KAFUtils {
     }
     return page;
   }
-  
+
   public String getWfPage(List<Element> wfs, int origWfCounter) {
     String xpath=null;
-    if (wfs.get(origWfCounter).getAttributeValue("xpath") == null) { 
+    if (wfs.get(origWfCounter).getAttributeValue("xpath") == null) {
       xpath = "";
     }
     else {
@@ -86,15 +86,15 @@ public class KAFUtils {
     }
     return xpath;
   }
-  
+
   /**
    * From the list of <wf> elements, get the sentence Ids in a SortedSet.
-   * 
+   *
    * @param List
    *          <Element> wfs
    * @return SortedSet sentIds
    */
-  
+
   public SortedSet<Integer> getNumSents(List<Element> wfs) {
     SortedSet<Integer> sentIds = new TreeSet<Integer>();
     for (int i = 0; i < wfs.size(); i++) {
@@ -107,7 +107,7 @@ public class KAFUtils {
    * From the list of <wf> elements, get Map <sentId,tokens>. The tokens
    * ArrayList is empty and should be populated by the
    * getSentsFromWfs(LinkedHashMap, wfs) function.
-   * 
+   *
    * @param List
    *          <Element> wfs
    * @return LinkedHashMap<String,List<String>> sentId, tokens of each sentence
@@ -125,11 +125,11 @@ public class KAFUtils {
   }
 
   /**
-   * 
+   *
    * Gets a Map <sentId,tokens> and the list of <wf> elements and populates the
    * Map<sentId,tokens> with the sentenceId and the tokens for each sentence.
    * The output of this function is used to annotate NEs per tokenized sentence.
-   * 
+   *
    * @param LinkedHashMap
    *          <String,List<String>> sentTokensMap
    * @param List
@@ -153,7 +153,7 @@ public class KAFUtils {
 
   /**
    * Set the term type attribute based on the pos value
-   * 
+   *
    * @param kaf postag
    * @return type
    */
@@ -165,10 +165,10 @@ public class KAFUtils {
       return "close";
     }
   }
-  
-  public String getTermMorphofeat(List<Element> termList, int realTermCounter) { 
+
+  public String getTermMorphofeat(List<Element> termList, int realTermCounter) {
 	  String morphFeat = null;
-	  if (termList.get(realTermCounter).getAttributeValue("morphofeat") == null) { 
+	  if (termList.get(realTermCounter).getAttributeValue("morphofeat") == null) {
 	      morphFeat = "";
 	    }
 	    else {
@@ -177,9 +177,9 @@ public class KAFUtils {
 	    return morphFeat;
   }
 
-  public String getTermType(List<Element> termList, int realTermCounter) { 
+  public String getTermType(List<Element> termList, int realTermCounter) {
 	  String termType = null;
-	  if (termList.get(realTermCounter).getAttributeValue("type") == null) { 
+	  if (termList.get(realTermCounter).getAttributeValue("type") == null) {
 	      termType = "";
 	    }
 	    else {
@@ -187,10 +187,10 @@ public class KAFUtils {
 	    }
 	    return termType;
   }
-  
-  public String getTermLemma(List<Element> termList, int realTermCounter) { 
+
+  public String getTermLemma(List<Element> termList, int realTermCounter) {
 	  String lemma = null;
-	  if (termList.get(realTermCounter).getAttributeValue("lemma") == null) { 
+	  if (termList.get(realTermCounter).getAttributeValue("lemma") == null) {
 	      lemma = "";
 	    }
 	    else {
@@ -198,12 +198,12 @@ public class KAFUtils {
 	    }
 	    return lemma;
   }
-  
+
   /**
    * From a termSpan Element in KAF returns the comment inside the Span Element.
    * This function is used to add the string corresponding to a term span as a
    * commment in the Span element of the <terms> layer.
-   * 
+   *
    * @param Element
    *          termSpan
    * @return Comment spanComment
@@ -218,14 +218,29 @@ public class KAFUtils {
     }
     return spanComment;
   }
-  
+
+  public String getTermSpanCommentValue(Comment spanComment) {
+    String spanCommentValue = null;
+    if (spanComment.getValue() == null) {
+        spanCommentValue = "";
+      }
+    if (spanComment.getValue().equals("-")) {
+	    spanCommentValue = "dash";
+      }
+      else {
+        spanCommentValue = spanComment.getValue();
+      }
+      return spanCommentValue;
+}
+
+
   /**
-   * 
+   *
    * It takes a NE span indexes and the tokens in a sentence and produces the
    * string to which the NE span corresponds to. This function is used to get
    * the NE textual representation from a Span. The NE string will then be added
    * to the span element in the <entities> layer of the KAF document.
-   * 
+   *
    * @param Span
    *          reducedSpan
    * @param String
@@ -240,6 +255,6 @@ public class KAFUtils {
     String neString = sb.toString();
     return neString;
   }
-  
+
 
 }
