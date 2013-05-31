@@ -181,7 +181,7 @@ public class Annotate {
 	        String posId = this.getKafTagSet(lang, posTag); // posId
 	        String type = kafUtils.setTermType(posId); // type
 	        String lemma = dictLemmatizer.lemmatize(lang, tokens[j], posTag); // lemma
-	        String spanString = tokens[j]; // spanString
+	        String spanString = kafUtils.setSpanString(tokens[j]); // spanString
 	        ArrayList<String> tokenIds = new ArrayList<String>();
 	        tokenIds.add("w" + Integer.toString(realWfCounter)); // targets
 	        kaf.addTerm(termId, posId, type, lemma, tokenIds, spanString, posTag);

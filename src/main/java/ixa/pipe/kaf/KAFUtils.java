@@ -31,6 +31,17 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
 public class KAFUtils {
+	
+  public String setSpanString(String tok) {
+	  String spanString = null;
+	  if (tok.endsWith("-") || tok.startsWith("-")) { 
+		  spanString = tok.replace("-", "dash");
+	  }
+	  else {
+		  spanString = tok;
+	  }
+	  return spanString;
+  }
 
   public String getWfOffset(List<Element> wfs, int origWfCounter) {
     String offset=null;
@@ -224,8 +235,8 @@ public class KAFUtils {
     if (spanComment.getValue() == null) {
         spanCommentValue = "";
       }
-    if (spanComment.getValue().equals("-")) {
-	    spanCommentValue = "dash";
+    if (spanComment.getValue().startsWith("-") || spanComment.getValue().endsWith("-")) {
+	    spanCommentValue = spanComment.getValue().replace("-", "dash");
       }
       else {
         spanCommentValue = spanComment.getValue();
