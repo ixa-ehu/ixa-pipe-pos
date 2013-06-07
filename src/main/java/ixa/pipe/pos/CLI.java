@@ -16,8 +16,7 @@
 
 package ixa.pipe.pos;
 
-import ixa.pipe.kaf.KAF;
-import ixa.pipe.kaf.KAFReader;
+import ixa.kaflib.KAFDocument;
 import ixa.pipe.lemmatize.Dictionary;
 import ixa.pipe.lemmatize.JWNLemmatizer;
 import ixa.pipe.lemmatize.MorfologikLemmatizer;
@@ -25,13 +24,11 @@ import ixa.pipe.lemmatize.SimpleLemmatizer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.util.List;
 
 import net.didion.jwnl.JWNLException;
 import net.sourceforge.argparse4j.ArgumentParsers;
@@ -40,13 +37,10 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.MutuallyExclusiveGroup;
 import net.sourceforge.argparse4j.inf.Namespace;
 
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 /**
- * IXA-OpenNLP POS tagging using Apache OpenNLP. Lemmatization provided by JWNL.
+ * IXA-OpenNLP POS tagging using Apache OpenNLP. Lemmatization is dictionary based.
  * 
  * @author ragerri
  * @version 1.0
@@ -127,26 +121,16 @@ public class CLI {
     String lang = parsedArguments.getString("lang");
     String lemMethod = parsedArguments.getString("lemmatize");
     String dictionary = parsedArguments.getString("wordnet");
-    KAFReader kafReader = new KAFReader();
-    StringBuilder sb = new StringBuilder();
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
-    KAF kaf = new KAF(lang);
     try {
       breader = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
       bwriter = new BufferedWriter(new OutputStreamWriter(System.out, "UTF-8"));
-      String line;
-      while ((line = breader.readLine()) != null) {
-        sb.append(line);
-      }
-
+      
       // read KAF from standard input
-      InputStream kafIn = new ByteArrayInputStream(sb.toString().getBytes(
-          "UTF-8"));
-      Element rootNode = kafReader.getRootNode(kafIn);
-      List<Element> lingProc = kafReader.getKafHeader(rootNode);
-      List<Element> wfs = kafReader.getWfs(rootNode);
-
+      KAFDocument kaf = KAFDocument.createFromStream(breader);
+      kaf.addLinguisticProcessor("terms","ixa-pipe-pos-"+lang,"1.0");
+      
       // choosing Dictionary for lemmatization
       // WordNet lemmatization available for English only
       // Default: MorfologikLemmatizer
@@ -180,14 +164,12 @@ public class CLI {
       // add already contained header plus this module linguistic
       // processor
       Annotate annotator = new Annotate(lang);
-      kaf.addKafHeader(lingProc, kaf);
-      kaf.addlps("terms", "ixa-pipe-pos-" + lang, kaf.getTimestamp(), "1.0");
 
       // annotate POS tags to KAF and lemmatize
-      annotator.annotatePOSToKAF(wfs, kaf, lemmatizer, lang);
-      XMLOutputter xout = new XMLOutputter(Format.getPrettyFormat());
-      xout.output(kaf.createKAFDoc(), bwriter);
+      annotator.annotatePOSToKAF(kaf, lemmatizer, lang);
+      bwriter.write(kaf.toString());
       bwriter.close();
+      breader.close();
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -16,42 +16,35 @@
 
 package ixa.pipe.pos;
 
-import ixa.pipe.kaf.KAF;
-import ixa.pipe.kaf.KAFUtils;
+import ixa.kaflib.KAFDocument;
+import ixa.kaflib.WF;
 import ixa.pipe.lemmatize.Dictionary;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 
 /**
  * @author ragerri
- * 
+ *
  */
 public class Annotate {
 
   private POS posTagger;
-  private KAFUtils kafUtils;
 
 
   public Annotate(String lang) throws IOException {
     Resources modelRetriever = new Resources();
     InputStream posModel = modelRetriever.getPOSModel(lang);
     posTagger = new POS(posModel);
-    kafUtils = new KAFUtils();
   }
 
-  
+
   /**
-   * 
+   *
    * Mapping between Penn Treebank tagset and KAF tagset
-   * 
+   *
    * @param penn treebank postag
    * @return kaf POS tag
    */
@@ -78,8 +71,8 @@ public class Annotate {
       return "O"; // other
     }
   }
-  
-  private String mapSpanishTagSetToKaf(String postag) { 
+
+  private String mapSpanishTagSetToKaf(String postag) {
     if (postag.equalsIgnoreCase("RB") || postag.equalsIgnoreCase("RN")) {
       return "A"; // adverb
     } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
@@ -102,31 +95,45 @@ public class Annotate {
       return "O"; // other
     }
   }
-  
+
   public String getKafTagSet(String lang, String postag) {
     String tag = null;
-    if (lang.equalsIgnoreCase("en")) { 
+    if (lang.equalsIgnoreCase("en")) {
       tag = this.mapEnglishTagSetToKaf(postag);
     }
-    if (lang.equalsIgnoreCase("es")) { 
+    if (lang.equalsIgnoreCase("es")) {
       tag = this.mapSpanishTagSetToKaf(postag);
     }
     return tag;
   }
 
-  
-  
- 
+
+  /**
+   * Set the term type attribute based on the pos value
+   *
+   * @param kaf postag
+   * @return type
+   */
+  public String setTermType(String postag) {
+    if (postag.startsWith("N") || postag.startsWith("V")
+        || postag.startsWith("G") || postag.startsWith("A")) {
+      return "open";
+    } else {
+      return "close";
+    }
+  }
+
+
   /**
    * This method uses the Apache OpenNLP to perform POS tagging.
-   * 
+   *
    * It gets a Map<SentenceId, tokens> from the input KAF document and iterates
    * over the tokens of each sentence to annotated POS tags.
-   * 
+   *
    * It also reads <wf>, elements from the input KAF document and fills the KAF
    * object with those elements plus the annotated POS tags in the <term>
    * elements.
-   * 
+   *
    * @param LinkedHashMap
    *          <String,List<String>
    * @param List
@@ -134,60 +141,36 @@ public class Annotate {
    * @param KAF
    *          object. This object is used to take the output data and convert it
    *          to KAF.
-   * 
+   *
    * @return JDOM KAF document containing <wf>, and <terms> elements.
    */
 
- 
-  
-  public void annotatePOSToKAF(
-	     List<Element> wfs, KAF kaf, Dictionary dictLemmatizer, String lang)
-	      throws IOException, JDOMException {
 
-    LinkedHashMap<String, List<String>> sentencesMap = kafUtils
-        .getSentencesMap(wfs);
-    LinkedHashMap<String, List<String>> sentTokensMap = kafUtils
-        .getSentsFromWfs(sentencesMap, wfs);  
-	    for (Map.Entry<String, List<String>> sentence : sentTokensMap.entrySet()) {
-	      String sid = sentence.getKey();
-	      String[] tokens = sentence.getValue().toArray(
-	          new String[sentence.getValue().size()]);
 
-	      // POS annotation
-	      String[] posTagged = posTagger.posAnnotate(tokens);
+  public void annotatePOSToKAF(KAFDocument kaf, Dictionary dictLemmatizer, String lang)
+              throws IOException {
+    
+    List<List<WF>> sentences = kaf.getSentences();
+    for (List<WF> sentence : sentences) { 
+      
+      /* Get an array of token forms from a list of WF objects. */
+      String tokens[] = new String[sentence.size()];
+      for (int i = 0; i < sentence.size(); i++) {
+        tokens[i] = sentence.get(i).getForm();
+      }
+      
+      String [] posTagged = posTagger.posAnnotate(tokens);
+      for (int i = 0; i < posTagged.length; i++) {
+        List<WF> wfs = new ArrayList<WF>();
+        wfs.add(sentence.get(i));
+        String posTag = posTagged[i];
+        String posId = this.getKafTagSet(lang, posTag);
+        String type = this.setTermType(posId); // type
+        String lemma = dictLemmatizer.lemmatize(lang, tokens[i], posTag); // lemma
+        kaf.createTermOptions(type, lemma, posId, posTag,wfs);
+      }
+    }
 
-	      // Add tokens in the sentence to kaf object
-	      int numTokensInKaf = kaf.getNumWfs();
-	      int indexNumTokens = numTokensInKaf + 1;
-	      for (int i = 0; i < tokens.length; i++) {
-	        int origWfCounter = i + numTokensInKaf;
-	        int realWfCounter = i + indexNumTokens;
-	        String offset = kafUtils.getWfOffset(wfs, origWfCounter);
-	        String tokLength = kafUtils.getWfLength(wfs, origWfCounter);
-	        String para = kafUtils.getWfPara(wfs, origWfCounter);
-	        String id = "w" + Integer.toString(realWfCounter);
-	        String tokenStr = tokens[i];
-	        kaf.addWf(id, sid, offset, tokLength, para, tokenStr);
-	      }
+  }
 
-	      // Add terms to KAF object
-	      int noTerms = kaf.getNumTerms();
-	      int indexTermCounter = noTerms + 1;
-	      for (int j = 0; j < posTagged.length; j++) {
-	        int realWfCounter = j + indexNumTokens;
-	        int realTermCounter = j + indexTermCounter;
-	        String termId = "t" + Integer.toString(realTermCounter); // termId
-	        String posTag = posTagged[j];
-	        String posId = this.getKafTagSet(lang, posTag); // posId
-	        String type = kafUtils.setTermType(posId); // type
-	        String lemma = dictLemmatizer.lemmatize(lang, tokens[j], posTag); // lemma
-	        String spanString = kafUtils.setSpanString(tokens[j]); // spanString
-	        ArrayList<String> tokenIds = new ArrayList<String>();
-	        tokenIds.add("w" + Integer.toString(realWfCounter)); // targets
-	        kaf.addTerm(termId, posId, type, lemma, tokenIds, spanString, posTag);
-	      }
-
-	    }
-	  }
-  
 }
