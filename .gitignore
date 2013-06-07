@@ -1,4 +1,5 @@
 target
+*.dict
 *.bin
 *.patch
 *.pyc
