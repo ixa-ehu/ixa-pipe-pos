@@ -102,7 +102,7 @@ git clone git@github.com:ixa-ehu/ixa-pipe-tok.git
 --------------------------------------
 
 The POS tagger needs the trained models and dictionaries to do the lemmatization. Download the models
-and untar the archive in the src/main/resources directory:
+and untar the archive into the src/main/resources directory:
 
 ````shell
 cd ixa-pipe-pos/src/main/resources
