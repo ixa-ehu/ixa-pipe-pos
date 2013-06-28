@@ -96,7 +96,7 @@ public class Annotate {
     }
   }
 
-  public String getKafTagSet(String lang, String postag) {
+  private String getKafTagSet(String lang, String postag) {
     String tag = null;
     if (lang.equalsIgnoreCase("en")) {
       tag = this.mapEnglishTagSetToKaf(postag);
@@ -114,7 +114,7 @@ public class Annotate {
    * @param kaf postag
    * @return type
    */
-  public String setTermType(String postag) {
+  private String setTermType(String postag) {
     if (postag.startsWith("N") || postag.startsWith("V")
         || postag.startsWith("G") || postag.startsWith("A")) {
       return "open";
@@ -151,7 +151,7 @@ public class Annotate {
               throws IOException {
     
     List<List<WF>> sentences = kaf.getSentences();
-    for (List<WF> sentence : sentences) { 
+    for (List<WF> sentence : sentences) {
       
       /* Get an array of token forms from a list of WF objects. */
       String tokens[] = new String[sentence.size()];
