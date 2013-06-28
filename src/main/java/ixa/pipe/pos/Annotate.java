@@ -167,7 +167,7 @@ public class Annotate {
         String posId = this.getKafTagSet(lang, posTag);
         String type = this.setTermType(posId); // type
         String lemma = dictLemmatizer.lemmatize(lang, tokens[i], posTag); // lemma
-        kaf.createTermOptions(type, lemma, posId, posTag,wfs);
+        kaf.createTermOptions(type, lemma, posId, posTag, wfs);
       }
     }
 
