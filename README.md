@@ -2,17 +2,36 @@
 IXA-pipe-pos
 ============
 
-This module uses Apache OpenNLP programatically to perform POS tagging.
+ixa-pipe-pos provides POS tagging and lemmatization for English and Spanish.
 This module is part of IXA-Pipeline ("is a pipeline"), a multilingual NLP pipeline
 developed by the IXA NLP Group (ixa.si.ehu.es).
 
-+ English perceptron models have been trained and evaluated using the WSJ treebank as explained in
-  K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic dependency network.
-  In Proceedings of HLT-NAACL’03, 2003. Currently we obtain a performance of 96.48% vs 97.24% obtained by Toutanova et al. (2003).
+- POS tagging models have been trained using the Apache OpenNLP API:
 
-+ Spanish Maximum Entropy models have been trained and evaluated using the Ancora corpus; it was randomly
+    + English perceptron models have been trained and evaluated using the WSJ treebank as explained in
+      K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic dependency network. In Proceedings of HLT-NAACL’03, 2003. Currently we obtain a performance of 96.48% vs 97.24% obtained by Toutanova et al. (2003).
+
+    + Spanish Maximum Entropy models have been trained and evaluated using the Ancora corpus; it was randomly
   divided in 90% for training (440K words) and 10% testing (70K words), obtaining a performance of 98.88%.
 
+- Lemmatization is dictionary based:
+
++ English:
+    + WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as a value of the -w option when running ixa-pipe-pos (see point 7. below).
+    + Plain text dictionary: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
+    + Morfologik-stemming: english.dict is the same as en-lemmas.dict but binarized as a finite state automata using the morfologik-stemming project (see NOTICE file for details) This method uses 10% of RAM with respect to the plain text dictionary and works noticeably faster.
+
++ Spanish:
+    + Plain text dictionary: es-lemmas.dict.
+    + Morfologik stemming: spanish.dict.
+
+To get WordNet go to:
+
+````shell
+wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
+````
+
+By default lemmatization for both English and Spanish is performed using the Morfologik-stemming binary dictionaries.
 
 Contents
 ========
@@ -113,22 +132,6 @@ If you change the name of the models you will need to modify also the source cod
 
 To perform English lemmatization the module uses three different methods for English and two for Spanish:
 
-+ English:
-    + WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as a value of the -w option when running ixa-pipe-pos (see point 7. below).
-    + Plain text dictionary: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
-    + Morfologik-stemming: english.dict is the same as en-lemmas.dict but binarized as a finite state automata using the
-      morfologik-stemming project (see NOTICE file for details) This method uses 10% of RAM with respect to the plain text
-     dictionary and works 2x faster.
-
-+ Spanish:
-    + Plain text dictionary: es-lemmas.dict.
-    + Morfologik stemming: spanish.dict.
-
-To get WordNet go to:
-
-````shell
-wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
-````
 
 5. Move into main directory
 ---------------------------
@@ -177,7 +180,7 @@ Current paramaters for specifying the language (to load the relevant models) is 
 java -jar $PATH/target/ixa-pipe-pos-1.0.jar -help
 ````
 
-for more options running the module
+for more options running the module such as lemmatization methods.
 
 
 GENERATING JAVADOC
