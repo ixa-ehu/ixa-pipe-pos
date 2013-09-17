@@ -16,14 +16,14 @@ developed by the IXA NLP Group (ixa.si.ehu.es).
 
 - Lemmatization is dictionary based:
 
-+ English:
-    + WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as a value of the -w option when running ixa-pipe-pos (see point 7. below).
-    + Plain text dictionary: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
-    + Morfologik-stemming: english.dict is the same as en-lemmas.dict but binarized as a finite state automata using the morfologik-stemming project (see NOTICE file for details) This method uses 10% of RAM with respect to the plain text dictionary and works noticeably faster.
+    + English:
+        + WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as a value of the -w option when running ixa-pipe-pos (see point 7. below).
+        + Plain text dictionary: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
+        + Morfologik-stemming: english.dict is the same as en-lemmas.dict but binarized as a finite state automata using the morfologik-stemming project (see NOTICE file for details) This method uses 10% of RAM with respect to the plain text dictionary and works noticeably faster.
 
-+ Spanish:
-    + Plain text dictionary: es-lemmas.dict.
-    + Morfologik stemming: spanish.dict.
+    + Spanish:
+        + Plain text dictionary: es-lemmas.dict.
+        + Morfologik stemming: spanish.dict.
 
 To get WordNet go to:
 
