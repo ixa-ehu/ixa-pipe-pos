@@ -166,7 +166,7 @@ mvn clean install
 
 The program accepts tokenized text in KAF format as standard input and outputs KAF.
 
-http://kyoto-project.eu/www2.let.vu.nl/twiki/pub/Kyoto/TechnicalPapers/WP002_TR009_KAF_Framework.pdf
+https://github.com/opener-project/kaf/wiki/KAF-structure-overview
 
 You can get the tokenized input for this module from ixa-pipe-tok. To run the program execute:
 
