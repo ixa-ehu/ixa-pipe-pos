@@ -52,13 +52,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.carrot2</groupId>
 			<artifactId>morfologik-stemming</artifactId>
 			<version>1.6.0</version>
@@ -96,7 +89,6 @@
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
 										<Main-Class>ixa.pipe.pos.CLI</Main-Class>
-										<!-- <Class-Path>../models/models.jar</Class-Path> -->
 									</manifestEntries>
 								</transformer>
 							</transformers>
