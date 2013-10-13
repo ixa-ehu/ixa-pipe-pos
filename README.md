@@ -51,7 +51,7 @@ INSTALLATION
 
 Installing the ixa-pipe-pos requires the following steps:
 
-If you already have installed in your machine JDK6 and MAVEN 3, please go to step 3
+If you already have installed in your machine JDK7 and MAVEN 3, please go to step 3
 directly. Otherwise, follow these steps:
 
 1. Install JDK 1.6
@@ -171,10 +171,10 @@ https://github.com/opener-project/kaf/wiki/KAF-structure-overview
 You can get the tokenized input for this module from ixa-pipe-tok. To run the program execute:
 
 ````shell
-cat wordforms.kaf | java -jar $PATH/target/ixa-pipe-pos-1.0.jar -l $lang
+cat wordforms.kaf | java -jar $PATH/target/ixa-pipe-pos-1.0.jar
 ````
 
-Current paramaters for specifying the language (to load the relevant models) is mandatory. See
+See
 
 ````shell
 java -jar $PATH/target/ixa-pipe-pos-1.0.jar -help
