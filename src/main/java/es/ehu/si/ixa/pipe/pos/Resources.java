@@ -27,22 +27,22 @@ public class Resources {
 
   public InputStream getDictionary(String lang) {
 	  if (lang.equalsIgnoreCase("en")) {
-		  dict = getClass().getResourceAsStream("/en-lemmas.dict");
+		  dict = getClass().getResourceAsStream("/en/en-lemmas.dict");
 	  }
 
 	  if (lang.equalsIgnoreCase("es")) {
-		  dict = getClass().getResourceAsStream("/es-lemmas.dict");
+		  dict = getClass().getResourceAsStream("/es/es-lemmas.dict");
 	  }
 	  return dict;
   }
 
   public URL getBinaryDict(String lang) {
 	  if (lang.equalsIgnoreCase("en")) {
-		  dictURL = getClass().getResource("/english.dict");
+		  dictURL = getClass().getResource("/en/english.dict");
   }
 
 	  if (lang.equalsIgnoreCase("es")) {
-		  dictURL = getClass().getResource("/spanish.dict");
+		  dictURL = getClass().getResource("/es/spanish.dict");
 	  }
 	  return dictURL;
   }

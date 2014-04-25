@@ -91,11 +91,11 @@ public class MorphoTagger {
     InputStream trainedModelInputStream = null;
     if (lang.equalsIgnoreCase("en")) {
       trainedModelInputStream = getClass().getResourceAsStream(
-          "/en-pos-perceptron-500-dev.bin");
+          "/en/en-pos-perceptron-c0-b3-dev.bin");
     }
     if (lang.equalsIgnoreCase("es")) {
       trainedModelInputStream = getClass().getResourceAsStream(
-          "/es-pos-perceptron-500-0.bin");
+          "/es/es-pos-perceptron-c0-b3.bin");
     }
     return trainedModelInputStream;
   }

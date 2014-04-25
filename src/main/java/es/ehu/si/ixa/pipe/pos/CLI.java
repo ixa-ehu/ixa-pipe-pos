@@ -338,8 +338,6 @@ public class CLI {
     evalParser.addArgument("--evalReport").required(false)
         .choices("brief", "detailed", "error")
         .help("Choose type of evaluation report; defaults to detailed");
-    evalParser.addArgument("-c", "--corpus").setDefault("opennlp")
-        .choices("opennlp").help("choose format input of corpus");
     evalParser.addArgument("--beamsize").setDefault(DEFAULT_BEAM_SIZE)
         .type(Integer.class)
         .help("Choose beam size for evaluation: 1 is faster.");

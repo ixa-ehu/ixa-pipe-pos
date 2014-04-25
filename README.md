@@ -1,29 +1,116 @@
 
-IXA-pipe-pos
+ixa-pipe-pos
 ============
 
-ixa-pipe-pos provides POS tagging and lemmatization for English and Spanish.
-This module is part of IXA-Pipeline ("is a pipeline"), a multilingual NLP pipeline
-developed by the IXA NLP Group (ixa.si.ehu.es).
+ixa-pipe-pos is a Part of Speech tagger for English and Spanish. 
+ixa-pipe-pos is part of IXA Pipeline ("is a pipeline"), a multilingual NLP pipeline developed 
+by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. 
 
-- POS tagging models have been trained using the Apache OpenNLP API:
+Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
+pipeline tools but also for **official releases, including source code and binary
+packages for all the tools in the IXA pipeline**.
 
-    + English perceptron models have been trained and evaluated using the WSJ treebank as explained in
-      K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic dependency network. In Proceedings of HLT-NAACL’03, 2003. Currently we obtain a performance of 96.48% vs 97.24% obtained by Toutanova et al. (2003).
+This document is intended to be the **usage guide of ixa-pipe-pos**. If you really need to clone
+and install this repository instead of using the releases provided in
+[http://ixa2.si.ehu.es/ixa-pipes], please scroll down to the end of the document for
+the [installation instructions](#installation).
 
-    + Spanish Maximum Entropy models have been trained and evaluated using the Ancora corpus; it was randomly
-  divided in 90% for training (440K words) and 10% testing (70K words), obtaining a performance of 98.88%.
+## OVERVIEW
 
-- Lemmatization is dictionary based:
+ixa-pipe-pos provides POS tagging and lemmatization for English and Spanish. We
+provide two fast POS tagging models: 
 
-    + English:
-        + WordNet-3.0. You will need to download WordNet and provide $WordNet/dict as a value of the -w option when running ixa-pipe-pos (see point 7. below).
-        + Plain text dictionary: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
-        + Morfologik-stemming: english.dict is the same as en-lemmas.dict but binarized as a finite state automata using the morfologik-stemming project (see NOTICE file for details) This method uses 10% of RAM with respect to the plain text dictionary and works noticeably faster.
++ **POS tagging models for English** trained and evaluated using the WSJ treebank as explained 
+  in K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic 
+  dependency network. In Proceedings of HLT-NAACL’03, 2003. 
++ **POS tagging models for Spanish** trained and evaluated using the Ancora corpus; it was randomly
+  divided in 90% for training (450K words) and 10% testing (50K words). 
++ **Dictionary-based lemmatization** for English and Spanish. 
 
-    + Spanish:
-        + Plain text dictionary: es-lemmas.dict.
-        + Morfologik stemming: spanish.dict.
+For this first release we provide two reasonably fast POS tagging models based on the Perceptron (Collins 2002) and 
+Maximum Entropy (Ratnaparkhi 1999) algorithms. To avoid duplication of efforts, we use the machine learning API 
+provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added dictionary-based lemmatization. 
+
+Therefore, the following resources are provided in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz) package: 
+
++ **English POS Models**:
+  + Penn Treebank: **en-pos-perceptron-c0-b3-dev.bin**: 97.06
+
++ **Spanish POS Models**: we obtained better results overall with Maximum Entropy
+  models (Ratnapharki 1999). The best results are obtained when a c0 (cutoff 0)
+  is used, but those models are slower for production than the Perceptron
+  models. Therefore, we provide both types, based on maxent and perceptron.
+  + Ancora: **es-pos-maxent-750-c0-b3.bin**: 98.88 Word accuracy.
+  + Ancora: **es-pos-perceptron-c0-b3.bin**: 98.24 Word accuracy (**this is the default**). 
+
++ **Lemmatizer Dictionaries**:
+  + **English**:
+    + **Plain text dictionary**: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
+    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as a finite state automata 
+      using the morfologik-stemming project (see NOTICE file for details). This method uses 10% of RAM with respect 
+      to the plain text dictionary (**this is the default**).
+    + **WordNet-3.0**. You will need to download WordNet and provide $WordNet/dict as a value of the --lemmatizer 
+      option when running ixa-pipe-pos. (see [usage](#using ixa-pipe-pos)).
+  + **Spanish**:
+    + **Plain text dictionary**: es-lemmas.dict.
+    + **Morfologik stemming**: spanish.dict.
+
+ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details).
+
+## USING ixa-pipe-pos
+
+ixa-pipe-pos provides 3 basic functionalities:
+
+1. **tag**: reads a NAF document containing *wf* and *term* elements and tags named
+   entities.
+2. **train**: trains new model for English or Spanish with several options
+   available.
+3. **eval**: evaluates a trained model with a given test set.
+
+Each of these functionalities are accessible by adding (tag|train|eval) as a
+subcommand to ixa-pipe-pos-$version.jar. Please read below and check the -help
+parameter: 
+
+````shell
+java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval) -help
+````
+
+### POS Tagging with ixa-pipe-pos
+
+If you are in hurry, just execute: 
+
+````shell
+cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag
+````
+
+If you want to know more, please follow reading.
+
+ixa-pipe-pos reads NAF documents (with *wf* and *term* elements) via standard input and outputs NAF
+through standard output. The NAF format specification is here:
+
+(http://wordpress.let.vupr.nl/naf/)
+
+You can get the necessary input for ixa-pipe-pos by piping it with 
+[ixa-pipe-tok](https://github.com/ixa-ehu/ixa-pipe-tok). 
+
+There are several options to tag with ixa-pipe-pos: 
+
++ **lang**: choose between en and es. If no language is chosen, the one specified
+  in the NAF header will be used.
++ **features**: choose features to use during the decoding. Currently only
+  baseline features are provided: 
+  + **baseline**: it implements local, opennlp features. These
+     features generate reasonably accurate and very fast models.
++ **model**: provide the model to do the tagging. If no model is provided via
+  this parameter, ixa-pipe-pos will revert to the baseline model distributed
+  in the release.  
++ **beamsize**: choose beam size for decoding. There is no definitive evidence
+  that using larger or smaller beamsize actually improves accuracy. It is known
+  to slow things down considerably if beamsize is set to 100, for example.
++ **lemmatize**: choose dictionary method to perform lemmatization:
+  + **bin**: Morfologik binary dictionary (**default**).
+  + **plain**: plain text dictionary.
+  + **wn**: WordNet 3.0-based lemmatization, **only for English**.
 
 To get WordNet go to:
 
@@ -31,43 +118,108 @@ To get WordNet go to:
 wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
 ````
 
-By default lemmatization for both English and Spanish is performed using the Morfologik-stemming binary dictionaries.
+**Tagging Example**: 
 
-Contents
-========
+````shell
+cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag
+````
+
+### Training new models
+
+The following options are available via the train subcommand:
+
++ **features**: as explained in the previous section. Obviously, for best
+  performance the features used at training should be used for tagging.
++ **input**: the training dataset.
++ **testSet**: self-explanatory, the test dataset.
++ **devSet**: the development set if cross evaluation is chosen to find the
+  right number of iterations (this option is still very experimental).
++ **output**: the model name resulting of the training. If not output is
+  chosen, ixa-pipe-pos will save the model in a file named following the
+  features used.
++ **params**: this is where most of the training options are specified.
+  + **Algorithm**: choose between PERCEPTRON or MAXENT.
+  + **Iterations**: choose number of iterations.
+  + **Cutoff**: consider only events above the cutoff number specified.
+  + **Threads**: multi-threading, only works with MAXENT.
+  + **Language**: en or es. 
+  + **Beamsize**: choose beamsize for decoding. It defaults to 3.
+  + **Corpus**: corpus format. Currently opennlp native format supported.
+  + **CrossEval**: choose the range of iterations at which to perform
+  evaluation. This parameter tells the trainer to find the best number of
+  iterations for MAXENT training on a development set. Then that iteration
+  number will be used to train the final model. In a very experimental state. 
+
+**Example**:
+
+````shell
+java -jar target/ixa.pipe.pos-$version.jar train -f baseline -p trainParams.txt -i train.data -t test.data -o test-pos.bin
+````
+
+### Evaluation
+
+To evaluate a trained model, the eval subcommand provides the following
+options: 
+
++ **model**: input the name of the model to evaluate.
++ **features**: as explained for *train* and *tag* subcommands.
++ **language**: input en or es.
++ **testSet**: testset to evaluate the model.
++ **evalReport**: choose the detail in displaying the results: 
+  + **brief**: it just prints the word accuracy.
+  + **detailed**: detailed report with confusion matrixes and so on. 
+  + **error**: print to stderr all the false positives.
++ **corpus**: choose between native opennlp and conll 2003 formats.
++ **beamsize**: choose beamsize for decoding.
+
+**Example**:
+
+````shell
+java -jar target/ixa.pipe.nerc-$version.jar eval -m test-pos.bin -f baseline -l en -t test.data 
+````
+
+## JAVADOC
+
+It is possible to generate the javadoc of the module by executing:
+
+````shell
+cd ixa-pipe-pos/
+mvn javadoc:jar
+````
+
+Which will create a jar file core/target/ixa-pipe-pos-$version-javadoc.jar
+
+## Module contents
 
 The contents of the module are the following:
 
     + formatter.xml           Apache OpenNLP code formatter for Eclipse SDK
     + pom.xml                 maven pom file which deals with everything related to compilation and execution of the module
-    + src/                    java source code of the module
+    + src/                    java source code of the module and required resources
     + Furthermore, the installation process, as described in the README.md, will generate another directory:
     target/                 it contains binary executable and other directories
 
 
-
-INSTALLATION
-============
+## INSTALLATION
 
 Installing the ixa-pipe-pos requires the following steps:
 
-If you already have installed in your machine JDK7 and MAVEN 3, please go to step 3
+If you already have installed in your machine the Java 1.7+ and MAVEN 3, please go to step 3
 directly. Otherwise, follow these steps:
 
-1. Install JDK 1.6
--------------------
+### 1. Install JDK 1.7
 
-If you do not install JDK 1.6 in a default location, you will probably need to configure the PATH in .bashrc or .bash_profile:
+If you do not install JDK 1.7 in a default location, you will probably need to configure the PATH in .bashrc or .bash_profile:
 
 ````shell
-export JAVA_HOME=/yourpath/local/java6
+export JAVA_HOME=/yourpath/local/java7
 export PATH=${JAVA_HOME}/bin:${PATH}
 ````
 
 If you use tcsh you will need to specify it in your .login as follows:
 
 ````shell
-setenv JAVA_HOME /usr/java/java16
+setenv JAVA_HOME /usr/java/java17
 setenv PATH ${JAVA_HOME}/bin:${PATH}
 ````
 
@@ -77,10 +229,9 @@ If you re-login into your shell and run the command
 java -version
 ````
 
-You should now see that your jdk is 1.6
+You should now see that your JDK is 1.7
 
-2. Install MAVEN 3
-------------------
+### 2. Install MAVEN 3
 
 Download MAVEN 3 from
 
@@ -108,95 +259,53 @@ If you re-login into your shell and run the command
 mvn -version
 ````
 
-You should see reference to the MAVEN version you have just installed plus the JDK 6 that is using.
+You should see reference to the MAVEN version you have just installed plus the JDK 7 that is using.
 
-3. Get module source code
---------------------------
+### 3. Get module source code
+
+If you must get the module source code from here do this:
 
 ````shell
-git clone git@github.com:ixa-ehu/ixa-pipe-tok.git
+git clone https://github.com/ixa-ehu/ixa-pipe-pos
 ````
 
-4. Download models and other resources
---------------------------------------
+### 4. Download the Resources
 
-The POS tagger needs the trained models and dictionaries to do the lemmatization. Download the models
-and untar the archive into the src/main/resources directory:
+You will need to download the trained models and other resources and copy them to ixa-pipe-pos/src/main/resources/
+for the module to work properly:
+
+Download the models and untar the archive into the src/main/resources directory:
 
 ````shell
 cd ixa-pipe-pos/src/main/resources
-wget http://ixa2.si.ehu.es/ragerri/ixa-pipeline-models/pos-resources.tgz
+wget http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz
 tar xvzf pos-resources.tgz
 ````
-If you change the name of the models you will need to modify also the source code in Models.java.
+The pos-resources contains the baseline models to which ixa-pipe-pos backs off if not model is provided as parameter
+for tagging.
 
-To perform English lemmatization the module uses three different methods for English and two for Spanish:
-
-
-5. Move into main directory
----------------------------
+### 5. Compile
 
 ````shell
 cd ixa-pipe-pos
-````
-
-6. Install module using maven
------------------------------
-
-````shell
 mvn clean package
 ````
 
 This step will create a directory called target/ which contains various directories and files.
 Most importantly, there you will find the module executable:
 
-ixa-pipe-pos-1.0.jar
+ixa-pipe-pos-$version.jar
 
 This executable contains every dependency the module needs, so it is completely portable as long
-as you have a JVM 1.6 installed.
+as you have a JVM 1.7 installed.
 
-To install the module in the local maven repository, usually located at ~/.m2/, execute:
+To install the module in the local maven repository, usually located in ~/.m2/, execute:
 
 ````shell
 mvn clean install
 ````
 
-7. USING ixa-pipe-pos
-=====================
-
-The program accepts tokenized text in KAF format as standard input and outputs KAF.
-
-https://github.com/opener-project/kaf/wiki/KAF-structure-overview
-
-You can get the tokenized input for this module from ixa-pipe-tok. To run the program execute:
-
-````shell
-cat wordforms.kaf | java -jar $PATH/target/ixa-pipe-pos-1.0.jar
-````
-
-See
-
-````shell
-java -jar $PATH/target/ixa-pipe-pos-1.0.jar -help
-````
-
-for more options running the module such as lemmatization methods.
-
-
-GENERATING JAVADOC
-==================
-
-You can also generate the javadoc of the module by executing:
-
-````shell
-mvn javadoc:jar
-````
-
-Which will create a jar file target/ixa-pipe-pos-1.0-javadoc.jar
-
-
-Contact information
-===================
+## Contact information
 
 ````shell
 Rodrigo Agerri
@@ -205,3 +314,4 @@ University of the Basque Country (UPV/EHU)
 E-20018 Donostia-San Sebastián
 rodrigo.agerri@ehu.es
 ````
+
