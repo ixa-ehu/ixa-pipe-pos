@@ -21,11 +21,8 @@ import java.net.URL;
 
 public class Resources {
 
-  private InputStream dict;
-  private URL dictURL;
-  private String constantTag;
-
   public InputStream getDictionary(String lang) {
+      InputStream dict = null;
 	  if (lang.equalsIgnoreCase("en")) {
 		  dict = getClass().getResourceAsStream("/en/en-lemmas.dict");
 	  }
@@ -37,6 +34,7 @@ public class Resources {
   }
 
   public URL getBinaryDict(String lang) {
+    URL dictURL = null;
 	  if (lang.equalsIgnoreCase("en")) {
 		  dictURL = getClass().getResource("/en/english.dict");
   }
@@ -48,6 +46,7 @@ public class Resources {
   }
 
   public String setTagConstant(String lang, String postag) {
+    String constantTag = null;
     if (lang.equalsIgnoreCase("en")) {
       if (postag.equalsIgnoreCase("NNP")) {
         constantTag = "NNP";
