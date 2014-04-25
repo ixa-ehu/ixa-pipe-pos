@@ -14,13 +14,14 @@
    limitations under the License.
  */
 
-package ixa.pipe.lemmatize;
+package es.ehu.si.ixa.pipe.lemmatize;
 
-import ixa.pipe.pos.Resources;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import es.ehu.si.ixa.pipe.pos.Resources;
 
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.Adjective;
@@ -48,7 +49,7 @@ import net.didion.jwnl.princeton.file.PrincetonRandomAccessDictionaryFile;
  *         Class to obtain English lemmas using JWNL API.
  * 
  */
-public class JWNLemmatizer implements Dictionary {
+public class JWNLemmatizer implements DictionaryLemmatizer {
 
   private net.didion.jwnl.dictionary.Dictionary dict;
   private MorphologicalProcessor morphy;

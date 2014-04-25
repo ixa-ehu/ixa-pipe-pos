@@ -1,16 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ixa</groupId>
 	<artifactId>ixa-pipe-pos</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0</version>
+	<version>1.0.0</version>
 	<name>ixa-pipe-pos</name>
-	<description>POS tagging module of IXA-Pipeline, a multilingual Natural Language Processing
-	Pipeline based on Apache OpenNLP API. Currently English and Spanish annotation is available,
-	but it can be easily extended to deal with other languages too. All models have been trained
-	by the IXA NLP Group of the University of the Basque Country (ixa.si.ehu.es).
-        </description>
+	<description>POS tagging module of IXA Pipeline, a multilingual Natural Language Processing  developed by the IXA NLP Group of the University of the Basque Country (ixa.si.ehu.es).</description>
 	<developers>
 		<developer>
 			<id>ragerri</id>
@@ -24,7 +19,7 @@
 	<prerequisites>
 		<maven>3.0</maven>
 	</prerequisites>
-	<url>http://maven.apache.org</url>
+	<url>http://ixa2.si.ehu.es/ixa-pipes</url>
 
 	<repositories>
 	 <repository>
@@ -63,7 +58,11 @@
 			<version>1.5.3</version>
 			<scope>compile</scope>
 		</dependency>
-
+		<dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
 		 <dependency>
 		   <groupId>ixa.kaflib</groupId>
 		   <artifactId>kaflib-naf</artifactId>
@@ -88,7 +87,10 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
-										<Main-Class>ixa.pipe.pos.CLI</Main-Class>
+										<Main-Class>es.ehu.si.ixa.pipe.pos.CLI</Main-Class>
+										<groupId>${project.groupId}</groupId>
+                                        <artifactId>${project.artifactId}</artifactId>
+                                        <Implementation-Version>${project.version}</Implementation-Version>
 									</manifestEntries>
 								</transformer>
 							</transformers>
@@ -105,7 +107,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
 				<configuration>
-					<mainClass>ixa.pipe.pos.CLI</mainClass>
+					<mainClass>es.ehu.si.ixa.pipe.pos.CLI</mainClass>
 				</configuration>
 			</plugin>
 
@@ -117,4 +119,13 @@
 
 		</plugins>
 	</build>
+	<groupId>es.ehu.si</groupId>
+	<organization>
+		<name>IXA Pipeline</name>
+		<url>http://ixa2.si.ehu.es/ixa-pipes</url>
+	</organization>
+	<scm>
+		<url>https://github.com/ixa-ehu/ixa-pipe-pos</url>
+		<developerConnection>ragerri</developerConnection>
+	</scm>
 </project>

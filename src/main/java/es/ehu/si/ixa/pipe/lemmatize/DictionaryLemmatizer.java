@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package ixa.pipe.lemmatize;
+package es.ehu.si.ixa.pipe.lemmatize;
 
 /**
  * @author ragerri
@@ -23,7 +23,7 @@ package ixa.pipe.lemmatize;
 /** 
  * Interface to provide dictionary information for lemmatization.
  */
-public interface Dictionary {
+public interface DictionaryLemmatizer {
 
   /**
    * Returns the lemma of the specified word with the specified part-of-speech.

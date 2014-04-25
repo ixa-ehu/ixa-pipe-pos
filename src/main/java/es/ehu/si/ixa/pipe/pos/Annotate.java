@@ -14,16 +14,17 @@
    limitations under the License.
  */
 
-package ixa.pipe.pos;
+package es.ehu.si.ixa.pipe.pos;
 
 import ixa.kaflib.KAFDocument;
 import ixa.kaflib.WF;
-import ixa.pipe.lemmatize.Dictionary;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer;
 
 /**
  * @author ragerri
@@ -31,15 +32,15 @@ import java.util.List;
  */
 public class Annotate {
 
-  private POS posTagger;
+  private MorphoTagger posTagger;
 
 
-  public Annotate(String lang) throws IOException {
-    Resources modelRetriever = new Resources();
-    InputStream posModel = modelRetriever.getPOSModel(lang);
-    posTagger = new POS(posModel);
+  public Annotate(String lang, String model, String features, int beamsize) throws IOException {
+    if (model.equalsIgnoreCase("baseline")) {
+      System.err.println("No POS model chosen, reverting to baseline model!");
+    }
+    posTagger = new MorphoTagger(lang, model, features, beamsize);
   }
-
 
   /**
    *
@@ -147,7 +148,7 @@ public class Annotate {
 
 
 
-  public void annotatePOSToKAF(KAFDocument kaf, Dictionary dictLemmatizer, String lang)
+  public void annotatePOSToKAF(KAFDocument kaf, DictionaryLemmatizer dictLemmatizer, String lang)
               throws IOException {
     
     List<List<WF>> sentences = kaf.getSentences();

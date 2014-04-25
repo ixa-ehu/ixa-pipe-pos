@@ -1,6 +1,5 @@
-package ixa.pipe.lemmatize;
+package es.ehu.si.ixa.pipe.lemmatize;
 
-import ixa.pipe.pos.Resources;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,12 +8,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import es.ehu.si.ixa.pipe.pos.Resources;
+
 import morfologik.stemming.Dictionary;
 import morfologik.stemming.DictionaryLookup;
 import morfologik.stemming.IStemmer;
 import morfologik.stemming.WordData;
 
-public class MorfologikLemmatizer implements ixa.pipe.lemmatize.Dictionary {
+public class MorfologikLemmatizer implements es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer {
 
   private IStemmer dictLookup;
 
