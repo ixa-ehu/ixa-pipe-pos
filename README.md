@@ -50,7 +50,7 @@ Therefore, the following resources are provided in the [pos-resources.tgz](http:
       using the morfologik-stemming project (see NOTICE file for details). This method uses 10% of RAM with respect 
       to the plain text dictionary (**this is the default**).
     + **WordNet-3.0**. You will need to download WordNet and provide $WordNet/dict as a value of the --lemmatizer 
-      option when running ixa-pipe-pos. (see [usage](#using ixa-pipe-pos)).
+      option when running ixa-pipe-pos. (see [usage](#USING ixa-pipe-pos)).
   + **Spanish**:
     + **Plain text dictionary**: es-lemmas.dict.
     + **Morfologik stemming**: spanish.dict.
