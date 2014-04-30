@@ -3,12 +3,12 @@ ixa-pipe-pos
 ============
 
 ixa-pipe-pos is a Part of Speech tagger for English and Spanish. 
-ixa-pipe-pos is part of IXA Pipeline ("is a pipeline"), a multilingual NLP pipeline developed 
+ixa-pipe-pos is part of IXA pipes, a multilingual NLP pipeline developed 
 by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. 
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
-pipeline tools but also for **official releases, including source code and binary
-packages for all the tools in the IXA pipeline**.
+pipes tools but also for **official releases, including source code and binary
+packages for all the tools in the IXA pipes toolkit**.
 
 This document is intended to be the **usage guide of ixa-pipe-pos**. If you really need to clone
 and install this repository instead of using the releases provided in
