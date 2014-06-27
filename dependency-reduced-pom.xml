@@ -4,7 +4,7 @@
   <groupId>es.ehu.si</groupId>
   <artifactId>ixa-pipe-pos</artifactId>
   <name>ixa-pipe-pos</name>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <description>POS tagging module of IXA Pipeline, a multilingual Natural Language Processing  developed by the IXA NLP Group of the University of the Basque Country (ixa.si.ehu.es).</description>
   <url>http://ixa2.si.ehu.es/ixa-pipes</url>
   <prerequisites>
