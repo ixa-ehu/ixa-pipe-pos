@@ -18,7 +18,7 @@
 Algorithm=MAXENT
 Iterations=700
 Cutoff=0
-Threads=4
+Threads=2
 
 #### Custom parameters added by ixa-pipe-pos ####
  

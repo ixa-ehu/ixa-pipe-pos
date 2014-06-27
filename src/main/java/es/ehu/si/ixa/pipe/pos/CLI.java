@@ -29,6 +29,7 @@ import java.net.URL;
 
 import net.didion.jwnl.JWNLException;
 import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
@@ -194,13 +195,19 @@ public class CLI {
       URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
       lemmatizer = new MorfologikLemmatizer(dictLemmatizer);
     }
-    KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor("terms",
-        "ixa-pipe-pos-" + lang, version);
     Annotate annotator = new Annotate(lang, model, features, beamsize);
-    newLp.setBeginTimestamp();
-    annotator.annotatePOSToKAF(kaf, lemmatizer, lang);
-    newLp.setEndTimestamp();
-    bwriter.write(kaf.toString());
+    //annotate to KAF
+    if (parsedArguments.getBoolean("nokaf")) {
+      KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
+          "terms", "ixa-pipe-pos-" + lang, version);
+
+      newLp.setBeginTimestamp();
+      annotator.annotatePOSToKAF(kaf, lemmatizer, lang);
+      newLp.setEndTimestamp();
+      bwriter.write(kaf.toString());
+    } else {//annotate to CoNLL
+      bwriter.write(annotator.annotatePOSToCoNLL(kaf, lemmatizer, lang));
+    }
     bwriter.close();
     breader.close();
   }
@@ -223,6 +230,11 @@ public class CLI {
         .setDefault("bin")
         .help(
             "Lemmatization method: Choose 'bin' for binary Morfologik dictionary (default), 'plain' for plain text dictionary and 'wn' for WordNet lemmatization.\n");
+    annotateParser
+        .addArgument("--nokaf")
+        .action(Arguments.storeFalse())
+        .help(
+            "Do not print tokens in NAF format, but conll tabulated format.\n");
   }
 
   public final void train() throws IOException {
@@ -249,7 +261,8 @@ public class CLI {
     }
 
     if (parsedArguments.getString("features").equalsIgnoreCase("baseline")) {
-      posTaggerTrainer = new BaselineMorphoTaggerTrainer(lang, trainFile, testFile, beamsize);
+      posTaggerTrainer = new BaselineMorphoTaggerTrainer(lang, trainFile,
+          testFile, beamsize);
     } else {
       System.err.println("Specify valid features parameter!!");
     }
@@ -259,8 +272,8 @@ public class CLI {
       if (parsedArguments.get("devSet") == null) {
         InputOutputUtils.devSetException();
       } else {
-        trainedModel = posTaggerTrainer.trainCrossEval(trainFile, devFile, params,
-            evalRange);
+        trainedModel = posTaggerTrainer.trainCrossEval(trainFile, devFile,
+            params, evalRange);
       }
     } else {
       trainedModel = posTaggerTrainer.train(params);
@@ -271,24 +284,17 @@ public class CLI {
   }
 
   public final void loadTrainingParameters() {
-    trainParser.addArgument("-f", "--features")
-        .choices("baseline")
-        .required(true)
-        .help("Choose features to train POS model");
-    trainParser.addArgument("-p", "--params")
-        .required(true)
+    trainParser.addArgument("-f", "--features").choices("baseline")
+        .required(true).help("Choose features to train POS model");
+    trainParser.addArgument("-p", "--params").required(true)
         .help("Load the parameters file");
-    trainParser.addArgument("-i", "--input")
-        .required(true)
+    trainParser.addArgument("-i", "--input").required(true)
         .help("Input training set");
-    trainParser.addArgument("-t", "--testSet")
-        .required(true)
+    trainParser.addArgument("-t", "--testSet").required(true)
         .help("Input testset for evaluation");
-    trainParser.addArgument("-d", "--devSet")
-        .required(false)
+    trainParser.addArgument("-d", "--devSet").required(false)
         .help("Input development set for cross-evaluation");
-    trainParser.addArgument("-o", "--output")
-        .required(false)
+    trainParser.addArgument("-o", "--output").required(false)
         .help("Choose output file to save the annotation");
   }
 

@@ -28,14 +28,14 @@ import es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer;
 
 /**
  * @author ragerri
- *
+ * 
  */
 public class Annotate {
 
   private MorphoTagger posTagger;
 
-
-  public Annotate(String lang, String model, String features, int beamsize) throws IOException {
+  public Annotate(String lang, String model, String features, int beamsize)
+      throws IOException {
     if (model.equalsIgnoreCase("baseline")) {
       System.err.println("No POS model chosen, reverting to baseline model!");
     }
@@ -43,10 +43,11 @@ public class Annotate {
   }
 
   /**
-   *
+   * 
    * Mapping between Penn Treebank tagset and KAF tagset
-   *
-   * @param penn treebank postag
+   * 
+   * @param penn
+   *          treebank postag
    * @return kaf POS tag
    */
   private String mapEnglishTagSetToKaf(String postag) {
@@ -108,11 +109,11 @@ public class Annotate {
     return tag;
   }
 
-
   /**
    * Set the term type attribute based on the pos value
-   *
-   * @param kaf postag
+   * 
+   * @param kaf
+   *          postag
    * @return type
    */
   private String setTermType(String postag) {
@@ -124,43 +125,19 @@ public class Annotate {
     }
   }
 
+  public void annotatePOSToKAF(KAFDocument kaf,
+      DictionaryLemmatizer dictLemmatizer, String lang) throws IOException {
 
-  /**
-   * This method uses the Apache OpenNLP to perform POS tagging.
-   *
-   * It gets a Map<SentenceId, tokens> from the input KAF document and iterates
-   * over the tokens of each sentence to annotated POS tags.
-   *
-   * It also reads <wf>, elements from the input KAF document and fills the KAF
-   * object with those elements plus the annotated POS tags in the <term>
-   * elements.
-   *
-   * @param LinkedHashMap
-   *          <String,List<String>
-   * @param List
-   *          <Element> termList
-   * @param KAF
-   *          object. This object is used to take the output data and convert it
-   *          to KAF.
-   *
-   * @return JDOM KAF document containing <wf>, and <terms> elements.
-   */
-
-
-
-  public void annotatePOSToKAF(KAFDocument kaf, DictionaryLemmatizer dictLemmatizer, String lang)
-              throws IOException {
-    
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
-      
+
       /* Get an array of token forms from a list of WF objects. */
       String tokens[] = new String[sentence.size()];
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
-      
-      String [] posTagged = posTagger.posAnnotate(tokens);
+
+      String[] posTagged = posTagger.posAnnotate(tokens);
       for (int i = 0; i < posTagged.length; i++) {
         List<WF> wfs = new ArrayList<WF>();
         wfs.add(sentence.get(i));
@@ -171,7 +148,28 @@ public class Annotate {
         kaf.createTermOptions(type, lemma, posId, posTag, wfs);
       }
     }
+  }
+  
 
+  public String annotatePOSToCoNLL(KAFDocument kaf,
+      DictionaryLemmatizer dictLemmatizer, String lang) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    List<List<WF>> sentences = kaf.getSentences();
+    for (List<WF> sentence : sentences) {
+      /* Get an array of token forms from a list of WF objects. */
+      String tokens[] = new String[sentence.size()];
+      for (int i = 0; i < sentence.size(); i++) {
+        tokens[i] = sentence.get(i).getForm();
+      }
+      String[] posTagged = posTagger.posAnnotate(tokens);
+      for (int i = 0; i < posTagged.length; i++) {
+        String posTag = posTagged[i];
+        String lemma = dictLemmatizer.lemmatize(lang, tokens[i], posTag); // lemma
+        sb.append(tokens[i]).append("\t").append(lemma).append("\t").append(posTag).append("\n");
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
   }
 
 }
