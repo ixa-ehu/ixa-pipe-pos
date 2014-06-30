@@ -51,7 +51,7 @@ import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
 import es.ehu.si.ixa.pipe.pos.train.MorphoTaggerTrainer;
 
 /**
- * Main class of ixa-pipe-pos.
+ * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes (ixa2.si.ehu.es/ixa-pipes).
  * 
  * @author ragerri
  * @version 2014-04-24
