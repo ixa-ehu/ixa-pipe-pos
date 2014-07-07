@@ -244,6 +244,7 @@ public class CLI {
     String testFile = parsedArguments.getString("testSet");
     String devFile = parsedArguments.getString("devSet");
     String features = parsedArguments.getString("features");
+    Integer dictCutOff = parsedArguments.getInt("autoDict");
     String outModel = null;
     // load training parameters file
     String paramFile = parsedArguments.getString("params");
@@ -264,10 +265,10 @@ public class CLI {
 
     if (features.equalsIgnoreCase("baseline")) {
       posTaggerTrainer = new BaselineTrainer(lang, trainFile,
-          testFile, beamsize);
+          testFile, dictCutOff, beamsize);
     }
     else if (features.equalsIgnoreCase("opennlp")) {
-      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile, beamsize);
+      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile, dictCutOff, beamsize);
     }
     else {
       System.err.println("Specify valid features parameter!!");
@@ -302,6 +303,11 @@ public class CLI {
         .help("Input development set for cross-evaluation");
     trainParser.addArgument("-o", "--output").required(false)
         .help("Choose output file to save the annotation");
+    trainParser.addArgument("--autoDict")
+        .type(Integer.class)
+        .required(false)
+        .setDefault(-1)
+        .help("Provide cutoff > 1 to automatically build a tag dictionary from the training data.\n");
   }
 
   public final void eval() throws IOException {

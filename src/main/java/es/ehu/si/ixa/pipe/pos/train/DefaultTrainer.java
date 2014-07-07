@@ -6,10 +6,11 @@ import opennlp.tools.postag.POSTaggerFactory;
 
 public class DefaultTrainer extends AbstractTrainer {
   
-  public DefaultTrainer(String lang, String trainData, String testData, int beamsize) throws IOException {
-    super(lang, trainData, testData, beamsize);
+  public DefaultTrainer(String lang, String trainData, String testData, int dictCutOff, int beamsize) throws IOException {
+    super(lang, trainData, testData, dictCutOff, beamsize);
     
     posTaggerFactory = new POSTaggerFactory();
+    this.getAutomaticDictionary(dictCutOff);
   }
 
 }

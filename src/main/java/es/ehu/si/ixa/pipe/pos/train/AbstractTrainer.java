@@ -10,12 +10,15 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
+import opennlp.tools.cmdline.TerminateToolException;
+import opennlp.tools.postag.MutableTagDictionary;
 import opennlp.tools.postag.POSEvaluator;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSSample;
 import opennlp.tools.postag.POSTagger;
 import opennlp.tools.postag.POSTaggerFactory;
 import opennlp.tools.postag.POSTaggerME;
+import opennlp.tools.postag.TagDictionary;
 import opennlp.tools.postag.WordTagSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
@@ -61,7 +64,7 @@ public abstract class AbstractTrainer implements Trainer {
      */
     protected  POSTaggerFactory posTaggerFactory;
 
-    public AbstractTrainer(String alang, String aTrainData, String aTestData, int aBeamsize) throws IOException {
+    public AbstractTrainer(String alang, String aTrainData, String aTestData, int dictCutOff, int aBeamsize) throws IOException {
       this.lang = alang;
       this.trainData = aTrainData;
       this.testData = aTestData;
@@ -70,6 +73,7 @@ public abstract class AbstractTrainer implements Trainer {
       ObjectStream<String> testStream = InputOutputUtils.readInputData(aTestData);
       testSamples = new WordTagSampleStream(testStream);
       this.beamSize = aBeamsize;
+      
     }
     
     public POSModel train(TrainingParameters params) {
@@ -205,6 +209,28 @@ public abstract class AbstractTrainer implements Trainer {
       }
       return posTaggerEvaluator;
     }
-
-
+    
+    public void getAutomaticDictionary(int dictCutOff) {
+      if (dictCutOff != -1) {
+        try {
+          TagDictionary dict = posTaggerFactory.getTagDictionary();
+          if (dict == null) {
+            dict = posTaggerFactory.createEmptyTagDictionary();
+            posTaggerFactory.setTagDictionary(dict);
+          }
+          if (dict instanceof MutableTagDictionary) {
+            POSTaggerME.populatePOSDictionary(trainSamples, (MutableTagDictionary)dict,
+                dictCutOff);
+          } else {
+            throw new IllegalArgumentException(
+                "Can't extend a POSDictionary that does not implement MutableTagDictionary.");
+          }
+          trainSamples.reset();
+        } catch (IOException e) {
+          throw new TerminateToolException(-1,
+              "IO error while creating/extending POS Dictionary: "
+                  + e.getMessage(), e);
+        }
+      }
+    }
 }
