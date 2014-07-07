@@ -47,6 +47,7 @@ import es.ehu.si.ixa.pipe.lemmatize.MorfologikLemmatizer;
 import es.ehu.si.ixa.pipe.lemmatize.SimpleLemmatizer;
 import es.ehu.si.ixa.pipe.pos.eval.Evaluate;
 import es.ehu.si.ixa.pipe.pos.train.BaselineTrainer;
+import es.ehu.si.ixa.pipe.pos.train.DefaultTrainer;
 import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
 import es.ehu.si.ixa.pipe.pos.train.Trainer;
 
@@ -213,10 +214,10 @@ public class CLI {
   }
 
   private void loadAnnotateParameters() {
-    annotateParser.addArgument("-l", "--lang").choices("en", "es")
+    annotateParser.addArgument("-l", "--lang").choices("en", "es", "it")
         .required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
-    annotateParser.addArgument("-f", "--features").choices("baseline")
+    annotateParser.addArgument("-f", "--features").choices("opennlp", "baseline")
         .required(false).setDefault("baseline")
         .help("Choose features for POS tagging; it defaults to baseline.");
     annotateParser.addArgument("-m", "--model").required(false)
@@ -242,6 +243,7 @@ public class CLI {
     String trainFile = parsedArguments.getString("input");
     String testFile = parsedArguments.getString("testSet");
     String devFile = parsedArguments.getString("devSet");
+    String features = parsedArguments.getString("features");
     String outModel = null;
     // load training parameters file
     String paramFile = parsedArguments.getString("params");
@@ -260,10 +262,14 @@ public class CLI {
           + ".bin";
     }
 
-    if (parsedArguments.getString("features").equalsIgnoreCase("baseline")) {
+    if (features.equalsIgnoreCase("baseline")) {
       posTaggerTrainer = new BaselineTrainer(lang, trainFile,
           testFile, beamsize);
-    } else {
+    }
+    else if (features.equalsIgnoreCase("opennlp")) {
+      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile, beamsize);
+    }
+    else {
       System.err.println("Specify valid features parameter!!");
     }
 
@@ -284,7 +290,7 @@ public class CLI {
   }
 
   public final void loadTrainingParameters() {
-    trainParser.addArgument("-f", "--features").choices("baseline")
+    trainParser.addArgument("-f", "--features").choices("opennlp", "baseline")
         .required(true).help("Choose features to train POS model");
     trainParser.addArgument("-p", "--params").required(true)
         .help("Load the parameters file");
@@ -334,10 +340,10 @@ public class CLI {
     evalParser.addArgument("-o", "--outputFile").required(false)
         .help("Choose file to save detailed evalReport");
     evalParser.addArgument("-m", "--model").required(true).help("Choose model");
-    evalParser.addArgument("-f", "--features").choices("baseline")
+    evalParser.addArgument("-f", "--features").choices("opennlp", "baseline")
         .required(true).help("Choose features for evaluation");
     evalParser.addArgument("-l", "--language").required(true)
-        .choices("en", "es")
+        .choices("en", "es", "it")
         .help("Choose language to load model for evaluation");
     evalParser.addArgument("-t", "--testSet").required(true)
         .help("Input testset for evaluation");

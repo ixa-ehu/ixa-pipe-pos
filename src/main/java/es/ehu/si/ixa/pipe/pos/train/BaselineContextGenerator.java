@@ -124,56 +124,62 @@ public class BaselineContextGenerator implements POSContextGenerator {
         wordsKey = tokens;
       }
     }
-    List<String> e = new ArrayList<String>();
-    e.add("default");
+    List<String> featureList = new ArrayList<String>();
+    featureList.add("default");
     // add the word itself
-    e.add("w=" + lex);
+    featureList.add("w=" + lex);
     dictGram[0] = lex;
     if (dict == null || !dict.contains(new StringList(dictGram))) {
       // do some basic suffix analysis
       String[] suffs = getSuffixes(lex);
       for (int i = 0; i < suffs.length; i++) {
-        e.add("suf=" + suffs[i]);
+        featureList.add("suf=" + suffs[i]);
       }
 
       String[] prefs = getPrefixes(lex);
       for (int i = 0; i < prefs.length; i++) {
-        e.add("pre=" + prefs[i]);
+        featureList.add("pre=" + prefs[i]);
       }
       // see if the word has any special characters
       if (lex.indexOf('-') != -1) {
-        e.add("h");
+        featureList.add("h");
       }
 
       if (hasCap.matcher(lex).find()) {
-        e.add("c");
+        featureList.add("c");
       }
 
       if (hasNum.matcher(lex).find()) {
-        e.add("d");
+        featureList.add("d");
       }
     }
     // add the words and pos's of the surrounding context
     if (prev != null) {
-      e.add("p=" + prev);
+      featureList.add("pw=" + prev);
+      //bigram w-1,w
+      featureList.add("pw,w=" + prev + "," + lex);
       if (tagprev != null) {
-        e.add("t=" + tagprev);
+        featureList.add("pt=" + tagprev);
+        //bigram tag-1, w
+        featureList.add("pt,w=" + tagprev + "," + lex);
       }
       if (prevprev != null) {
-        e.add("pp=" + prevprev);
+        featureList.add("ppw=" + prevprev);
         if (tagprevprev != null) {
-          e.add("t2=" + tagprevprev+","+tagprev);
+          //bigram tag-2,tag-1
+          featureList.add("pt2,pt1=" + tagprevprev+","+tagprev);
         }
       }
     }
 
     if (next != null) {
-      e.add("n=" + next);
+      featureList.add("nw=" + next);
       if (nextnext != null) {
-        e.add("nn=" + nextnext);
+        featureList.add("nnw=" + nextnext);
+  
       }
     }
-    String[] contexts = e.toArray(new String[e.size()]);
+    String[] contexts = featureList.toArray(new String[featureList.size()]);
     if (contextsCache != null) {
       contextsCache.put(cacheKey,contexts);
     }
