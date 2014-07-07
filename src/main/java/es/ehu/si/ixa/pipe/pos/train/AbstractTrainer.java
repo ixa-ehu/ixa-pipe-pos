@@ -33,7 +33,7 @@ import opennlp.tools.util.TrainingParameters;
  * 
  */
 
-public abstract class AbstractMorphoTaggerTrainer implements MorphoTaggerTrainer {
+public abstract class AbstractTrainer implements Trainer {
 
     protected String lang;
     /**
@@ -61,7 +61,7 @@ public abstract class AbstractMorphoTaggerTrainer implements MorphoTaggerTrainer
      */
     protected  POSTaggerFactory posTaggerFactory;
 
-    public AbstractMorphoTaggerTrainer(String alang, String aTrainData, String aTestData, int aBeamsize) throws IOException {
+    public AbstractTrainer(String alang, String aTrainData, String aTestData, int aBeamsize) throws IOException {
       this.lang = alang;
       this.trainData = aTrainData;
       this.testData = aTestData;

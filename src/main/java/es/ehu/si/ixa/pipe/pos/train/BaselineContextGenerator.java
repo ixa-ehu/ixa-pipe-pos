@@ -9,8 +9,11 @@ import opennlp.tools.postag.POSContextGenerator;
 import opennlp.tools.util.Cache;
 import opennlp.tools.util.StringList;
 
-public class BaselinePOSContextGenerator implements POSContextGenerator {
-  
+/**
+ * A context generator for the POS Tagger.
+ */
+public class BaselineContextGenerator implements POSContextGenerator {
+
   protected final String SE = "*SE*";
   protected final String SB = "*SB*";
   private static final int PREFIX_LENGTH = 4;
@@ -30,8 +33,8 @@ public class BaselinePOSContextGenerator implements POSContextGenerator {
    *
    * @param dict
    */
-  public BaselinePOSContextGenerator() {
-    this(0);
+  public BaselineContextGenerator(Dictionary dict) {
+    this(0,dict);
   }
 
   /**
@@ -40,7 +43,9 @@ public class BaselinePOSContextGenerator implements POSContextGenerator {
    * @param cacheSize
    * @param dict
    */
-  public BaselinePOSContextGenerator(int cacheSize) {
+  public BaselineContextGenerator(int cacheSize, Dictionary dict) {
+    this.dict = dict;
+    dictGram = new String[1];
     if (cacheSize > 0) {
       contextsCache = new Cache(cacheSize);
     }
@@ -124,7 +129,6 @@ public class BaselinePOSContextGenerator implements POSContextGenerator {
     // add the word itself
     e.add("w=" + lex);
     dictGram[0] = lex;
-    //TODO this will always be true as we do not construct these resources in the BaselinePOSFactory
     if (dict == null || !dict.contains(new StringList(dictGram))) {
       // do some basic suffix analysis
       String[] suffs = getSuffixes(lex);
@@ -177,3 +181,4 @@ public class BaselinePOSContextGenerator implements POSContextGenerator {
   }
 
 }
+

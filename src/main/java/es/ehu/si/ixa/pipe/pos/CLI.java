@@ -46,9 +46,9 @@ import es.ehu.si.ixa.pipe.lemmatize.JWNLemmatizer;
 import es.ehu.si.ixa.pipe.lemmatize.MorfologikLemmatizer;
 import es.ehu.si.ixa.pipe.lemmatize.SimpleLemmatizer;
 import es.ehu.si.ixa.pipe.pos.eval.Evaluate;
-import es.ehu.si.ixa.pipe.pos.train.BaselineMorphoTaggerTrainer;
+import es.ehu.si.ixa.pipe.pos.train.BaselineTrainer;
 import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
-import es.ehu.si.ixa.pipe.pos.train.MorphoTaggerTrainer;
+import es.ehu.si.ixa.pipe.pos.train.Trainer;
 
 /**
  * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes (ixa2.si.ehu.es/ixa-pipes).
@@ -238,7 +238,7 @@ public class CLI {
   }
 
   public final void train() throws IOException {
-    MorphoTaggerTrainer posTaggerTrainer = null;
+    Trainer posTaggerTrainer = null;
     String trainFile = parsedArguments.getString("input");
     String testFile = parsedArguments.getString("testSet");
     String devFile = parsedArguments.getString("devSet");
@@ -261,7 +261,7 @@ public class CLI {
     }
 
     if (parsedArguments.getString("features").equalsIgnoreCase("baseline")) {
-      posTaggerTrainer = new BaselineMorphoTaggerTrainer(lang, trainFile,
+      posTaggerTrainer = new BaselineTrainer(lang, trainFile,
           testFile, beamsize);
     } else {
       System.err.println("Specify valid features parameter!!");

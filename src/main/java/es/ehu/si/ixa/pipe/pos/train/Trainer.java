@@ -6,7 +6,7 @@ import opennlp.tools.postag.POSSample;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 
-public interface MorphoTaggerTrainer {
+public interface Trainer {
   
   public POSModel train(TrainingParameters params);
   

@@ -12,7 +12,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
-import es.ehu.si.ixa.pipe.pos.train.MorphoTaggerTrainer;
+import es.ehu.si.ixa.pipe.pos.train.Trainer;
 import opennlp.tools.cmdline.postag.POSEvaluationErrorListener;
 import opennlp.tools.cmdline.postag.POSTaggerFineGrainedReportListener;
 import opennlp.tools.postag.POSEvaluator;
@@ -45,7 +45,7 @@ import opennlp.tools.util.eval.EvaluationMonitor;
      * The name finder trainer to use for appropriate features.
      */
     //TODO deal with features properly, here and in other classes
-    private MorphoTaggerTrainer nameFinderTrainer;
+    private Trainer nameFinderTrainer;
     /**
      * An instance of the probabilistic {@link POSTaggerME}.
      */
