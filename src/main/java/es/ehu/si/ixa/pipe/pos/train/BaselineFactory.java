@@ -12,7 +12,7 @@ import opennlp.tools.postag.TagDictionary;
 public class BaselineFactory extends POSTaggerFactory {
 
   /**
-   * Creates a {@link POSTaggerFactory} that provides the default implementation
+   * Creates a {@link BaselineFactory} that provides the default implementation
    * of the resources.
    */
   public BaselineFactory() {
@@ -21,19 +21,34 @@ public class BaselineFactory extends POSTaggerFactory {
   /**
    * Creates a {@link POSTaggerFactory}. Use this constructor to
    * programmatically create a factory.
-   * 
+   *
    * @param ngramDictionary
+   *          the ngrams dictionary
    * @param posDictionary
+   *          the postags dictionary
    */
-  public BaselineFactory(Dictionary ngramDictionary, TagDictionary posDictionary) {
+  public BaselineFactory(final Dictionary ngramDictionary,
+      final TagDictionary posDictionary) {
     super(ngramDictionary, posDictionary);
   }
 
-  public POSContextGenerator getPOSContextGenerator() {
+  /*
+   * (non-Javadoc)
+   *
+   * @see opennlp.tools.postag.POSTaggerFactory#getPOSContextGenerator()
+   */
+  @Override
+  public final POSContextGenerator getPOSContextGenerator() {
     return new BaselineContextGenerator(0, getDictionary());
   }
 
-  public POSContextGenerator getPOSContextGenerator(int cacheSize) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see opennlp.tools.postag.POSTaggerFactory#getPOSContextGenerator(int)
+   */
+  @Override
+  public final POSContextGenerator getPOSContextGenerator(final int cacheSize) {
     return new BaselineContextGenerator(cacheSize, getDictionary());
   }
 
