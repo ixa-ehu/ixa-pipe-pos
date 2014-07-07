@@ -66,7 +66,7 @@ public class InputOutputUtils {
   }
 
   public static TrainingParameters loadTrainingParameters(String paramFile) {
-    return loadTrainingParameters(paramFile, false);
+    return loadTrainingParameters(paramFile, true);
   }
 
   private static TrainingParameters loadTrainingParameters(String paramFile,
