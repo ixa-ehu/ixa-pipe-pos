@@ -17,20 +17,19 @@ package es.ehu.si.ixa.pipe.pos.train;
  */
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import opennlp.model.TrainUtil;
 import opennlp.tools.cmdline.TerminateToolException;
+import opennlp.tools.ml.TrainerFactory;
+import opennlp.tools.util.InputStreamFactory;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.TrainingParameters;
@@ -66,7 +65,7 @@ public class InputOutputUtils {
   }
 
   public static TrainingParameters loadTrainingParameters(String paramFile) {
-    return loadTrainingParameters(paramFile, true);
+    return loadTrainingParameters(paramFile, false);
   }
 
   private static TrainingParameters loadTrainingParameters(String paramFile,
@@ -95,15 +94,9 @@ public class InputOutputUtils {
         }
       }
 
-      if (!TrainUtil.isValid(params.getSettings())) {
+      if (!TrainerFactory.isValid(params.getSettings())) {
         throw new TerminateToolException(1, "Training parameters file '"
             + paramFile + "' is invalid!");
-      }
-
-      if (!supportSequenceTraining
-          && TrainUtil.isSequenceTraining(params.getSettings())) {
-        throw new TerminateToolException(1,
-            "Sequence training is not supported!");
       }
     }
 
@@ -113,9 +106,8 @@ public class InputOutputUtils {
   public static ObjectStream<String> readInputData(String infile)
           throws IOException {
 
-        BufferedReader breader = new BufferedReader(new InputStreamReader(
-            new FileInputStream(infile), "UTF-8"));
-        ObjectStream<String> lineStream = new PlainTextByLineStream(breader);
+        InputStreamFactory inputStreamFactory = new DefaultInputStreamFactory(new FileInputStream(infile));
+        ObjectStream<String> lineStream = new PlainTextByLineStream(inputStreamFactory, "UTF-8");
         return lineStream;
 
       }

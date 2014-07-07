@@ -8,7 +8,6 @@ public class BaselineTrainer extends AbstractTrainer {
     super(lang, trainData, testData, dictCutOff, beamsize);
     
     posTaggerFactory = new BaselineFactory();
-    this.getAutomaticDictionary(dictCutOff);
     
   }
 

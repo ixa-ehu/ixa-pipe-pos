@@ -27,7 +27,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 
-import net.didion.jwnl.JWNLException;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -42,7 +41,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.jdom2.JDOMException;
 
 import es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer;
-import es.ehu.si.ixa.pipe.lemmatize.JWNLemmatizer;
 import es.ehu.si.ixa.pipe.lemmatize.MorfologikLemmatizer;
 import es.ehu.si.ixa.pipe.lemmatize.SimpleLemmatizer;
 import es.ehu.si.ixa.pipe.pos.eval.Evaluate;
@@ -108,8 +106,7 @@ public class CLI {
     loadEvalParameters();
   }
 
-  public static void main(String[] args) throws IOException, JDOMException,
-      JWNLException {
+  public static void main(String[] args) throws IOException, JDOMException {
 
     CLI cmdLine = new CLI();
     cmdLine.parseCLI(args);
@@ -124,8 +121,7 @@ public class CLI {
    *           exception if problems with the incoming data
    * @throws JWNLException
    */
-  public final void parseCLI(final String[] args) throws IOException,
-      JWNLException {
+  public final void parseCLI(final String[] args) throws IOException {
     try {
       parsedArguments = argParser.parseArgs(args);
       System.err.println("CLI options: " + parsedArguments);
@@ -145,7 +141,7 @@ public class CLI {
   }
 
   public final void annotate(final InputStream inputStream,
-      final OutputStream outputStream) throws IOException, JWNLException {
+      final OutputStream outputStream) throws IOException {
 
     int beamsize = parsedArguments.getInt("beamsize");
     String features = parsedArguments.getString("features");
@@ -156,7 +152,6 @@ public class CLI {
       model = parsedArguments.getString("model");
     }
     String lemMethod = parsedArguments.getString("lemmatize");
-    String wnPath = parsedArguments.getString("wordnet");
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
     breader = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
@@ -176,21 +171,6 @@ public class CLI {
       System.err.println("Using plain text dictionary");
       InputStream dictLemmatizer = resourceRetriever.getDictionary(lang);
       lemmatizer = new SimpleLemmatizer(dictLemmatizer);
-    } else if (lemMethod.equalsIgnoreCase("wn") && lang.equalsIgnoreCase("en")) {
-      if (wnPath != null) {
-        lemmatizer = new JWNLemmatizer(wnPath);
-      } else {
-        System.err
-            .println("ERROR: For WordNet lemmatization please provide the path to WordNet directory");
-        System.exit(1);
-      }
-    } else if (lemMethod.equalsIgnoreCase("wn")
-        && lang.equalsIgnoreCase("en") == false) {
-      System.err
-          .println("WordNet lemmatization available for English only. Using"
-              + " default Morfologik binary dictionary.");
-      URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
-      lemmatizer = new MorfologikLemmatizer(dictLemmatizer);
     } else {
       System.err.println("Using default Morfologik binary dictionary.");
       URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
@@ -227,10 +207,10 @@ public class CLI {
         .help("Choose beam size for decoding, it defaults to 3.");
     annotateParser
         .addArgument("-lem", "--lemmatize")
-        .choices("bin", "plain", "wn")
+        .choices("bin", "plain")
         .setDefault("bin")
         .help(
-            "Lemmatization method: Choose 'bin' for binary Morfologik dictionary (default), 'plain' for plain text dictionary and 'wn' for WordNet lemmatization.\n");
+            "Lemmatization method: Choose 'bin' for binary Morfologik dictionary (default), 'plain' for plain text dictionary.\n");
     annotateParser
         .addArgument("--nokaf")
         .action(Arguments.storeFalse())

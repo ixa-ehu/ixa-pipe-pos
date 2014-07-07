@@ -60,11 +60,20 @@ public abstract class AbstractTrainer implements Trainer {
      */
     protected int beamSize;
     /**
+     * Cutoff value to create tag dictionary from training data.
+     */
+    private int dictCutOff;
+    /**
+     * ObjectStream of the dictionary data, taken from the training data.
+     */
+    private WordTagSampleStream dictSamples;
+
+    /**
      * posTaggerFactory features need to be implemented by any class extending this one.
      */
-    protected  POSTaggerFactory posTaggerFactory;
-
-    public AbstractTrainer(String alang, String aTrainData, String aTestData, int dictCutOff, int aBeamsize) throws IOException {
+    protected POSTaggerFactory posTaggerFactory;
+   
+    public AbstractTrainer(String alang, String aTrainData, String aTestData, int aDictCutOff, int aBeamsize) throws IOException {
       this.lang = alang;
       this.trainData = aTrainData;
       this.testData = aTestData;
@@ -72,7 +81,10 @@ public abstract class AbstractTrainer implements Trainer {
       trainSamples = new WordTagSampleStream(trainStream);
       ObjectStream<String> testStream = InputOutputUtils.readInputData(aTestData);
       testSamples = new WordTagSampleStream(testStream);
+      ObjectStream<String> dictStream = InputOutputUtils.readInputData(aTrainData);
+      dictSamples = new WordTagSampleStream(dictStream);
       this.beamSize = aBeamsize;
+      this.dictCutOff = aDictCutOff;
       
     }
     
@@ -80,11 +92,12 @@ public abstract class AbstractTrainer implements Trainer {
       // features
       if (posTaggerFactory == null) {
         throw new IllegalStateException(
-        "Classes derived from AbstractMorphoTrainer must create a POSTaggerFactory features!");
+        "Classes derived from AbstractTrainer must create a POSTaggerFactory features!");
       }
+      this.getAutomaticDictionary(dictCutOff);
       // training model
       POSModel trainedModel = null;
-      POSEvaluator posEvaluator = null;
+      POSEvaluator posEvaluator = null;    
       try {
         trainedModel = POSTaggerME.train(lang, trainSamples, params,
             posTaggerFactory);
@@ -153,9 +166,6 @@ public abstract class AbstractTrainer implements Trainer {
           // reading data for training and test
           ObjectStream<String> trainStream = InputOutputUtils.readInputData(trainData);
           ObjectStream<String> devStream = InputOutputUtils.readInputData(devData);
-          // TODO
-          //ObjectStream<POSSample> trainSamples = new POSSampleStream(
-          //    trainStream);
           ObjectStream<POSSample> trainSamples = new WordTagSampleStream(
               trainStream);
           ObjectStream<POSSample> devSamples = new WordTagSampleStream(devStream);
@@ -219,13 +229,13 @@ public abstract class AbstractTrainer implements Trainer {
             posTaggerFactory.setTagDictionary(dict);
           }
           if (dict instanceof MutableTagDictionary) {
-            POSTaggerME.populatePOSDictionary(trainSamples, (MutableTagDictionary)dict,
+            POSTaggerME.populatePOSDictionary(dictSamples, (MutableTagDictionary)dict,
                 dictCutOff);
           } else {
             throw new IllegalArgumentException(
                 "Can't extend a POSDictionary that does not implement MutableTagDictionary.");
           }
-          trainSamples.reset();
+          dictSamples.reset();
         } catch (IOException e) {
           throw new TerminateToolException(-1,
               "IO error while creating/extending POS Dictionary: "
