@@ -1,10 +1,10 @@
 package es.ehu.si.ixa.pipe.pos.train;
 
 import opennlp.tools.postag.POSContextGenerator;
-import opennlp.tools.util.BaseToolFactory;
+import opennlp.tools.postag.POSTaggerFactory;
 import opennlp.tools.util.InvalidFormatException;
 
-public class BaselinePOSFactory extends BaseToolFactory {
+public class BaselinePOSFactory extends POSTaggerFactory {
   
   public BaselinePOSFactory() {
     
