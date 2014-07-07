@@ -22,7 +22,7 @@ Threads=4
 
 #### Custom parameters added by ixa-pipe-pos ####
  
-Language=es
+Language=it
 
 # Beamsize 1 amounts to greedy search
 Beamsize=3
@@ -38,6 +38,6 @@ Corpus=opennlp
 ## Leave empty to disactivate this option (this is the default)
 #
 
-#CrossEval=1:10
-CrossEval=
+CrossEval=1:10
+#CrossEval=
 
