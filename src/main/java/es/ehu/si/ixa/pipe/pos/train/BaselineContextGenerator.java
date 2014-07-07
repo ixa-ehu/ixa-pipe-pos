@@ -52,7 +52,7 @@ public class BaselineContextGenerator implements POSContextGenerator {
   }
   protected static String[] getPrefixes(String lex) {
     String[] prefs = new String[PREFIX_LENGTH];
-    for (int li = 0, ll = PREFIX_LENGTH; li < ll; li++) {
+    for (int li = 2, ll = PREFIX_LENGTH; li < ll; li++) {
       prefs[li] = lex.substring(0, Math.min(li + 1, lex.length()));
     }
     return prefs;
