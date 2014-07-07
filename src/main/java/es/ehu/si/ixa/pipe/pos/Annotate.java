@@ -33,12 +33,12 @@ public class Annotate {
 
   private MorphoTagger posTagger;
 
-  public Annotate(String lang, String model, String features, int beamsize)
+  public Annotate(String lang, String model, int beamsize)
       throws IOException {
     if (model.equalsIgnoreCase("baseline")) {
       System.err.println("No POS model chosen, reverting to baseline model!");
     }
-    posTagger = new MorphoTagger(lang, model, features, beamsize);
+    posTagger = new MorphoTagger(lang, model, beamsize);
   }
 
   /**

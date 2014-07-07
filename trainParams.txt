@@ -25,7 +25,7 @@ Threads=4
 Language=en
 
 # Beamsize 1 amounts to greedy search
-Beamsize=3
+Beamsize=10
 
 # Formats opennlp or conll
 Corpus=opennlp

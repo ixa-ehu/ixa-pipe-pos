@@ -144,7 +144,6 @@ public class CLI {
       final OutputStream outputStream) throws IOException {
 
     int beamsize = parsedArguments.getInt("beamsize");
-    String features = parsedArguments.getString("features");
     String model;
     if (parsedArguments.get("model") == null) {
       model = "baseline";
@@ -176,7 +175,7 @@ public class CLI {
       URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
       lemmatizer = new MorfologikLemmatizer(dictLemmatizer);
     }
-    Annotate annotator = new Annotate(lang, model, features, beamsize);
+    Annotate annotator = new Annotate(lang, model, beamsize);
     //annotate to KAF
     if (parsedArguments.getBoolean("nokaf")) {
       KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
@@ -197,9 +196,6 @@ public class CLI {
     annotateParser.addArgument("-l", "--lang").choices("en", "es", "it")
         .required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
-    annotateParser.addArgument("-f", "--features").choices("opennlp", "baseline")
-        .required(false).setDefault("baseline")
-        .help("Choose features for POS tagging; it defaults to baseline.");
     annotateParser.addArgument("-m", "--model").required(false)
         .help("Choose model to perform POS tagging.");
     annotateParser.addArgument("--beamsize").setDefault(DEFAULT_BEAM_SIZE)

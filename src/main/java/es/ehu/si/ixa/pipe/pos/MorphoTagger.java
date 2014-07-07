@@ -39,7 +39,7 @@ public class MorphoTagger {
    * then it initializes the nercModel and finally it creates a nercDetector
    * using such model.
    */
-  public MorphoTagger(final String lang, final String model, final String features, final int beamsize) {
+  public MorphoTagger(final String lang, final String model, final int beamsize) {
 
     POSModel posModel = loadModel(lang, model);
     posTagger = new POSTaggerME(posModel, beamsize, 0);
@@ -54,7 +54,7 @@ public class MorphoTagger {
    * @param features the features
    */
   public MorphoTagger(final String lang, final String model, final String features) {
-    this(lang, model, features, CLI.DEFAULT_BEAM_SIZE);
+    this(lang, model, CLI.DEFAULT_BEAM_SIZE);
   }
 
   public String[] posAnnotate(String[] tokens) {
