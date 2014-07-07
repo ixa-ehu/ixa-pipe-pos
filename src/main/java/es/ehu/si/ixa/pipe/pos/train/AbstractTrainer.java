@@ -24,15 +24,10 @@ import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 
 /**
- * Training POS tagger with Apache OpenNLP Machine Learning API. Added
- * cross-evaluation functionality.
- * 
- * The Features are based on A. Ratnaparkhi (1998). A maximum entropy model for part-of-speech tagging,
- * Proceedings of the conference on empirical methods in natural language processing (EMNLP). 
- * 
- * See features at {@link opennlp.tools.postag.DefaultPOSContextGenerator }
+ * Training POS tagger with Apache OpenNLP Machine Learning API.
  * 
  * @author ragerri
+ * @version 2014-07-07
  * 
  */
 
@@ -94,7 +89,7 @@ public abstract class AbstractTrainer implements Trainer {
         throw new IllegalStateException(
         "Classes derived from AbstractTrainer must create a POSTaggerFactory features!");
       }
-      this.getAutomaticDictionary(dictCutOff);
+      this.getAutomaticDictionary(dictSamples, dictCutOff);
       // training model
       POSModel trainedModel = null;
       POSEvaluator posEvaluator = null;    
@@ -145,8 +140,7 @@ public abstract class AbstractTrainer implements Trainer {
       // lists to store best parameters
       List<List<Integer>> allParams = new ArrayList<List<Integer>>();
       List<Integer> finalParams = new ArrayList<Integer>();
-      // features
-      POSTaggerFactory posTaggerFactory = new POSTaggerFactory();
+      
       // F:<iterations,cutoff> Map
       Map<List<Integer>, Double> results = new LinkedHashMap<List<Integer>, Double>();
       // maximum iterations and cutoff
@@ -169,12 +163,14 @@ public abstract class AbstractTrainer implements Trainer {
           ObjectStream<POSSample> trainSamples = new WordTagSampleStream(
               trainStream);
           ObjectStream<POSSample> devSamples = new WordTagSampleStream(devStream);
-
+          ObjectStream<String> dictStream = InputOutputUtils.readInputData(trainData);
+          ObjectStream<POSSample> dictSamples = new WordTagSampleStream(dictStream);
           // dynamic creation of parameters
           params.put(TrainingParameters.ITERATIONS_PARAM, Integer.toString(i));
           params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(c));
           System.out.println("Trying with " + i + " iterations...");
-
+          this.getAutomaticDictionary(dictSamples, dictCutOff);
+          
           // training model
           POSModel trainedModel = POSTaggerME.train(lang, trainSamples, params,
               posTaggerFactory);
@@ -220,7 +216,7 @@ public abstract class AbstractTrainer implements Trainer {
       return posTaggerEvaluator;
     }
     
-    public void getAutomaticDictionary(int dictCutOff) {
+    public void getAutomaticDictionary(ObjectStream<POSSample> dictSamples, int dictCutOff) {
       if (dictCutOff != -1) {
         try {
           TagDictionary dict = posTaggerFactory.getTagDictionary();

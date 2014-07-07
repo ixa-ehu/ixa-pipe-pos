@@ -9,12 +9,9 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
-import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
-import es.ehu.si.ixa.pipe.pos.train.Trainer;
 import opennlp.tools.cmdline.postag.POSEvaluationErrorListener;
 import opennlp.tools.cmdline.postag.POSTaggerFineGrainedReportListener;
+import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.postag.POSEvaluator;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSSample;
@@ -23,6 +20,7 @@ import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.postag.WordTagSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.eval.EvaluationMonitor;
+import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
 
   /**
    * Evaluation class mostly using {@link POSEvaluator}.
@@ -41,28 +39,20 @@ import opennlp.tools.util.eval.EvaluationMonitor;
      */
     private static POSModel posModel;
     /**
-     *
-     * The name finder trainer to use for appropriate features.
-     */
-    //TODO deal with features properly, here and in other classes
-    private Trainer nameFinderTrainer;
-    /**
      * An instance of the probabilistic {@link POSTaggerME}.
      */
     private POSTaggerME posTagger;
 
     /**
-     * Construct an evaluator.
+     * Construct an evaluator. The features are encoded in the model itself.
      *
      * @param testData the reference data to evaluate against
      * @param model the model to be evaluated
-     * @param features the features
      * @param lang the language
      * @param beamsize the beam size for decoding
      * @throws IOException if input data not available
      */
-    public Evaluate( final String lang, final String testData, final String model, final String features,
-        final int beamsize) throws IOException {
+    public Evaluate(final String testData, final String model, final int beamsize) throws IOException {
 
       ObjectStream<String> testStream = InputOutputUtils.readInputData(testData);
       testSamples = new WordTagSampleStream(testStream);

@@ -293,12 +293,10 @@ public class CLI {
   public final void eval() throws IOException {
     String outputFile = parsedArguments.getString("outputFile");
     String testFile = parsedArguments.getString("testSet");
-    String features = parsedArguments.getString("features");
     String model = parsedArguments.getString("model");
-    String lang = parsedArguments.getString("language");
     int beam = parsedArguments.getInt("beamsize");
 
-    Evaluate evaluator = new Evaluate(lang, testFile, model, features, beam);
+    Evaluate evaluator = new Evaluate(testFile, model, beam);
     if (parsedArguments.getString("evalReport") != null) {
       if (parsedArguments.getString("evalReport").equalsIgnoreCase("brief")) {
         evaluator.evaluate();
@@ -326,11 +324,6 @@ public class CLI {
     evalParser.addArgument("-o", "--outputFile").required(false)
         .help("Choose file to save detailed evalReport");
     evalParser.addArgument("-m", "--model").required(true).help("Choose model");
-    evalParser.addArgument("-f", "--features").choices("opennlp", "baseline")
-        .required(true).help("Choose features for evaluation");
-    evalParser.addArgument("-l", "--language").required(true)
-        .choices("en", "es", "it")
-        .help("Choose language to load model for evaluation");
     evalParser.addArgument("-t", "--testSet").required(true)
         .help("Input testset for evaluation");
     evalParser.addArgument("--evalReport").required(false)
