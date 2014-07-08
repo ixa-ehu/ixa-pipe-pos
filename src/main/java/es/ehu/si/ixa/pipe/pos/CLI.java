@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Rodrigo Agerri
+ * Copyright 2014 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -50,10 +50,11 @@ import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
 import es.ehu.si.ixa.pipe.pos.train.Trainer;
 
 /**
- * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes (ixa2.si.ehu.es/ixa-pipes).
- * 
+ * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes
+ * (ixa2.si.ehu.es/ixa-pipes). The annotate method is the main entry point.
+ *
  * @author ragerri
- * @version 2014-04-24
+ * @version 2014-07-08
  */
 
 public class CLI {
@@ -64,10 +65,14 @@ public class CLI {
    */
   private final String version = CLI.class.getPackage()
       .getImplementationVersion();
-  Namespace parsedArguments = null;
-
-  // create Argument Parser
-  ArgumentParser argParser = ArgumentParsers.newArgumentParser(
+  /**
+   * The CLI arguments.
+   */
+  private Namespace parsedArguments = null;
+  /**
+   * The argument parser.
+   */
+  private ArgumentParser argParser = ArgumentParsers.newArgumentParser(
       "ixa-pipe-pos-" + version + ".jar").description(
       "ixa-pipe-pos-" + version
           + " is a multilingual POS tagger developed by IXA NLP Group.\n");
@@ -106,7 +111,18 @@ public class CLI {
     loadEvalParameters();
   }
 
-  public static void main(String[] args) throws IOException, JDOMException {
+  /**
+   * The main method.
+   *
+   * @param args
+   *          the arguments
+   * @throws IOException
+   *           the input output exception if not file is available
+   * @throws JDOMException
+   *           as the input is a NAF file, a JDOMException could be thrown
+   */
+  public static void main(final String[] args) throws IOException,
+      JDOMException {
 
     CLI cmdLine = new CLI();
     cmdLine.parseCLI(args);
@@ -114,7 +130,7 @@ public class CLI {
 
   /**
    * Parse the command interface parameters with the argParser.
-   * 
+   *
    * @param args
    *          the arguments passed through the CLI
    * @throws IOException
@@ -140,6 +156,17 @@ public class CLI {
     }
   }
 
+  /**
+   * Main entry point for annotation. Takes system.in as input and outputs
+   * annotated text via system.out.
+   *
+   * @param inputStream
+   *          the input stream
+   * @param outputStream
+   *          the output stream
+   * @throws IOException
+   *           the exception if not input is provided
+   */
   public final void annotate(final InputStream inputStream,
       final OutputStream outputStream) throws IOException {
 
@@ -176,7 +203,7 @@ public class CLI {
       lemmatizer = new MorfologikLemmatizer(dictLemmatizer);
     }
     Annotate annotator = new Annotate(lang, model, beamsize);
-    //annotate to KAF
+    // annotate to KAF
     if (parsedArguments.getBoolean("nokaf")) {
       KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
           "terms", "ixa-pipe-pos-" + lang, version);
@@ -185,13 +212,17 @@ public class CLI {
       annotator.annotatePOSToKAF(kaf, lemmatizer, lang);
       newLp.setEndTimestamp();
       bwriter.write(kaf.toString());
-    } else {//annotate to CoNLL
+    } else {
+      // annotate to CoNLL
       bwriter.write(annotator.annotatePOSToCoNLL(kaf, lemmatizer, lang));
     }
     bwriter.close();
     breader.close();
   }
 
+  /**
+   * Generate the annotation parameter of the CLI.
+   */
   private void loadAnnotateParameters() {
     annotateParser.addArgument("-l", "--lang").choices("en", "es")
         .required(false)
@@ -205,8 +236,8 @@ public class CLI {
         .addArgument("-lem", "--lemmatize")
         .choices("bin", "plain")
         .setDefault("bin")
-        .help(
-            "Lemmatization method: Choose 'bin' for binary Morfologik dictionary (default), 'plain' for plain text dictionary.\n");
+        .help("Lemmatization method: Choose 'bin' for binary Morfologik "
+        + " dictionary (default), 'plain' for plain text dictionary.\n");
     annotateParser
         .addArgument("--nokaf")
         .action(Arguments.storeFalse())
@@ -214,6 +245,12 @@ public class CLI {
             "Do not print tokens in NAF format, but conll tabulated format.\n");
   }
 
+  /**
+   * Main entry point for training.
+   *
+   * @throws IOException
+   *           throws an exception if errors in the various file inputs.
+   */
   public final void train() throws IOException {
     Trainer posTaggerTrainer = null;
     String trainFile = parsedArguments.getString("input");
@@ -241,13 +278,12 @@ public class CLI {
     }
 
     if (features.equalsIgnoreCase("baseline")) {
-      posTaggerTrainer = new BaselineTrainer(lang, trainFile,
-          testFile, dictPath, dictCutOff, beamsize);
-    }
-    else if (features.equalsIgnoreCase("opennlp")) {
-      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile, dictPath, dictCutOff, beamsize);
-    }
-    else {
+      posTaggerTrainer = new BaselineTrainer(lang, trainFile, testFile,
+          dictPath, dictCutOff, beamsize);
+    } else if (features.equalsIgnoreCase("opennlp")) {
+      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile,
+          dictPath, dictCutOff, beamsize);
+    } else {
       System.err.println("Specify valid features parameter!!");
     }
 
@@ -267,6 +303,9 @@ public class CLI {
     System.out.println("Wrote trained POS model to " + outModel);
   }
 
+  /**
+   * Loads the parameters for the training CLI.
+   */
   public final void loadTrainingParameters() {
     trainParser.addArgument("-f", "--features").choices("opennlp", "baseline")
         .required(true).help("Choose features to train POS model");
@@ -280,16 +319,22 @@ public class CLI {
         .help("Input development set for cross-evaluation");
     trainParser.addArgument("-o", "--output").required(false)
         .help("Choose output file to save the annotation");
-    trainParser.addArgument("--autoDict")
+    trainParser
+        .addArgument("--autoDict")
         .type(Integer.class)
         .required(false)
         .setDefault(-1)
-        .help("Provide cutoff > 1 to automatically build a tag dictionary from the training data\n");
-    trainParser.addArgument("--dictPath")
-        .required(false)
+        .help("Provide cutoff > 1 to automatically build a tag "
+        + " dictionary from the training data\n");
+    trainParser.addArgument("--dictPath").required(false)
         .help("Provide path to tag dictionary\n");
   }
 
+  /**
+   * Main entry point for evaluation.
+   * @throws IOException the io exception thrown if
+   * errors with paths are present
+   */
   public final void eval() throws IOException {
     String outputFile = parsedArguments.getString("outputFile");
     String testFile = parsedArguments.getString("testSet");
@@ -320,6 +365,9 @@ public class CLI {
     }
   }
 
+  /**
+   * Load the evaluation parameters of the CLI.
+   */
   public final void loadEvalParameters() {
     evalParser.addArgument("-o", "--outputFile").required(false)
         .help("Choose file to save detailed evalReport");
