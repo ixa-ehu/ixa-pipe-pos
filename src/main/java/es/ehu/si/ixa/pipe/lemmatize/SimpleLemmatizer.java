@@ -44,7 +44,7 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
 	    try {
 			while ((line = breader.readLine()) != null) {
 				String[] elems = line.split("\t");
-				dictMap.put(Arrays.asList(elems[0],elems[1]),elems[2]);
+				dictMap.put(Arrays.asList(elems[0],elems[2]),elems[1]);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
