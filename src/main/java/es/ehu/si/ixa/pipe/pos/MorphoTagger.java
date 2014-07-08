@@ -18,7 +18,9 @@ package es.ehu.si.ixa.pipe.pos;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
+import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 
@@ -31,8 +33,13 @@ import opennlp.tools.postag.POSTaggerME;
 
 public class MorphoTagger {
 
-  private static POSModel posModel;
   private POSTaggerME posTagger;
+  /**
+   * The models to use for every language. The keys of the hash are the
+   * language codes, the values the models.
+   */
+  private static ConcurrentHashMap<String, POSModel> posModels =
+      new ConcurrentHashMap<String, POSModel>();
 
   /**
    * It constructs an object POS from the POS class. First it loads a model,
@@ -45,14 +52,6 @@ public class MorphoTagger {
     posTagger = new POSTaggerME(posModel, beamsize, 0);
   }
   
-  /**
-   * Construct a StatisticalNameFinder without name factory and with
-   * default beam size.
-   *
-   * @param lang the language
-   * @param model the model
-   * @param features the features
-   */
   public MorphoTagger(final String lang, final String model, final String features) {
     this(lang, model, CLI.DEFAULT_BEAM_SIZE);
   }
@@ -65,13 +64,14 @@ public class MorphoTagger {
   public final POSModel loadModel(final String lang, final String model) {
     InputStream trainedModelInputStream = null;
     try {
-      if (posModel == null) {
+      // Load the model if it's not there yet
+      if (!posModels.containsKey(lang)) {
         if (model.equalsIgnoreCase("baseline")) {
           trainedModelInputStream = getBaselineModelStream(lang, model);
         } else {
           trainedModelInputStream = new FileInputStream(model);
         }
-        posModel = new POSModel(trainedModelInputStream);
+        posModels.put(lang, new POSModel(trainedModelInputStream));
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -84,9 +84,9 @@ public class MorphoTagger {
         }
       }
     }
-    return posModel;
+    return posModels.get(lang);
   }
-  
+
   private InputStream getBaselineModelStream(final String lang, final String model) {
     InputStream trainedModelInputStream = null;
     if (lang.equalsIgnoreCase("en")) {
