@@ -24,11 +24,11 @@ public class Resources {
   public InputStream getDictionary(String lang) {
       InputStream dict = null;
 	  if (lang.equalsIgnoreCase("en")) {
-		  dict = getClass().getResourceAsStream("/en/en-lemmas.dict");
+		  dict = getClass().getResourceAsStream("/lemmatizer-dicts/language-tool/en-lemmatizer.dict");
 	  }
 
 	  if (lang.equalsIgnoreCase("es")) {
-		  dict = getClass().getResourceAsStream("/es/es-lemmas.dict");
+		  dict = getClass().getResourceAsStream("/lemmatizer-dicts/freeling/es-lemmatizer.dict");
 	  }
 	  return dict;
   }
@@ -36,11 +36,11 @@ public class Resources {
   public URL getBinaryDict(String lang) {
     URL dictURL = null;
 	  if (lang.equalsIgnoreCase("en")) {
-		  dictURL = getClass().getResource("/en/english.dict");
+		  dictURL = getClass().getResource("/lemmatizer-dicts/language-tool/english.dict");
   }
 
 	  if (lang.equalsIgnoreCase("es")) {
-		  dictURL = getClass().getResource("/es/spanish.dict");
+		  dictURL = getClass().getResource("/lemmatizer-dicts/freeling/spanish.dict");
 	  }
 	  return dictURL;
   }
