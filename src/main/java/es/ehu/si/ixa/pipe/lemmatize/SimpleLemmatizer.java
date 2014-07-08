@@ -16,7 +16,6 @@
 
 package es.ehu.si.ixa.pipe.lemmatize;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,61 +28,89 @@ import java.util.List;
 import es.ehu.si.ixa.pipe.pos.Resources;
 
 /**
+ * Lemmatize by simple dictionary lookup into a hashmap built from a file
+ * containing, for each line, word\tablemma\tabpostag.
  * 
  * @author ragerri
- * 
+ * @version 2014-07-08
  */
 public class SimpleLemmatizer implements DictionaryLemmatizer {
-  
-	private HashMap<List<String>,String> dictMap;
 
-  public SimpleLemmatizer(InputStream dictionary) {
-		dictMap = new HashMap<List<String>,String>();
-		BufferedReader breader = new BufferedReader(new InputStreamReader(dictionary));
-		String line;
-	    try {
-			while ((line = breader.readLine()) != null) {
-				String[] elems = line.split("\t");
-				dictMap.put(Arrays.asList(elems[0],elems[2]),elems[1]);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}    
+  /**
+   * The hashmap containing the dictionary.
+   */
+  private HashMap<List<String>, String> dictMap;
+  /**
+   * The class dealing with loading the proper dictionary.
+   */
+  private Resources tagRetriever = new Resources();
+
+  /**
+   * Construct a hashmap from the input tab separated dictionary.
+   * 
+   * The input file should have, for each line, word\tablemma\tabpostag
+   * 
+   * @param dictionary
+   *          the input dictionary via inputstream
+   */
+  public SimpleLemmatizer(final InputStream dictionary) {
+    dictMap = new HashMap<List<String>, String>();
+    BufferedReader breader = new BufferedReader(new InputStreamReader(
+        dictionary));
+    String line;
+    try {
+      while ((line = breader.readLine()) != null) {
+        String[] elems = line.split("\t");
+        dictMap.put(Arrays.asList(elems[0], elems[2]), elems[1]);
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
-  
-  Resources tagRetriever = new Resources();
-  
-  private List<String> getDictKeys(String lang, String word, String postag) {
+
+  /**
+   * Get the dictionary keys (word and postag).
+   *
+   * @param lang
+   *          the language
+   * @param word
+   *          the surface form word
+   * @param postag
+   *          the assigned postag
+   * @return returns the dictionary keys
+   */
+  private List<String> getDictKeys(final String lang, final String word,
+      final String postag) {
     String constantTag = tagRetriever.setTagConstant(lang, postag);
-		List<String> keys = new ArrayList<String>();
-		if (postag.startsWith(String.valueOf(constantTag))) { 
-			keys.addAll(Arrays.asList(word,postag));
-		}
-		else {
-			keys.addAll(Arrays.asList(word.toLowerCase(),postag));
-		}
-		return keys;
-	}
-     
-  public String lemmatize(String lang, String word, String postag) {
-	String lemma = null;
-	String constantTag = tagRetriever.setTagConstant(lang, postag);
-	List<String> keys = this.getDictKeys(lang, word, postag);
-	//lookup lemma as value of the map
-	String keyValue = dictMap.get(keys);
-	if (keyValue != null) { 
-		lemma = keyValue;
-	}
-	else if (keyValue == null && postag.startsWith(String.valueOf(constantTag))) { 
-		lemma = word;
-	}
-	else if (keyValue == null && word.toUpperCase() == word) { 
-		lemma = word;
-	}
-	else {
-		lemma = word.toLowerCase();
-	}
-	return lemma;  
+    List<String> keys = new ArrayList<String>();
+    if (postag.startsWith(String.valueOf(constantTag))) {
+      keys.addAll(Arrays.asList(word, postag));
+    } else {
+      keys.addAll(Arrays.asList(word.toLowerCase(), postag));
+    }
+    return keys;
+  }
+
+  /* (non-Javadoc)
+   * @see es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String, java.lang.String, java.lang.String)
+   */
+  public String lemmatize(final String lang, final String word, final String postag) {
+    String lemma = null;
+    String constantTag = tagRetriever.setTagConstant(lang, postag);
+    List<String> keys = this.getDictKeys(lang, word, postag);
+    // lookup lemma as value of the map
+    String keyValue = dictMap.get(keys);
+    if (keyValue != null) {
+      lemma = keyValue;
+    } else if (keyValue == null
+        && postag.startsWith(String.valueOf(constantTag))) {
+      lemma = word;
+    } else if (keyValue == null && word.toUpperCase().equals(word)) {
+      lemma = word;
+    } else {
+      lemma = word.toLowerCase();
+    }
+    return lemma;
   }
 }

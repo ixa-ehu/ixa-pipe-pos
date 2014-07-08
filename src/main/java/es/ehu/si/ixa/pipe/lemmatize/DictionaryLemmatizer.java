@@ -1,5 +1,5 @@
 /*
- *Copyright 2013 Rodrigo Agerri
+ * Copyright 2014 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,21 +17,21 @@
 package es.ehu.si.ixa.pipe.lemmatize;
 
 /**
+ * Interface of the lemmatizer based on Dictionary lookup.
  * @author ragerri
+ * @version 2014-07-08
  *
- */
-/** 
- * Interface to provide dictionary information for lemmatization.
  */
 public interface DictionaryLemmatizer {
 
   /**
-   * Returns the lemma of the specified word with the specified part-of-speech.
-   * 
-   * @param word The word whose lemmas are desired.
-   * @param pos The part-of-speech of the specified word.
-   * @return The lemma of the specified word given the specified part-of-speech.
+   * Lemmatize by dictionary lookup.
+   *
+   * @param lang the language
+   * @param word the surface form word
+   * @param postag the postag assigned
+   * @return the lemma
    */
-  public String lemmatize(String lang, String word, String postag);
+  String lemmatize(String lang, String word, String postag);
 
 }
