@@ -10,6 +10,7 @@ public class DefaultTrainer extends AbstractTrainer {
     super(lang, trainData, testData, dictCutOff, beamsize);
     
     posTaggerFactory = new POSTaggerFactory();
+    this.getAutomaticDictionary(dictSamples, dictCutOff);
 
   }
 
