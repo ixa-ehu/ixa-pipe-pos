@@ -43,6 +43,10 @@ public abstract class AbstractTrainer implements Trainer {
    */
   protected String testData;
   /**
+   * String holding the path to the tag Dictionary;
+   */
+  protected String dictPath;
+  /**
    * ObjectStream of the training data.
    */
   protected ObjectStream<POSSample> trainSamples;
@@ -50,6 +54,10 @@ public abstract class AbstractTrainer implements Trainer {
    * ObjectStream of the test data.
    */
   protected ObjectStream<POSSample> testSamples;
+  /**
+   * ObjectStream of the automatically created dictionary data, taken from the training data.
+   */
+  protected WordTagSampleStream dictSamples;
   /**
    * beamsize value needs to be established in any class extending this one.
    */
@@ -59,21 +67,17 @@ public abstract class AbstractTrainer implements Trainer {
    */
   protected int dictCutOff;
   /**
-   * ObjectStream of the dictionary data, taken from the training data.
-   */
-  protected WordTagSampleStream dictSamples;
-
-  /**
    * posTaggerFactory features need to be implemented by any class extending
    * this one.
    */
   protected POSTaggerFactory posTaggerFactory;
 
   public AbstractTrainer(String alang, String aTrainData, String aTestData,
-      int aDictCutOff, int aBeamsize) throws IOException {
+      String aDictPath, int aDictCutOff, int aBeamsize) throws IOException {
     this.lang = alang;
     this.trainData = aTrainData;
     this.testData = aTestData;
+    this.dictPath = aDictPath;
     ObjectStream<String> trainStream = InputOutputUtils
         .readInputData(aTrainData);
     trainSamples = new WordTagSampleStream(trainStream);
