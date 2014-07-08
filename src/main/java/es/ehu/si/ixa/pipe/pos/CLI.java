@@ -193,7 +193,7 @@ public class CLI {
   }
 
   private void loadAnnotateParameters() {
-    annotateParser.addArgument("-l", "--lang").choices("en", "es", "it")
+    annotateParser.addArgument("-l", "--lang").choices("en", "es")
         .required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
     annotateParser.addArgument("-m", "--model").required(false)
