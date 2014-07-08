@@ -79,8 +79,8 @@ public class BaselineContextGenerator implements POSContextGenerator {
    */
   public String[] getContext(int index, Object[] tokens, String[] tags) {
     String next, nextnext, lex, prev, prevprev;
-    String tagprev, tagprevprev, tagnext, tagnextnext;
-    tagnext = tagnextnext = tagprev = tagprevprev = null;
+    String tagprev, tagprevprev;
+    tagprev = tagprevprev = null;
     next = nextnext = lex = prev = prevprev = null;
 
     lex = tokens[index].toString();
@@ -94,13 +94,6 @@ public class BaselineContextGenerator implements POSContextGenerator {
     }
     else {
       next = SE; // Sentence End
-    }
-    
-    if (tags.length > index + 1) {
-      tagnext = tags[index + 1];
-      if (tags.length > index + 2) {
-        tagnextnext = tags[index +2];
-      }
     }
 
     if (index - 1 >= 0) {
@@ -169,40 +162,20 @@ public class BaselineContextGenerator implements POSContextGenerator {
         featureList.add("pt=" + tagprev);
         //bigram tag-1, w
         featureList.add("pt,w=" + tagprev + "," + lex);
-        if (tagnext != null) {
-          featureList.add("pt,nt=" + tagprev + "," + tagnext);
-          featureList.add("pt,nt,w=" + tagprev + "," + tagnext + "," + lex);
-        }
       }
       if (prevprev != null) {
         featureList.add("ppw=" + prevprev);
         if (tagprevprev != null) {
-          featureList.add("pt2=" + tagprevprev);
-          featureList.add("pt2,w=" + tagprevprev + "," + lex);
           //bigram tag-2,tag-1
           featureList.add("pt2,pt1=" + tagprevprev+","+tagprev);
-          //trigram tag-2,tag-1,w
-          featureList.add("pt2,pt1,w=" + tagprevprev + "," + tagprev + "," + lex);
         }
       }
     }
 
     if (next != null) {
       featureList.add("nw=" + next);
-      //bigram w,w+1
-      featureList.add("nw,w=" + lex + "," + next);
-      if (tagnext != null) {
-        featureList.add("nt=" + tagnext);
-        featureList.add("nt,w=" + tagnext + "," + lex);
-      }
       if (nextnext != null) {
         featureList.add("nnw=" + nextnext);
-        if (tagnextnext != null) {
-          featureList.add("nnt=" + tagnextnext);
-          featureList.add("nt,nnt=" + tagnext + "," + tagnextnext);
-          featureList.add("nt,nnt,w=" + tagnext + "," + tagnextnext + "," + lex);
-          featureList.add("nnt,w=" + tagnextnext + "," + lex);
-        }
   
       }
     }
