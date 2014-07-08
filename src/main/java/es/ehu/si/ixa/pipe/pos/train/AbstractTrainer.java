@@ -24,60 +24,65 @@ import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 
 /**
- * Training POS tagger with Apache OpenNLP Machine Learning API.
- * 
+ * Training POS taggers with Apache OpenNLP Machine Learning API.
  * @author ragerri
  * @version 2014-07-07
- * 
  */
 
 public abstract class AbstractTrainer implements Trainer {
 
-  protected String lang;
   /**
-   * String holding the training data.
+   * The language.
    */
-  protected String trainData;
-  /**
-   * String holding the testData.
-   */
-  protected String testData;
-  /**
-   * String holding the path to the tag Dictionary;
-   */
-  protected String dictPath;
+  private String lang;
   /**
    * ObjectStream of the training data.
    */
-  protected ObjectStream<POSSample> trainSamples;
+  private ObjectStream<POSSample> trainSamples;
   /**
    * ObjectStream of the test data.
    */
-  protected ObjectStream<POSSample> testSamples;
+  private ObjectStream<POSSample> testSamples;
   /**
-   * ObjectStream of the automatically created dictionary data, taken from the training data.
+   * ObjectStream of the automatically created dictionary data, taken from the
+   * training data.
    */
-  protected WordTagSampleStream dictSamples;
+  private WordTagSampleStream dictSamples;
   /**
    * beamsize value needs to be established in any class extending this one.
    */
-  protected int beamSize;
+  private int beamSize;
   /**
    * Cutoff value to create tag dictionary from training data.
    */
-  protected int dictCutOff;
+  private int dictCutOff;
   /**
    * posTaggerFactory features need to be implemented by any class extending
    * this one.
    */
-  protected POSTaggerFactory posTaggerFactory;
+  private POSTaggerFactory posTaggerFactory;
 
-  public AbstractTrainer(String alang, String aTrainData, String aTestData,
-      String aDictPath, int aDictCutOff, int aBeamsize) throws IOException {
+  /**
+   * Construct an AbstractTrainer.
+   * @param alang
+   *          the language
+   * @param aTrainData
+   *          the training data
+   * @param aTestData
+   *          the test data
+   * @param aDictPath
+   *          the tag dictionary path
+   * @param aDictCutOff
+   *          the cutoff to automatically build a tag dictionary
+   * @param aBeamsize
+   *          the beamsize for decoding
+   * @throws IOException
+   *           the io exceptions
+   */
+  public AbstractTrainer(final String alang, final String aTrainData,
+      final String aTestData, final String aDictPath, final int aDictCutOff,
+      final int aBeamsize) throws IOException {
     this.lang = alang;
-    this.trainData = aTrainData;
-    this.testData = aTestData;
-    this.dictPath = aDictPath;
     ObjectStream<String> trainStream = InputOutputUtils
         .readInputData(aTrainData);
     trainSamples = new WordTagSampleStream(trainStream);
@@ -85,24 +90,30 @@ public abstract class AbstractTrainer implements Trainer {
     testSamples = new WordTagSampleStream(testStream);
     ObjectStream<String> dictStream = InputOutputUtils
         .readInputData(aTrainData);
-    dictSamples = new WordTagSampleStream(dictStream);
+    setDictSamples(new WordTagSampleStream(dictStream));
     this.beamSize = aBeamsize;
     this.dictCutOff = aDictCutOff;
 
   }
 
-  public POSModel train(TrainingParameters params) {
+  /*
+   * (non-Javadoc)
+   * @see es.ehu.si.ixa.pipe.pos.train.Trainer#train(opennlp.tools.util.
+   * TrainingParameters)
+   */
+  public final POSModel train(final TrainingParameters params) {
     // features
-    if (posTaggerFactory == null) {
+    if (getPosTaggerFactory() == null) {
       throw new IllegalStateException(
-          "Classes derived from AbstractTrainer must create a POSTaggerFactory features!");
+          "Classes derived from AbstractTrainer must "
+              + " create a POSTaggerFactory features!");
     }
     // training model
     POSModel trainedModel = null;
     POSEvaluator posEvaluator = null;
     try {
       trainedModel = POSTaggerME.train(lang, trainSamples, params,
-          posTaggerFactory);
+          getPosTaggerFactory());
       posEvaluator = evaluate(trainedModel, testSamples);
     } catch (IOException e) {
       System.err.println("IO error while loading traing and test sets!");
@@ -113,8 +124,15 @@ public abstract class AbstractTrainer implements Trainer {
     return trainedModel;
   }
 
-  public POSModel trainCrossEval(String trainData, String devData,
-      TrainingParameters params, String[] evalRange) {
+  /*
+   * (non-Javadoc)
+   * @see es.ehu.si.ixa.pipe.pos.train.Trainer#trainCrossEval(java.lang.String,
+   * java.lang.String, opennlp.tools.util.TrainingParameters,
+   * java.lang.String[])
+   */
+  public final POSModel trainCrossEval(final String trainData,
+      final String devData, final TrainingParameters params,
+      final String[] evalRange) {
 
     // get best parameters from cross evaluation
     List<Integer> bestParams = null;
@@ -137,8 +155,23 @@ public abstract class AbstractTrainer implements Trainer {
     return trainedModel;
   }
 
-  private List<Integer> crossEval(String trainData, String devData,
-      TrainingParameters params, String[] evalRange) throws IOException {
+  /**
+   * Cross evaluation for Maxent training to obtain the best iteration.
+   * @param trainData
+   *          the training data
+   * @param devData
+   *          the development data
+   * @param params
+   *          the parameters file
+   * @param evalRange
+   *          the range to perform cross evaluation
+   * @return the best parameters
+   * @throws IOException
+   *           io exception if data not available
+   */
+  private List<Integer> crossEval(final String trainData, final String devData,
+      final TrainingParameters params, final String[] evalRange)
+      throws IOException {
 
     // cross-evaluation
     System.out.println("Cross Evaluation:");
@@ -161,28 +194,28 @@ public abstract class AbstractTrainer implements Trainer {
       int start = Integer.valueOf(evalRange[0]);
       int iterRange = Integer.valueOf(evalRange[1]);
 
-      for (int i = start + 10; i < iterList.size() + 10; i += iterRange) {
+      for (int i = start + start; i < iterList.size() + start; i += iterRange) {
         // reading data for training and test
         ObjectStream<String> trainStream = InputOutputUtils
             .readInputData(trainData);
         ObjectStream<String> devStream = InputOutputUtils
             .readInputData(devData);
-        ObjectStream<POSSample> trainSamples = new WordTagSampleStream(
+        ObjectStream<POSSample> aTrainSamples = new WordTagSampleStream(
             trainStream);
         ObjectStream<POSSample> devSamples = new WordTagSampleStream(devStream);
         ObjectStream<String> dictStream = InputOutputUtils
             .readInputData(trainData);
-        ObjectStream<POSSample> dictSamples = new WordTagSampleStream(
+        ObjectStream<POSSample> aDictSamples = new WordTagSampleStream(
             dictStream);
         // dynamic creation of parameters
         params.put(TrainingParameters.ITERATIONS_PARAM, Integer.toString(i));
         params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(c));
         System.out.println("Trying with " + i + " iterations...");
-        this.getAutomaticDictionary(dictSamples, dictCutOff);
+        this.createAutomaticDictionary(aDictSamples, dictCutOff);
 
         // training model
-        POSModel trainedModel = POSTaggerME.train(lang, trainSamples, params,
-            posTaggerFactory);
+        POSModel trainedModel = POSTaggerME.train(lang, aTrainSamples, params,
+            getPosTaggerFactory());
         // evaluate model
         POSEvaluator posTaggerEvaluator = this.evaluate(trainedModel,
             devSamples);
@@ -211,12 +244,18 @@ public abstract class AbstractTrainer implements Trainer {
     return finalParams;
   }
 
-  public POSEvaluator evaluate(POSModel trainedModel,
-      ObjectStream<POSSample> testSamples) {
+  /*
+   * (non-Javadoc)
+   * @see
+   * es.ehu.si.ixa.pipe.pos.train.Trainer#evaluate(opennlp.tools.postag.POSModel
+   * , opennlp.tools.util.ObjectStream)
+   */
+  public final POSEvaluator evaluate(final POSModel trainedModel,
+      final ObjectStream<POSSample> aTestSamples) {
     POSTagger posTagger = new POSTaggerME(trainedModel, beamSize, 0);
     POSEvaluator posTaggerEvaluator = new POSEvaluator(posTagger);
     try {
-      posTaggerEvaluator.evaluate(testSamples);
+      posTaggerEvaluator.evaluate(aTestSamples);
     } catch (IOException e) {
       System.err.println("IO error while loading test set for evaluation!");
       e.printStackTrace();
@@ -225,21 +264,28 @@ public abstract class AbstractTrainer implements Trainer {
     return posTaggerEvaluator;
   }
 
-  public void getAutomaticDictionary(ObjectStream<POSSample> dictSamples,
-      int dictCutOff) {
-    if (dictCutOff != -1) {
+  /**
+   * Automatically create a tag dictionary from training data.
+   * @param aDictSamples
+   *          the dictSamples created from training data
+   * @param aDictCutOff
+   *          the cutoff to create the dictionary
+   */
+  protected final void createAutomaticDictionary(
+      final ObjectStream<POSSample> aDictSamples, final int aDictCutOff) {
+    if (aDictCutOff != -1) {
       try {
-        TagDictionary dict = posTaggerFactory.getTagDictionary();
+        TagDictionary dict = getPosTaggerFactory().getTagDictionary();
         if (dict == null) {
-          dict = posTaggerFactory.createEmptyTagDictionary();
-          posTaggerFactory.setTagDictionary(dict);
+          dict = getPosTaggerFactory().createEmptyTagDictionary();
+          getPosTaggerFactory().setTagDictionary(dict);
         }
         if (dict instanceof MutableTagDictionary) {
-          POSTaggerME.populatePOSDictionary(dictSamples,
-              (MutableTagDictionary) dict, dictCutOff);
+          POSTaggerME.populatePOSDictionary(aDictSamples,
+              (MutableTagDictionary) dict, aDictCutOff);
         } else {
-          throw new IllegalArgumentException(
-              "Can't extend a POSDictionary that does not implement MutableTagDictionary.");
+          throw new IllegalArgumentException("Can't extend a POSDictionary"
+              + " that does not implement MutableTagDictionary.");
         }
         dictSamples.reset();
       } catch (IOException e) {
@@ -250,17 +296,57 @@ public abstract class AbstractTrainer implements Trainer {
     }
   }
 
-  public void createTagDictionary(String dictPath) {
-
+  /**
+   * Create a tag dictionary with the dictionary contained in the dictPath.
+   * @param dictPath
+   *          the string pointing to the tag dictionary
+   */
+  protected final void createTagDictionary(final String dictPath) {
     if (dictPath != null) {
       try {
-        posTaggerFactory.setTagDictionary(posTaggerFactory
-            .createTagDictionary(new File(dictPath)));
+        getPosTaggerFactory().setTagDictionary(
+            getPosTaggerFactory().createTagDictionary(new File(dictPath)));
       } catch (IOException e) {
         throw new TerminateToolException(-1,
             "IO error while loading POS Dictionary: " + e.getMessage(), e);
       }
     }
+  }
+
+  /**
+   * Get the dictSamples to automatically create tag dictionary.
+   * @return the WordTagSampleStream dictSamples
+   */
+  protected final WordTagSampleStream getDictSamples() {
+    return dictSamples;
+  }
+
+  /**
+   * Set the dictSamples to automatically create tag dictionary.
+   * @param aDictSamples
+   *          the dict samples as a {@code WordTagSampleStream}
+   */
+  protected final void setDictSamples(final WordTagSampleStream aDictSamples) {
+    this.dictSamples = aDictSamples;
+  }
+
+  /**
+   * Get the posTaggerFactory. Every extension of this class must provide an
+   * implementation of the posTaggerFactory.
+   * @return the posTaggerFactory
+   */
+  protected final POSTaggerFactory getPosTaggerFactory() {
+    return posTaggerFactory;
+  }
+
+  /**
+   * Set/implement the posTaggerFactory to be used in the pos tagger training.
+   * @param aPosTaggerFactory
+   *          the pos tagger factory implemented
+   */
+  protected final void setPosTaggerFactory(
+      final POSTaggerFactory aPosTaggerFactory) {
+    this.posTaggerFactory = aPosTaggerFactory;
   }
 
 }
