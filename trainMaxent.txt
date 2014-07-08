@@ -16,7 +16,7 @@
 # Sample machine learning properties file
 
 Algorithm=MAXENT
-Iterations=700
+Iterations=1000
 Cutoff=0
 Threads=4
 
