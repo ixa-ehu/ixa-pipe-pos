@@ -219,6 +219,7 @@ public class CLI {
     String trainFile = parsedArguments.getString("input");
     String testFile = parsedArguments.getString("testSet");
     String devFile = parsedArguments.getString("devSet");
+    String dictPath = parsedArguments.getString("dictPath");
     String features = parsedArguments.getString("features");
     Integer dictCutOff = parsedArguments.getInt("autoDict");
     String outModel = null;
@@ -241,10 +242,10 @@ public class CLI {
 
     if (features.equalsIgnoreCase("baseline")) {
       posTaggerTrainer = new BaselineTrainer(lang, trainFile,
-          testFile, dictCutOff, beamsize);
+          testFile, dictPath, dictCutOff, beamsize);
     }
     else if (features.equalsIgnoreCase("opennlp")) {
-      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile, dictCutOff, beamsize);
+      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile, dictPath, dictCutOff, beamsize);
     }
     else {
       System.err.println("Specify valid features parameter!!");
@@ -283,7 +284,10 @@ public class CLI {
         .type(Integer.class)
         .required(false)
         .setDefault(-1)
-        .help("Provide cutoff > 1 to automatically build a tag dictionary from the training data.\n");
+        .help("Provide cutoff > 1 to automatically build a tag dictionary from the training data\n");
+    trainParser.addArgument("--dictPath")
+        .required(false)
+        .help("Provide path to tag dictionary\n");
   }
 
   public final void eval() throws IOException {
