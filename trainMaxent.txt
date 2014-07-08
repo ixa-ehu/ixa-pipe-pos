@@ -16,7 +16,7 @@
 # Sample machine learning properties file
 
 Algorithm=MAXENT
-Iterations=1000
+Iterations=700
 Cutoff=0
 Threads=4
 
@@ -38,6 +38,6 @@ Corpus=opennlp
 ## Leave empty to disactivate this option (this is the default)
 #
 
-CrossEval=1:10
-#CrossEval=
+#CrossEval=1:10
+CrossEval=
 

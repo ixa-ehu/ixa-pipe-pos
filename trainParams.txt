@@ -16,7 +16,7 @@
 # Sample machine learning properties file
 
 Algorithm=PERCEPTRON
-Iterations=120
+Iterations=500
 Cutoff=0
 Threads=4
 
@@ -25,7 +25,7 @@ Threads=4
 Language=en
 
 # Beamsize 1 amounts to greedy search
-Beamsize=10
+Beamsize=3
 
 # Formats opennlp or conll
 Corpus=opennlp
