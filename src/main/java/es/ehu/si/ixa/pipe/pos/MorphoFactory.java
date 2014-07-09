@@ -15,8 +15,20 @@
  */
 package es.ehu.si.ixa.pipe.pos;
 
+/**
+ * Class for creating {@code Morpheme} objects.
+ * @author ragerri
+ * @version 2014-07-08
+ *
+ */
 public class MorphoFactory {
 
+  /**
+   * Construct morpheme object with word and morphological tag.
+   * @param word the word
+   * @param tag the morphological tag
+   * @return the morpheme object
+   */
   public final Morpheme createMorpheme(final String word, final String tag) {
     Morpheme morpheme = new Morpheme();
     morpheme.setValue(word);
@@ -24,6 +36,13 @@ public class MorphoFactory {
     return morpheme;
   }
 
+  /**
+   * Construct morpheme object with word, tag and lemma.
+   * @param word the word
+   * @param tag the tag
+   * @param lemma the lemma
+   * @return the morphological object
+   */
   public final Morpheme createMorpheme(final String word, final String tag,
       final String lemma) {
     Morpheme morpheme = new Morpheme();
