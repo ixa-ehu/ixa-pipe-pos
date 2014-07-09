@@ -18,6 +18,9 @@ package es.ehu.si.ixa.pipe.pos;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import opennlp.tools.postag.POSModel;
@@ -39,6 +42,8 @@ public class MorphoTagger {
    */
   private static ConcurrentHashMap<String, POSModel> posModels =
       new ConcurrentHashMap<String, POSModel>();
+  
+  private MorphoFactory morphoFactory;
 
   /**
    * It constructs an object POS from the POS class. First it loads a model,
@@ -54,13 +59,41 @@ public class MorphoTagger {
   public MorphoTagger(final String lang, final String model, final String features) {
     this(lang, model, CLI.DEFAULT_BEAM_SIZE);
   }
+  
+  public MorphoTagger(final String lang, final String model, final int beamsize, final MorphoFactory aMorphoFactory) {
 
-  public String[] posAnnotate(String[] tokens) {
-    String[] posTags = posTagger.tag(tokens);
+    POSModel posModel = loadModel(lang, model);
+    posTagger = new POSTaggerME(posModel, beamsize, 0);
+    this.morphoFactory = aMorphoFactory;
+  }
+  
+  public MorphoTagger(final String lang, final String model, final MorphoFactory aMorphoFactory) {
+    this(lang, model, CLI.DEFAULT_BEAM_SIZE, aMorphoFactory);
+  }
+
+  public List<Morpheme> getMorphemes(String[] tokens) {
+    List<String> origPosTags = posAnnotate(tokens);
+    List<Morpheme> morphemes = getMorphemesFromStrings(origPosTags, tokens);
+    return morphemes;
+  } 
+  public List<String> posAnnotate(String[] tokens) {
+    String[] annotatedText = posTagger.tag(tokens);
+    List<String> posTags = new ArrayList<String>(Arrays.asList(annotatedText));
     return posTags;
   }
   
-  public final POSModel loadModel(final String lang, final String model) {
+  public List<Morpheme> getMorphemesFromStrings(List<String> posTags, String[] tokens) {
+    List<Morpheme> morphemes = new ArrayList<Morpheme>();
+    for (int i = 0; i < posTags.size(); i++) {
+      String word = tokens[i];
+      String tag = posTags.get(i);
+      Morpheme morpheme = morphoFactory.createMorpheme(word, tag);
+      morphemes.add(morpheme);
+    }
+    return morphemes;
+  }
+  
+  private final POSModel loadModel(final String lang, final String model) {
     InputStream trainedModelInputStream = null;
     try {
       // Load the model if it's not there yet

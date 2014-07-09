@@ -32,13 +32,17 @@ import es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer;
 public class Annotate {
 
   private MorphoTagger posTagger;
+  private String lang;
+  private MorphoFactory morphoFactory;
 
-  public Annotate(String lang, String model, int beamsize)
+  public Annotate(String aLang, String model, int beamsize)
       throws IOException {
     if (model.equalsIgnoreCase("baseline")) {
       System.err.println("No POS model chosen, reverting to baseline model!");
     }
-    posTagger = new MorphoTagger(lang, model, beamsize);
+    this.lang = aLang;
+    morphoFactory = new MorphoFactory();
+    posTagger = new MorphoTagger(lang, model, beamsize, morphoFactory);
   }
 
   /**
@@ -124,45 +128,43 @@ public class Annotate {
     }
   }
 
-  public void annotatePOSToKAF(KAFDocument kaf,
-      DictionaryLemmatizer dictLemmatizer, String lang) throws IOException {
+  public void annotatePOSToKAF(KAFDocument kaf, DictionaryLemmatizer dictLemmatizer) throws IOException {
 
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
 
-      /* Get an array of token forms from a list of WF objects. */
       String tokens[] = new String[sentence.size()];
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
 
-      String[] posTagged = posTagger.posAnnotate(tokens);
-      for (int i = 0; i < posTagged.length; i++) {
+      List<Morpheme> morphemes = posTagger.getMorphemes(tokens);
+      for (int i = 0; i < morphemes.size(); i++) {
         List<WF> wfs = new ArrayList<WF>();
         wfs.add(sentence.get(i));
-        String posTag = posTagged[i];
-        String posId = this.getKafTagSet(lang, posTag);
-        String type = this.setTermType(posId); // type
-        String lemma = dictLemmatizer.lemmatize(lang, tokens[i], posTag); // lemma
-        kaf.createTermOptions(type, lemma, posId, posTag, wfs);
+        String posId = this.getKafTagSet(lang, morphemes.get(i).getTag());
+        String type = this.setTermType(posId);
+        String lemma = dictLemmatizer.lemmatize(lang, morphemes.get(i).getWord(), morphemes.get(i).getTag());
+        morphemes.get(i).setLemma(lemma);
+        kaf.createTermOptions(type, morphemes.get(i).getLemma(), posId, morphemes.get(i).getTag(), wfs);
       }
     }
   }
   
 
   public String annotatePOSToCoNLL(KAFDocument kaf,
-      DictionaryLemmatizer dictLemmatizer, String lang) throws IOException {
+      DictionaryLemmatizer dictLemmatizer) throws IOException {
     StringBuilder sb = new StringBuilder();
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
-      /* Get an array of token forms from a list of WF objects. */
+      //Get an array of token forms from a list of WF objects.
       String tokens[] = new String[sentence.size()];
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
-      String[] posTagged = posTagger.posAnnotate(tokens);
-      for (int i = 0; i < posTagged.length; i++) {
-        String posTag = posTagged[i];
+      List<String> posTagged = posTagger.posAnnotate(tokens);
+      for (int i = 0; i < posTagged.size(); i++) {
+        String posTag = posTagged.get(i);
         String lemma = dictLemmatizer.lemmatize(lang, tokens[i], posTag); // lemma
         sb.append(tokens[i]).append("\t").append(lemma).append("\t").append(posTag).append("\n");
       }

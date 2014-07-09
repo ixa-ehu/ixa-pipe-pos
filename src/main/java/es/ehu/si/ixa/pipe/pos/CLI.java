@@ -209,12 +209,12 @@ public class CLI {
           "terms", "ixa-pipe-pos-" + lang, version);
 
       newLp.setBeginTimestamp();
-      annotator.annotatePOSToKAF(kaf, lemmatizer, lang);
+      annotator.annotatePOSToKAF(kaf, lemmatizer);
       newLp.setEndTimestamp();
       bwriter.write(kaf.toString());
     } else {
       // annotate to CoNLL
-      bwriter.write(annotator.annotatePOSToCoNLL(kaf, lemmatizer, lang));
+      bwriter.write(annotator.annotatePOSToCoNLL(kaf, lemmatizer));
     }
     bwriter.close();
     breader.close();
