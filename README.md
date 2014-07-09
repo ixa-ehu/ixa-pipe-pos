@@ -108,10 +108,6 @@ There are several options to tag with ixa-pipe-pos:
 
 + **lang**: choose between en and es. If no language is chosen, the one specified
   in the NAF header will be used.
-+ **features**: choose features to use during the decoding. Currently only
-  baseline features are provided: 
-  + **baseline**: it implements local, opennlp features. These
-     features generate reasonably accurate and very fast models.
 + **model**: provide the model to do the tagging. If no model is provided via
   this parameter, ixa-pipe-pos will revert to the baseline model distributed
   in the release.  
@@ -132,8 +128,14 @@ cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar t
 
 The following options are available via the train subcommand:
 
-+ **features**: as explained in the previous section. Obviously, for best
-  performance the features used at training should be used for tagging.
++ **features**: currently we provide 2 local feature sets plus non-local
+features using lexicons:
+  + **opennlp**: Apache OpenNLP featureset, kept for compatibility.
+  + **baseline**: local features adding bigrams and trigrams.
+  + **autoDict**: pass this parameter to automatically build a tag dictionary
+  from the training data.
+  + **dictPath**: pass this parameter to use an already existing tag dictionary
+  Check Apache OpenNLP documentation for the dictionary format.
 + **input**: the training dataset.
 + **testSet**: self-explanatory, the test dataset.
 + **devSet**: the development set if cross evaluation is chosen to find the
