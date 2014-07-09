@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>ixa-pipe-pos</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<name>ixa-pipe-pos</name>
 	<description>POS tagging module of IXA Pipeline, a multilingual Natural Language Processing  developed by the IXA NLP Group of the University of the Basque Country (ixa.si.ehu.es).</description>
 	<developers>

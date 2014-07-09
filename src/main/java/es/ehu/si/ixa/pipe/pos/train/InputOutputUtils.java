@@ -3,17 +3,17 @@ package es.ehu.si.ixa.pipe.pos.train;
 /*
  *Copyright 2013 Rodrigo Agerri
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 
 import java.io.BufferedOutputStream;
@@ -38,15 +38,28 @@ import opennlp.tools.util.model.BaseModel;
 import org.apache.commons.io.FileUtils;
 
 /**
- * 
- * Utility functions to read and save ObjectStreams
- * 
+ * Utility functions to read and save ObjectStreams.
  * @author ragerri
- * 
+ * @version 2014-07-08
+ *
  */
-public class InputOutputUtils {
+public final class InputOutputUtils {
 
-  private static void checkInputFile(String name, File inFile) {
+  /**
+   * Private constructor. This class should only be used statically.
+   */
+  private InputOutputUtils() {
+
+  }
+
+  /**
+   * Check input file integrity.
+   * @param name
+   *          the name of the file
+   * @param inFile
+   *          the file
+   */
+  private static void checkInputFile(final String name, final File inFile) {
 
     String isFailure = null;
 
@@ -64,12 +77,28 @@ public class InputOutputUtils {
     }
   }
 
-  public static TrainingParameters loadTrainingParameters(String paramFile) {
+  /**
+   * Load the parameters in the {@code TrainingParameters} file.
+   *
+   * @param paramFile
+   *          the training parameters file
+   * @return default loading of the parameters
+   */
+  public static TrainingParameters loadTrainingParameters(final String paramFile) {
     return loadTrainingParameters(paramFile, false);
   }
 
-  private static TrainingParameters loadTrainingParameters(String paramFile,
-      boolean supportSequenceTraining) {
+  /**
+   * Load the parameters in the {@code TrainingParameters} file.
+   *
+   * @param paramFile
+   *          the parameter file
+   * @param supportSequenceTraining
+   *          wheter sequence training is supported
+   * @return the parameters
+   */
+  private static TrainingParameters loadTrainingParameters(
+      final String paramFile, final boolean supportSequenceTraining) {
 
     TrainingParameters params = null;
 
@@ -87,10 +116,11 @@ public class InputOutputUtils {
             "Error during parameters loading: " + e.getMessage(), e);
       } finally {
         try {
-          if (paramsIn != null)
+          if (paramsIn != null) {
             paramsIn.close();
+          }
         } catch (IOException e) {
-          // sorry that this can fail
+          System.err.println("Error closing the input stream");
         }
       }
 
@@ -102,18 +132,37 @@ public class InputOutputUtils {
 
     return params;
   }
-  
-  public static ObjectStream<String> readInputData(String infile)
-          throws IOException {
 
-        InputStreamFactory inputStreamFactory = new DefaultInputStreamFactory(new FileInputStream(infile));
-        ObjectStream<String> lineStream = new PlainTextByLineStream(inputStreamFactory, "UTF-8");
-        return lineStream;
-
-      }
-
-  public static void printIterationResults(Map<List<Integer>, Double> results)
+  /**
+   * Read the file into an {@code ObjectStream}.
+   *
+   * @param infile
+   *          the string pointing to the file
+   * @return the object stream
+   * @throws IOException
+   *           throw exception if error occurs
+   */
+  public static ObjectStream<String> readInputData(final String infile)
       throws IOException {
+
+    InputStreamFactory inputStreamFactory = new DefaultInputStreamFactory(
+        new FileInputStream(infile));
+    ObjectStream<String> lineStream = new PlainTextByLineStream(
+        inputStreamFactory, "UTF-8");
+    return lineStream;
+
+  }
+
+  /**
+   * Print the results of each iteration in the cross evaluation training.
+   *
+   * @param results
+   *          the results
+   * @throws IOException
+   *           io exception
+   */
+  public static void printIterationResults(
+      final Map<List<Integer>, Double> results) throws IOException {
     for (Map.Entry<List<Integer>, Double> result : results.entrySet()) {
       Double value = result.getValue();
       List<Integer> key = result.getKey();
@@ -125,9 +174,20 @@ public class InputOutputUtils {
     }
   }
 
+  /**
+   * Keep the best iteration in the cross evaluation process.
+   *
+   * @param results
+   *          the results
+   * @param allParams
+   *          the parameters
+   * @return the best parameters
+   * @throws IOException
+   *           io exception
+   */
   public static List<List<Integer>> getBestIterations(
-      Map<List<Integer>, Double> results, List<List<Integer>> allParams)
-      throws IOException {
+      final Map<List<Integer>, Double> results,
+      final List<List<Integer>> allParams) throws IOException {
     StringBuffer sb = new StringBuffer();
     Double bestResult = (Collections.max(results.values()));
     for (Map.Entry<List<Integer>, Double> result1 : results.entrySet()) {
@@ -146,7 +206,16 @@ public class InputOutputUtils {
     return allParams;
   }
 
-  public static void saveModel(BaseModel trainedModel, String outfile) {
+  /**
+   * Save the model.
+   *
+   * @param trainedModel
+   *          the {@code BaseModel} trained.
+   * @param outfile
+   *          the outfile string
+   */
+  public static void saveModel(final BaseModel trainedModel,
+      final String outfile) {
     OutputStream modelOut = null;
     try {
       modelOut = new BufferedOutputStream(new FileOutputStream(outfile));
@@ -167,12 +236,15 @@ public class InputOutputUtils {
     }
   }
 
+  /**
+   * Print an exception if not development set is provided for cross evaluation.
+   */
   public static void devSetException() {
     System.err.println("Use --devSet option if performing crossEvaluation!");
     System.out
-        .println("Run java -jar target/ixa-pipe-train-1.0.jar -help for details; \n" +
-                "also check your trainParams.txt file");
+        .println("Run java -jar target/ixa-pipe-train-1.0.jar -help "
+    + " for details; also check your trainParams.txt file");
     System.exit(1);
   }
- 
+
 }
