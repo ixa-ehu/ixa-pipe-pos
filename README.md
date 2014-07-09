@@ -42,7 +42,7 @@ provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionall
 
 ### Models
 
-Therefore, the following resources are provided in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz) package: 
+The following resources are provided in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz) package: 
 
 + **English POS Models**:
   + Penn Treebank: **en-pos-perceptron-c0-b3-dev.bin**: 97.06
