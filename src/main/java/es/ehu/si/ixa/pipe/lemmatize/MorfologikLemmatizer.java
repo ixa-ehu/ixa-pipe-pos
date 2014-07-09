@@ -49,17 +49,22 @@ public class MorfologikLemmatizer implements
    * The class dealing with loading the default dictionaries.
    */
   private Resources tagRetriever = new Resources();
-
+  /**
+   * The language.
+   */
+  private String lang;
   /**
    * Reads a dictionary in morfologik FSA format.
    *
    * @param dictURL the URL containing the dictionary
+   * @param aLang the language
    * @throws IllegalArgumentException
    * @throws IOException throws an exception if dictionary path is not correct
    */
-  public MorfologikLemmatizer(final URL dictURL)
+  public MorfologikLemmatizer(final URL dictURL, String aLang)
       throws IOException {
     dictLookup = new DictionaryLookup(Dictionary.read(dictURL));
+    this.lang = aLang;
   }
 
   /**
@@ -85,15 +90,13 @@ public class MorfologikLemmatizer implements
   /**
    * Generate the dictionary keys (word, postag).
    *
-   * @param lang
-   *          the language
    * @param word
    *          the surface form
    * @param postag
    *          the assigned postag
    * @return a list of keys consisting of the word and its postag
    */
-  private List<String> getDictKeys(final String lang, final String word,
+  private List<String> getDictKeys(final String word,
       final String postag) {
     List<String> keys = new ArrayList<String>();
     String constantTag = tagRetriever.setTagConstant(lang, postag);
@@ -108,16 +111,13 @@ public class MorfologikLemmatizer implements
   /**
    * Generates the dictionary map.
    *
-   * @param lang
-   *          the language
    * @param word
    *          the surface form word
    * @param postag
    *          the postag assigned by the pos tagger
    * @return the hash map dictionary
    */
-  private HashMap<List<String>, String> getDictMap(final String lang,
-      final String word, final String postag) {
+  private HashMap<List<String>, String> getDictMap(final String word, final String postag) {
     HashMap<List<String>, String> dictMap = new HashMap<List<String>, String>();
     String constantTag = tagRetriever.setTagConstant(lang, postag);
     if (postag.startsWith(String.valueOf(constantTag))) {
@@ -135,11 +135,11 @@ public class MorfologikLemmatizer implements
    * es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String
    * , java.lang.String, java.lang.String)
    */
-  public String lemmatize(final String lang, final String word,
+  public String lemmatize(final String word,
       final String postag) {
     String lemma = null;
-    List<String> keys = this.getDictKeys(lang, word, postag);
-    HashMap<List<String>, String> dictMap = this.getDictMap(lang, word, postag);
+    List<String> keys = this.getDictKeys(word, postag);
+    HashMap<List<String>, String> dictMap = this.getDictMap(word, postag);
     // lookup lemma as value of the map
     String keyValue = dictMap.get(keys);
     String constantTag = tagRetriever.setTagConstant(lang, postag);

@@ -44,6 +44,10 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
    * The class dealing with loading the proper dictionary.
    */
   private Resources tagRetriever = new Resources();
+  /**
+   * The language.
+   */
+  private String lang;
 
   /**
    * Construct a hashmap from the input tab separated dictionary.
@@ -52,8 +56,9 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
    * 
    * @param dictionary
    *          the input dictionary via inputstream
+   * @param aLang the language
    */
-  public SimpleLemmatizer(final InputStream dictionary) {
+  public SimpleLemmatizer(final InputStream dictionary, final String aLang) {
     dictMap = new HashMap<List<String>, String>();
     BufferedReader breader = new BufferedReader(new InputStreamReader(
         dictionary));
@@ -67,20 +72,19 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    this.lang = aLang;
   }
 
   /**
    * Get the dictionary keys (word and postag).
    *
-   * @param lang
-   *          the language
    * @param word
    *          the surface form word
    * @param postag
    *          the assigned postag
    * @return returns the dictionary keys
    */
-  private List<String> getDictKeys(final String lang, final String word,
+  private List<String> getDictKeys(final String word,
       final String postag) {
     String constantTag = tagRetriever.setTagConstant(lang, postag);
     List<String> keys = new ArrayList<String>();
@@ -95,10 +99,10 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
   /* (non-Javadoc)
    * @see es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String, java.lang.String, java.lang.String)
    */
-  public String lemmatize(final String lang, final String word, final String postag) {
+  public String lemmatize(final String word, final String postag) {
     String lemma = null;
     String constantTag = tagRetriever.setTagConstant(lang, postag);
-    List<String> keys = this.getDictKeys(lang, word, postag);
+    List<String> keys = this.getDictKeys(word, postag);
     // lookup lemma as value of the map
     String keyValue = dictMap.get(keys);
     if (keyValue != null) {

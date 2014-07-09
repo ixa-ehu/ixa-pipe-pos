@@ -28,13 +28,15 @@ import opennlp.tools.postag.POSTaggerME;
 
 /**
  * POS tagging module based on Apache OpenNLP machine learning API.
- * 
  * @author ragerri
  * @version 2014-04-24
  */
 
 public class MorphoTagger {
 
+  /**
+   * The morpho tagger.
+   */
   private POSTaggerME posTagger;
   /**
    * The models to use for every language. The keys of the hash are the
@@ -42,47 +44,88 @@ public class MorphoTagger {
    */
   private static ConcurrentHashMap<String, POSModel> posModels =
       new ConcurrentHashMap<String, POSModel>();
-  
+  /**
+   * The morpho factory.
+   */
   private MorphoFactory morphoFactory;
+  /**
+   * The language.
+   */
+  private String lang;
 
   /**
-   * It constructs an object POS from the POS class. First it loads a model,
-   * then it initializes the nercModel and finally it creates a nercDetector
-   * using such model.
+   * Construct a morphotagger.
+   * @param aLang the language
+   * @param model the model
+   * @param beamsize the beamsize
    */
-  public MorphoTagger(final String lang, final String model, final int beamsize) {
-
-    POSModel posModel = loadModel(lang, model);
+  public MorphoTagger(final String aLang, final String model, final int beamsize) {
+    this.lang = aLang;
+    POSModel posModel = loadModel(model);
     posTagger = new POSTaggerME(posModel, beamsize, 0);
   }
-  
-  public MorphoTagger(final String lang, final String model, final String features) {
-    this(lang, model, CLI.DEFAULT_BEAM_SIZE);
-  }
-  
-  public MorphoTagger(final String lang, final String model, final int beamsize, final MorphoFactory aMorphoFactory) {
 
-    POSModel posModel = loadModel(lang, model);
+  /**
+   * Construct a morphotagger with default beamsize.
+   * @param aLang the language
+   * @param model the model
+   */
+  public MorphoTagger(final String aLang, final String model) {
+    this(aLang, model, CLI.DEFAULT_BEAM_SIZE);
+  }
+
+  /**
+   * Construct a morphotagger with {@code MorphoFactory}.
+   * @param aLang the language
+   * @param model the model
+   * @param beamsize the beamsize
+   * @param aMorphoFactory the morpho factory
+   */
+  public MorphoTagger(final String aLang, final String model, final int beamsize, final MorphoFactory aMorphoFactory) {
+    this.lang = aLang;
+    POSModel posModel = loadModel(model);
     posTagger = new POSTaggerME(posModel, beamsize, 0);
     this.morphoFactory = aMorphoFactory;
   }
-  
-  public MorphoTagger(final String lang, final String model, final MorphoFactory aMorphoFactory) {
-    this(lang, model, CLI.DEFAULT_BEAM_SIZE, aMorphoFactory);
+
+  /**
+   * Construct a morphotagger with default beamsize and morpho factory.
+   * @param aLang the language
+   * @param model the model
+   * @param aMorphoFactory the factory
+   */
+  public MorphoTagger(final String aLang, final String model, final MorphoFactory aMorphoFactory) {
+    this(aLang, model, CLI.DEFAULT_BEAM_SIZE, aMorphoFactory);
   }
 
-  public List<Morpheme> getMorphemes(String[] tokens) {
+  /**
+   * Get morphological analysis from a tokenized sentence.
+   * @param tokens the tokenized sentence
+   * @return a list of {@code Morpheme} objects containing morphological info
+   */
+  public final List<Morpheme> getMorphemes(final String[] tokens) {
     List<String> origPosTags = posAnnotate(tokens);
     List<Morpheme> morphemes = getMorphemesFromStrings(origPosTags, tokens);
     return morphemes;
-  } 
-  public List<String> posAnnotate(String[] tokens) {
+  }
+  /**
+   * Produce postags from a tokenized sentence.
+   * @param tokens the sentence
+   * @return a list containing the postags
+   */
+  public final List<String> posAnnotate(final String[] tokens) {
     String[] annotatedText = posTagger.tag(tokens);
     List<String> posTags = new ArrayList<String>(Arrays.asList(annotatedText));
     return posTags;
   }
-  
-  public List<Morpheme> getMorphemesFromStrings(List<String> posTags, String[] tokens) {
+
+  /**
+   * Create {@code Morpheme} objects from the output of posAnnotate.
+   * @param posTags the postags
+   * @param tokens the tokens
+   * @return a list of morpheme objects
+   */
+  public final List<Morpheme> getMorphemesFromStrings(final List<String> posTags, final String[] tokens) {
     List<Morpheme> morphemes = new ArrayList<Morpheme>();
     for (int i = 0; i < posTags.size(); i++) {
       String word = tokens[i];
@@ -92,14 +135,18 @@ public class MorphoTagger {
     }
     return morphemes;
   }
-  
-  private final POSModel loadModel(final String lang, final String model) {
+
+  /**
+   * Load model statically only if a model for the specified language is not already there.
+   * @param model the model type
+   * @return the model
+   */
+  private POSModel loadModel(final String model) {
     InputStream trainedModelInputStream = null;
     try {
-      // Load the model if it's not there yet
       if (!posModels.containsKey(lang)) {
         if (model.equalsIgnoreCase("baseline")) {
-          trainedModelInputStream = getBaselineModelStream(lang, model);
+          trainedModelInputStream = getBaselineModelStream(model);
         } else {
           trainedModelInputStream = new FileInputStream(model);
         }
@@ -119,7 +166,12 @@ public class MorphoTagger {
     return posModels.get(lang);
   }
 
-  private InputStream getBaselineModelStream(final String lang, final String model) {
+  /**
+   * Back-off to baseline models for a language.
+   * @param model the model type
+   * @return the back-off model
+   */
+  private InputStream getBaselineModelStream(final String model) {
     InputStream trainedModelInputStream = null;
     if (lang.equalsIgnoreCase("en")) {
       trainedModelInputStream = getClass().getResourceAsStream(

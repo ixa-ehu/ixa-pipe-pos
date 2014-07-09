@@ -26,16 +26,34 @@ import java.util.List;
 import es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer;
 
 /**
+ * Main annotation class of ixa-pipe-pos. Check this class for
+ * examples using the ixa-pipe-pos API.
  * @author ragerri
- * 
+ * @version 2014-07-09
  */
 public class Annotate {
 
+  /**
+   * The morpho tagger.
+   */
   private MorphoTagger posTagger;
+  /**
+   * The language.
+   */
   private String lang;
+  /**
+   * The factory to build morpheme objects.
+   */
   private MorphoFactory morphoFactory;
 
-  public Annotate(String aLang, String model, int beamsize)
+  /**
+   * Construct an annotator with a {@code MorphoFactory}.
+   * @param aLang the language
+   * @param model the model
+   * @param beamsize the beamsize for decoding
+   * @throws IOException io exception if model not properly loaded
+   */
+  public Annotate(final String aLang, final String model, final int beamsize)
       throws IOException {
     if (model.equalsIgnoreCase("baseline")) {
       System.err.println("No POS model chosen, reverting to baseline model!");
@@ -46,14 +64,13 @@ public class Annotate {
   }
 
   /**
-   * 
-   * Mapping between Penn Treebank tagset and KAF tagset
-   * 
-   * @param penn
+   * Mapping between Penn Treebank tagset and KAF tagset.
+   *
+   * @param postag
    *          treebank postag
    * @return kaf POS tag
    */
-  private String mapEnglishTagSetToKaf(String postag) {
+  private String mapEnglishTagSetToKaf(final String postag) {
     if (postag.startsWith("RB")) {
       return "A"; // adverb
     } else if (postag.equalsIgnoreCase("CC")) {
@@ -77,7 +94,12 @@ public class Annotate {
     }
   }
 
-  private String mapSpanishTagSetToKaf(String postag) {
+  /**
+   * Mapping between Ancora EAGLES PAROLE tagset and NAF.
+   * @param postag the postag
+   * @return the mapping to NAF pos tagset
+   */
+  private String mapSpanishTagSetToKaf(final String postag) {
     if (postag.equalsIgnoreCase("RB") || postag.equalsIgnoreCase("RN")) {
       return "A"; // adverb
     } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
@@ -101,7 +123,12 @@ public class Annotate {
     }
   }
 
-  private String getKafTagSet(String lang, String postag) {
+  /**
+   * Obtain the appropriate tagset according to language and postag.
+   * @param postag the postag
+   * @return the mapped tag
+   */
+  private String getKafTagSet(final String postag) {
     String tag = null;
     if (lang.equalsIgnoreCase("en")) {
       tag = this.mapEnglishTagSetToKaf(postag);
@@ -113,13 +140,11 @@ public class Annotate {
   }
 
   /**
-   * Set the term type attribute based on the pos value
-   * 
-   * @param kaf
-   *          postag
-   * @return type
+   * Set the term type attribute based on the pos value.
+   * @param postag the postag
+   * @return the type
    */
-  private String setTermType(String postag) {
+  private String setTermType(final String postag) {
     if (postag.startsWith("N") || postag.startsWith("V")
         || postag.startsWith("G") || postag.startsWith("A")) {
       return "open";
@@ -128,12 +153,18 @@ public class Annotate {
     }
   }
 
-  public void annotatePOSToKAF(KAFDocument kaf, DictionaryLemmatizer dictLemmatizer) throws IOException {
+  /**
+   * Annotate morphological information to NAF.
+   * @param kaf the NAF document
+   * @param dictLemmatizer the lemmatizer
+   * @throws IOException the io exception
+   */
+  public final void annotatePOSToKAF(final KAFDocument kaf, final DictionaryLemmatizer dictLemmatizer) throws IOException {
 
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
 
-      String tokens[] = new String[sentence.size()];
+      String[] tokens = new String[sentence.size()];
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
@@ -142,30 +173,36 @@ public class Annotate {
       for (int i = 0; i < morphemes.size(); i++) {
         List<WF> wfs = new ArrayList<WF>();
         wfs.add(sentence.get(i));
-        String posId = this.getKafTagSet(lang, morphemes.get(i).getTag());
+        String posId = this.getKafTagSet(morphemes.get(i).getTag());
         String type = this.setTermType(posId);
-        String lemma = dictLemmatizer.lemmatize(lang, morphemes.get(i).getWord(), morphemes.get(i).getTag());
+        String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(), morphemes.get(i).getTag());
         morphemes.get(i).setLemma(lemma);
         kaf.createTermOptions(type, morphemes.get(i).getLemma(), posId, morphemes.get(i).getTag(), wfs);
       }
     }
   }
-  
 
-  public String annotatePOSToCoNLL(KAFDocument kaf,
-      DictionaryLemmatizer dictLemmatizer) throws IOException {
+  /**
+   * Annotate morphological information in tabulated CoNLL-style format.
+   * @param kaf the naf input document
+   * @param dictLemmatizer the lemmatizer
+   * @return the text annotated in tabulated format
+   * @throws IOException throws io exception
+   */
+  public final String annotatePOSToCoNLL(final KAFDocument kaf,
+      final DictionaryLemmatizer dictLemmatizer) throws IOException {
     StringBuilder sb = new StringBuilder();
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
       //Get an array of token forms from a list of WF objects.
-      String tokens[] = new String[sentence.size()];
+      String[] tokens = new String[sentence.size()];
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
       List<String> posTagged = posTagger.posAnnotate(tokens);
       for (int i = 0; i < posTagged.size(); i++) {
         String posTag = posTagged.get(i);
-        String lemma = dictLemmatizer.lemmatize(lang, tokens[i], posTag); // lemma
+        String lemma = dictLemmatizer.lemmatize(tokens[i], posTag); // lemma
         sb.append(tokens[i]).append("\t").append(lemma).append("\t").append(posTag).append("\n");
       }
       sb.append("\n");

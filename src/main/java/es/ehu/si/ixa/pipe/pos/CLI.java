@@ -196,11 +196,11 @@ public class CLI {
     if (lemMethod.equalsIgnoreCase("plain")) {
       System.err.println("Using plain text dictionary");
       InputStream dictLemmatizer = resourceRetriever.getDictionary(lang);
-      lemmatizer = new SimpleLemmatizer(dictLemmatizer);
+      lemmatizer = new SimpleLemmatizer(dictLemmatizer, lang);
     } else {
       System.err.println("Using default Morfologik binary dictionary.");
       URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
-      lemmatizer = new MorfologikLemmatizer(dictLemmatizer);
+      lemmatizer = new MorfologikLemmatizer(dictLemmatizer, lang);
     }
     Annotate annotator = new Annotate(lang, model, beamsize);
     // annotate to KAF
