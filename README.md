@@ -124,7 +124,7 @@ There are several options to tag with ixa-pipe-pos:
 cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag
 ````
 
-### Training new models
+### Training
 
 The following options are available via the train subcommand:
 
