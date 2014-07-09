@@ -86,7 +86,7 @@ parameter:
 java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval) -help
 ````
 
-### POS Tagging with ixa-pipe-pos
+### Tagging
 
 If you are in hurry, just execute: 
 
