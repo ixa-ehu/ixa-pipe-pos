@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ixa</groupId>
+  <groupId>es.ehu.si</groupId>
   <artifactId>ixa-pipe-pos</artifactId>
   <name>ixa-pipe-pos</name>
-  <version>1.0</version>
-  <description>POS tagging module of IXA-Pipeline, a multilingual Natural Language Processing
-	Pipeline based on Apache OpenNLP API. Currently English and Spanish annotation is available,
-	but it can be easily extended to deal with other languages too. All models have been trained
-	by the IXA NLP Group of the University of the Basque Country (ixa.si.ehu.es).</description>
-  <url>http://maven.apache.org</url>
+  <version>1.1.0</version>
+  <description>POS tagging module of IXA Pipeline, a multilingual Natural Language Processing  developed by the IXA NLP Group of the University of the Basque Country (ixa.si.ehu.es).</description>
+  <url>http://ixa2.si.ehu.es/ixa-pipes</url>
   <prerequisites>
     <maven>3.0</maven>
   </prerequisites>
@@ -20,6 +17,14 @@
       <email>rodrigo.agerri@ehu.es</email>
     </developer>
   </developers>
+  <scm>
+    <developerConnection>ragerri</developerConnection>
+    <url>https://github.com/ixa-ehu/ixa-pipe-pos</url>
+  </scm>
+  <organization>
+    <name>IXA Pipeline</name>
+    <url>http://ixa2.si.ehu.es/ixa-pipes</url>
+  </organization>
   <build>
     <plugins>
       <plugin>
@@ -35,7 +40,10 @@
               <transformers>
                 <transformer>
                   <manifestEntries>
-                    <Main-Class>ixa.pipe.pos.CLI</Main-Class>
+                    <Main-Class>es.ehu.si.ixa.pipe.pos.CLI</Main-Class>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>${project.artifactId}</artifactId>
+                    <Implementation-Version>${project.version}</Implementation-Version>
                   </manifestEntries>
                 </transformer>
               </transformers>
@@ -51,7 +59,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.2.1</version>
         <configuration>
-          <mainClass>ixa.pipe.pos.CLI</mainClass>
+          <mainClass>es.ehu.si.ixa.pipe.pos.CLI</mainClass>
         </configuration>
       </plugin>
       <plugin>

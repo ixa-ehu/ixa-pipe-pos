@@ -1,5 +1,4 @@
 target
-*.dict
 *.bin
 *.patch
 *.pyc
@@ -14,3 +13,4 @@ octave-core
 *.project
 *.pydevproject
 *.settings
+*.checkstyle
