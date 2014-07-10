@@ -15,6 +15,15 @@ and install this repository instead of using the releases provided in
 [http://ixa2.si.ehu.es/ixa-pipes], please scroll down to the end of the document for
 the [installation instructions](#installation).
 
+## TABLE OF CONTENTS 
+
+1. [Overview of ixa-pipe-pos](#overview)
+  + [Distributed resources](#models)
+2. [Usage of ixa-pipe-pos](#usage)
+  + [POS tagging/lemmatizing](#tagging)
+  + [Training your own models](#training)
+  + [Evaluation](#evaluation)
+
 ## OVERVIEW
 
 ixa-pipe-pos provides POS tagging and lemmatization for English and Spanish. We
@@ -31,7 +40,9 @@ For this first release we provide two reasonably fast POS tagging models based o
 Maximum Entropy (Ratnaparkhi 1999) algorithms. To avoid duplication of efforts, we use the machine learning API 
 provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added dictionary-based lemmatization. 
 
-Therefore, the following resources are provided in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz) package: 
+### Models
+
+The following resources are provided in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz) package: 
 
 + **English POS Models**:
   + Penn Treebank: **en-pos-perceptron-c0-b3-dev.bin**: 97.06
@@ -43,21 +54,21 @@ Therefore, the following resources are provided in the [pos-resources.tgz](http:
   + Ancora: **es-pos-maxent-750-c0-b3.bin**: 98.88 Word accuracy.
   + Ancora: **es-pos-perceptron-c0-b3.bin**: 98.24 Word accuracy (**this is the default**). 
 
+Furthermore, the following resources **are required for lemmatization**, available in the [lemmatizer-dicts.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tgz)
+package. Note that the dictionaries come with their own licences, please do comply with them:
+
 + **Lemmatizer Dictionaries**:
   + **English**:
-    + **Plain text dictionary**: en-lemmas.dict is a "Word POStag lemma" dictionary in plain text to perform lemmatization.
-    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as a finite state automata 
-      using the morfologik-stemming project (see NOTICE file for details). This method uses 10% of RAM with respect 
-      to the plain text dictionary (**this is the default**).
-    + **WordNet-3.0**. You will need to download WordNet and provide $WordNet/dict as a value of the --lemmatizer 
-      option when running ixa-pipe-pos. (see [usage](#USING ixa-pipe-pos)).
+    + **Plain text dictionary**: en-lemmatizer.dict is a "word lemma postag" dictionary in plain text to perform lemmatization.
+    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as a finite state automata. 
+      using the morfologik-stemming project (see NOTICE file for details). This method uses 10% of RAM with respect to the plain text dictionary (**this is the default**).
   + **Spanish**:
-    + **Plain text dictionary**: es-lemmas.dict.
+    + **Plain text dictionary**: es-lemmatizer.dict.
     + **Morfologik stemming**: spanish.dict.
 
 ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details).
 
-## USING ixa-pipe-pos
+## USAGE
 
 ixa-pipe-pos provides 3 basic functionalities:
 
@@ -75,7 +86,7 @@ parameter:
 java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval) -help
 ````
 
-### POS Tagging with ixa-pipe-pos
+### Tagging
 
 If you are in hurry, just execute: 
 
@@ -97,10 +108,6 @@ There are several options to tag with ixa-pipe-pos:
 
 + **lang**: choose between en and es. If no language is chosen, the one specified
   in the NAF header will be used.
-+ **features**: choose features to use during the decoding. Currently only
-  baseline features are provided: 
-  + **baseline**: it implements local, opennlp features. These
-     features generate reasonably accurate and very fast models.
 + **model**: provide the model to do the tagging. If no model is provided via
   this parameter, ixa-pipe-pos will revert to the baseline model distributed
   in the release.  
@@ -110,13 +117,6 @@ There are several options to tag with ixa-pipe-pos:
 + **lemmatize**: choose dictionary method to perform lemmatization:
   + **bin**: Morfologik binary dictionary (**default**).
   + **plain**: plain text dictionary.
-  + **wn**: WordNet 3.0-based lemmatization, **only for English**.
-
-To get WordNet go to:
-
-````shell
-wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
-````
 
 **Tagging Example**: 
 
@@ -124,12 +124,18 @@ wget http://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz
 cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag
 ````
 
-### Training new models
+### Training
 
 The following options are available via the train subcommand:
 
-+ **features**: as explained in the previous section. Obviously, for best
-  performance the features used at training should be used for tagging.
++ **features**: currently we provide 2 local feature sets plus non-local
+features using lexicons:
+  + **opennlp**: Apache OpenNLP featureset, kept for compatibility.
+  + **baseline**: local features adding bigrams and trigrams.
+  + **autoDict**: pass this parameter to automatically build a tag dictionary
+  from the training data.
+  + **dictPath**: pass this parameter to use an already existing tag dictionary
+  Check Apache OpenNLP documentation for the dictionary format.
 + **input**: the training dataset.
 + **testSet**: self-explanatory, the test dataset.
 + **devSet**: the development set if cross evaluation is chosen to find the
@@ -149,7 +155,8 @@ The following options are available via the train subcommand:
   evaluation. This parameter tells the trainer to find the best number of
   iterations for MAXENT training on a development set. Then that iteration
   number will be used to train the final model. In a very experimental state. 
-
++ autoDict: automatically generate tag dictionary from training data
++ dictPath: use an already existing tag dictionary to train
 **Example**:
 
 ````shell
@@ -162,8 +169,6 @@ To evaluate a trained model, the eval subcommand provides the following
 options: 
 
 + **model**: input the name of the model to evaluate.
-+ **features**: as explained for *train* and *tag* subcommands.
-+ **language**: input en or es.
 + **testSet**: testset to evaluate the model.
 + **evalReport**: choose the detail in displaying the results: 
   + **brief**: it just prints the word accuracy.
@@ -175,7 +180,7 @@ options:
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.nerc-$version.jar eval -m test-pos.bin -f baseline -l en -t test.data 
+java -jar target/ixa.pipe.nerc-$version.jar eval -m test-pos.bin -l en -t test.data 
 ````
 
 ## JAVADOC
@@ -274,15 +279,16 @@ git clone https://github.com/ixa-ehu/ixa-pipe-pos
 You will need to download the trained models and other resources and copy them to ixa-pipe-pos/src/main/resources/
 for the module to work properly:
 
-Download the models and untar the archive into the src/main/resources directory:
+Download the models and dictionaries and untar the archive into the src/main/resources directory:
 
 ````shell
 cd ixa-pipe-pos/src/main/resources
 wget http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz
+wget http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tgz
 tar xvzf pos-resources.tgz
+tar xvzf lemmatizer-dicts.tgz
 ````
-The pos-resources contains the baseline models to which ixa-pipe-pos backs off if not model is provided as parameter
-for tagging.
+The pos-resources contains the baseline models to which ixa-pipe-pos backs off if not model is provided as parameter for tagging.
 
 ### 5. Compile
 

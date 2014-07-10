@@ -27,11 +27,10 @@ public interface DictionaryLemmatizer {
   /**
    * Lemmatize by dictionary lookup.
    *
-   * @param lang the language
    * @param word the surface form word
    * @param postag the postag assigned
    * @return the lemma
    */
-  String lemmatize(String lang, String word, String postag);
+  String lemmatize(String word, String postag);
 
 }

@@ -38,6 +38,6 @@ Corpus=opennlp
 ## Leave empty to disactivate this option (this is the default)
 #
 
-CrossEval=1:10
-#CrossEval=
+#CrossEval=1:10
+CrossEval=
 
