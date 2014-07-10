@@ -19,16 +19,17 @@ the [installation instructions](#installation).
 Therefore, before installing/using this module as explained in this README,
 **please install Apache OpenNLP 1.6.0 like this**:
 
-  git clone https://github.com/apache/opennlp
-  cd opennlp
-  cd opennlp
-  mvn clean install
-  cd ../opennlp-distr
-  mvn clean install
-  cd ../opennlp-docs
-  mvn clean install
-  cd ../opennlp-tools
-  mvn clean install
+````shell
+git clone https://github.com/apache/opennlp
+cd opennlp/opennlp
+mvn clean install
+cd ../opennlp-distr
+mvn clean install
+cd ../opennlp-docs
+mvn clean install
+cd ../opennlp-tools
+mvn clean install
+````
 
 ## TABLE OF CONTENTS 
 
