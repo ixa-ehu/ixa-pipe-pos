@@ -135,9 +135,10 @@ public class CLI {
    *          the arguments passed through the CLI
    * @throws IOException
    *           exception if problems with the incoming data
+   * @throws JDOMException 
    * @throws JWNLException
    */
-  public final void parseCLI(final String[] args) throws IOException {
+  public final void parseCLI(final String[] args) throws IOException, JDOMException {
     try {
       parsedArguments = argParser.parseArgs(args);
       System.err.println("CLI options: " + parsedArguments);
@@ -168,7 +169,7 @@ public class CLI {
    *           the exception if not input is provided
    */
   public final void annotate(final InputStream inputStream,
-      final OutputStream outputStream) throws IOException {
+      final OutputStream outputStream) throws IOException, JDOMException {
 
     int beamsize = parsedArguments.getInt("beamsize");
     String model;
