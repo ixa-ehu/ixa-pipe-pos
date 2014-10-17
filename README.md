@@ -23,12 +23,6 @@ Therefore, before installing/using this module as explained in this README,
 git clone https://github.com/apache/opennlp
 cd opennlp/opennlp
 mvn clean install
-cd ../opennlp-distr
-mvn clean install
-cd ../opennlp-docs
-mvn clean install
-cd ../opennlp-tools
-mvn clean install
 ````
 
 ## TABLE OF CONTENTS 
