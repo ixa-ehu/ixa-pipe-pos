@@ -20,6 +20,7 @@ import ixa.kaflib.KAFDocument;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,6 +35,7 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;
+import opennlp.tools.cmdline.CmdLineUtil;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.util.TrainingParameters;
 
@@ -267,8 +269,6 @@ public class CLI {
         .loadTrainingParameters(paramFile);
     String lang = params.getSettings().get("Language");
     Integer beamsize = Integer.valueOf(params.getSettings().get("Beamsize"));
-    String evalParam = params.getSettings().get("CrossEval");
-    String[] evalRange = evalParam.split("[ :-]");
 
     if (parsedArguments.get("output") != null) {
       outModel = parsedArguments.getString("output");
@@ -288,20 +288,8 @@ public class CLI {
       System.err.println("Specify valid features parameter!!");
     }
 
-    POSModel trainedModel = null;
-    if (evalRange.length == 2) {
-      if (parsedArguments.get("devSet") == null) {
-        InputOutputUtils.devSetException();
-      } else {
-        trainedModel = posTaggerTrainer.trainCrossEval(trainFile, devFile,
-            params, evalRange);
-      }
-    } else {
-      trainedModel = posTaggerTrainer.train(params);
-    }
-    InputOutputUtils.saveModel(trainedModel, outModel);
-    System.out.println();
-    System.out.println("Wrote trained POS model to " + outModel);
+    POSModel trainedModel = posTaggerTrainer.train(params);
+    CmdLineUtil.writeModel("ixa-pipe-pos", new File(outModel), trainedModel);
   }
 
   /**
