@@ -35,8 +35,9 @@ public class BaselineTrainer extends AbstractTrainer {
     super(lang, trainData, testData, dictPath, dictCutOff, beamsize);
 
     setPosTaggerFactory(new BaselineFactory());
-    this.createAutomaticDictionary(getDictSamples(), dictCutOff);
     this.createTagDictionary(dictPath);
+    this.createAutomaticDictionary(getDictSamples(), dictCutOff);
+    
   }
 
 }
