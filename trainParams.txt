@@ -22,23 +22,10 @@ Threads=4
 
 #### Custom parameters added by ixa-pipe-pos ####
  
-Language=it
+Language=en
 
 # Beamsize 1 amounts to greedy search
 Beamsize=3
 
 # Formats opennlp or conll
 Corpus=opennlp
-
-## Cross Evaluation if empty no cross evaluation is performed;
-## Cross Evaluation takes two values as arguments, namely, 50:100;
-## These values represent: 
-##    + The iteration to start the cross evaluation 
-##    + The range of iterations to perform each cross evaluation
-## Leave empty to disactivate this option (this is the default)
-#
-
-#CrossEval=1:10
-CrossEval=
-
-
