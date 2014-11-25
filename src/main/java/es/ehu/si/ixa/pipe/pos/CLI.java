@@ -227,10 +227,12 @@ public class CLI {
    * Generate the annotation parameter of the CLI.
    */
   private void loadAnnotateParameters() {
-    annotateParser.addArgument("-l", "--lang").choices("en", "es")
+    annotateParser.addArgument("-l", "--lang")
+        .choices("en", "es")
         .required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
-    annotateParser.addArgument("-m", "--model").required(false)
+    annotateParser.addArgument("-m", "--model")
+        .required(true)
         .help("Choose model to perform POS tagging.");
     annotateParser.addArgument("--beamsize").setDefault(DEFAULT_BEAM_SIZE)
         .type(Integer.class)
