@@ -55,9 +55,6 @@ public class Annotate {
    */
   public Annotate(final String aLang, final String model, final int beamsize)
       throws IOException {
-    if (model.equalsIgnoreCase("baseline")) {
-      System.err.println("No POS model chosen, reverting to baseline model!");
-    }
     this.lang = aLang;
     morphoFactory = new MorphoFactory();
     posTagger = new MorphoTagger(lang, model, beamsize, morphoFactory);

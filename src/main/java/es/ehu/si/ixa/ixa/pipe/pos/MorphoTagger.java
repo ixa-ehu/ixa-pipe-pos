@@ -17,9 +17,9 @@ package es.ehu.si.ixa.ixa.pipe.pos;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,10 +48,6 @@ public class MorphoTagger {
    * The morpho factory.
    */
   private MorphoFactory morphoFactory;
-  /**
-   * The language.
-   */
-  private String lang;
 
   /**
    * Construct a morphotagger.
@@ -60,9 +56,8 @@ public class MorphoTagger {
    * @param beamsize the beamsize
    */
   public MorphoTagger(final String aLang, final String model, final int beamsize) {
-    this.lang = aLang;
-    POSModel posModel = loadModel(model);
-    posTagger = new POSTaggerME(posModel, beamsize, 0);
+    POSModel posModel = loadModel(aLang, model);
+    posTagger = new POSTaggerME(posModel, beamsize, beamsize);
   }
 
   /**
@@ -82,9 +77,8 @@ public class MorphoTagger {
    * @param aMorphoFactory the morpho factory
    */
   public MorphoTagger(final String aLang, final String model, final int beamsize, final MorphoFactory aMorphoFactory) {
-    this.lang = aLang;
-    POSModel posModel = loadModel(model);
-    posTagger = new POSTaggerME(posModel, beamsize, 0);
+    POSModel posModel = loadModel(aLang, model);
+    posTagger = new POSTaggerME(posModel, beamsize, beamsize);
     this.morphoFactory = aMorphoFactory;
   }
 
@@ -137,51 +131,25 @@ public class MorphoTagger {
   }
 
   /**
-   * Load model statically only if a model for the specified language is not already there.
-   * @param model the model type
-   * @return the model
+   * Loads statically the probabilistic model. Every instance of this finder
+   * will share the same model.
+   *
+   * @param lang the language
+   * @param model the model to be loaded
+   * @return the model as a {@link POSModel} object
    */
-  private POSModel loadModel(final String model) {
-    InputStream trainedModelInputStream = null;
+  private final POSModel loadModel(final String lang, final String model) {
+    long lStartTime = new Date().getTime();
     try {
-      if (!posModels.containsKey(lang)) {
-        if (model.equalsIgnoreCase("baseline")) {
-          trainedModelInputStream = getBaselineModelStream(model);
-        } else {
-          trainedModelInputStream = new FileInputStream(model);
-        }
-        posModels.put(lang, new POSModel(trainedModelInputStream));
-      }
+      posModels.putIfAbsent(lang, new POSModel(new FileInputStream(model)));
     } catch (IOException e) {
       e.printStackTrace();
-    } finally {
-      if (trainedModelInputStream != null) {
-        try {
-          trainedModelInputStream.close();
-        } catch (IOException e) {
-          System.err.println("Could not load model!");
-        }
-      }
     }
+    long lEndTime = new Date().getTime();
+    long difference = lEndTime - lStartTime;
+    System.err.println("ixa-pipe-pos model loaded in: " + difference
+        + " miliseconds ... [DONE]");
     return posModels.get(lang);
-  }
-
-  /**
-   * Back-off to baseline models for a language.
-   * @param model the model type
-   * @return the back-off model
-   */
-  private InputStream getBaselineModelStream(final String model) {
-    InputStream trainedModelInputStream = null;
-    if (lang.equalsIgnoreCase("en")) {
-      trainedModelInputStream = getClass().getResourceAsStream(
-          "/en/en-pos-perceptron-c0-b3-dev.bin");
-    }
-    if (lang.equalsIgnoreCase("es")) {
-      trainedModelInputStream = getClass().getResourceAsStream(
-          "/es/es-pos-perceptron-c0-b3.bin");
-    }
-    return trainedModelInputStream;
   }
 
 }

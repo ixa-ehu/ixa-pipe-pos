@@ -70,6 +70,11 @@ public class CLI {
   private final String version = CLI.class.getPackage()
       .getImplementationVersion();
   /**
+   * Get the git commit of the ixa-pipe-nerc compiled by looking at the MANIFEST
+   * file.
+   */
+  private final String commit = CLI.class.getPackage().getSpecificationVersion();
+  /**
    * The CLI arguments.
    */
   private Namespace parsedArguments = null;
@@ -175,13 +180,8 @@ public class CLI {
   public final void annotate(final InputStream inputStream,
       final OutputStream outputStream) throws IOException, JDOMException {
 
+    String model = parsedArguments.getString("model");
     int beamsize = parsedArguments.getInt("beamsize");
-    String model;
-    if (parsedArguments.get("model") == null) {
-      model = "baseline";
-    } else {
-      model = parsedArguments.getString("model");
-    }
     String lemMethod = parsedArguments.getString("lemmatize");
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
@@ -189,29 +189,35 @@ public class CLI {
     bwriter = new BufferedWriter(new OutputStreamWriter(System.out, "UTF-8"));
 
     KAFDocument kaf = KAFDocument.createFromStream(breader);
+    //language
     String lang;
-    if (parsedArguments.get("lang") == null) {
-      lang = kaf.getLang();
+    if (parsedArguments.getString("language") != null) {
+      lang = parsedArguments.getString("language");
+      if (!kaf.getLang().equalsIgnoreCase(lang)) {
+        System.err
+            .println("Language parameter in NAF and CLI do not match!!");
+        System.exit(1);
+      }
     } else {
-      lang = parsedArguments.getString("lang");
+      lang = kaf.getLang();
     }
     DictionaryLemmatizer lemmatizer = null;
-    // TODO static loading of dictionaries
-    Resources resourceRetriever = new Resources();
+    // TODO static loading of lemmatizer dictionaries
+    Resources resources = new Resources();
     if (lemMethod.equalsIgnoreCase("plain")) {
       System.err.println("Using plain text dictionary");
-      InputStream dictLemmatizer = resourceRetriever.getDictionary(lang);
+      InputStream dictLemmatizer = resources.getDictionary(lang);
       lemmatizer = new SimpleLemmatizer(dictLemmatizer, lang);
     } else {
       System.err.println("Using default Morfologik binary dictionary.");
-      URL dictLemmatizer = resourceRetriever.getBinaryDict(lang);
+      URL dictLemmatizer = resources.getBinaryDict(lang);
       lemmatizer = new MorfologikLemmatizer(dictLemmatizer, lang);
     }
     Annotate annotator = new Annotate(lang, model, beamsize);
     // annotate to KAF
     if (parsedArguments.getBoolean("nokaf")) {
       KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
-          "terms", "ixa-pipe-pos-" + lang, version);
+          "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model), version + "-" + commit);
 
       newLp.setBeginTimestamp();
       annotator.annotatePOSToKAF(kaf, lemmatizer);
@@ -237,11 +243,12 @@ public class CLI {
         .required(true)
         .help("Choose model to perform POS tagging.");
     annotateParser.addArgument("--beamsize")
+        .required(false)
         .setDefault(DEFAULT_BEAM_SIZE)
         .type(Integer.class)
         .help("Choose beam size for decoding, it defaults to 3.");
-    annotateParser
-        .addArgument("-lem", "--lemmatize")
+    annotateParser.addArgument("-lem", "--lemmatize")
+        .required(false)
         .choices("bin", "plain")
         .setDefault("bin")
         .help("Lemmatization method: Choose 'bin' for binary Morfologik "
