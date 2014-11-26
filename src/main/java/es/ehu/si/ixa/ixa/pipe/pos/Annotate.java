@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.pipe.pos;
+package es.ehu.si.ixa.ixa.pipe.pos;
 
 import ixa.kaflib.KAFDocument;
 import ixa.kaflib.WF;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemmatize.DictionaryLemmatizer;
 
 /**
  * Main annotation class of ixa-pipe-pos. Check this class for

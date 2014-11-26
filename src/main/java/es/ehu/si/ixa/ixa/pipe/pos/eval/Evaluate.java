@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.pipe.pos.eval;
+package es.ehu.si.ixa.ixa.pipe.pos.eval;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +35,7 @@ import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.postag.WordTagSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.eval.EvaluationMonitor;
-import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
+import es.ehu.si.ixa.ixa.pipe.pos.train.InputOutputUtils;
 
 /**
  * Evaluation class mostly inspired by {@link POSEvaluator}.

@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.pipe.lemmatize;
+package es.ehu.si.ixa.ixa.pipe.lemmatize;
 
 /**
  * Interface of the lemmatizer based on Dictionary lookup.

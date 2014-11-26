@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package es.ehu.si.ixa.pipe.pos;
+package es.ehu.si.ixa.ixa.pipe.pos;
 
 /**
  * Class for creating {@code Morpheme} objects.

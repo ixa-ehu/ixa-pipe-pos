@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.pipe.pos;
+package es.ehu.si.ixa.ixa.pipe.pos;
 
 import ixa.kaflib.KAFDocument;
 
@@ -42,14 +42,14 @@ import opennlp.tools.util.TrainingParameters;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.JDOMException;
 
-import es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer;
-import es.ehu.si.ixa.pipe.lemmatize.MorfologikLemmatizer;
-import es.ehu.si.ixa.pipe.lemmatize.SimpleLemmatizer;
-import es.ehu.si.ixa.pipe.pos.eval.Evaluate;
-import es.ehu.si.ixa.pipe.pos.train.BaselineTrainer;
-import es.ehu.si.ixa.pipe.pos.train.DefaultTrainer;
-import es.ehu.si.ixa.pipe.pos.train.InputOutputUtils;
-import es.ehu.si.ixa.pipe.pos.train.Trainer;
+import es.ehu.si.ixa.ixa.pipe.lemmatize.DictionaryLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemmatize.MorfologikLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemmatize.SimpleLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.pos.eval.Evaluate;
+import es.ehu.si.ixa.ixa.pipe.pos.train.BaselineTrainer;
+import es.ehu.si.ixa.ixa.pipe.pos.train.DefaultTrainer;
+import es.ehu.si.ixa.ixa.pipe.pos.train.InputOutputUtils;
+import es.ehu.si.ixa.ixa.pipe.pos.train.Trainer;
 
 /**
  * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes

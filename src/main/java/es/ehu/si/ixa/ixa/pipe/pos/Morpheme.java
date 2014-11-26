@@ -14,7 +14,7 @@
      limitations under the License.
  */
 
-package es.ehu.si.ixa.pipe.pos;
+package es.ehu.si.ixa.ixa.pipe.pos;
 
 /**
  * Class for objects containing morphological information.

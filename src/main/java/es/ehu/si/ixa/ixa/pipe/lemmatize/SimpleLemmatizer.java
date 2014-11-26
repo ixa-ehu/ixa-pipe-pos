@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.pipe.lemmatize;
+package es.ehu.si.ixa.ixa.pipe.lemmatize;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import es.ehu.si.ixa.pipe.pos.Resources;
+import es.ehu.si.ixa.ixa.pipe.pos.Resources;
 
 /**
  * Lemmatize by simple dictionary lookup into a hashmap built from a file

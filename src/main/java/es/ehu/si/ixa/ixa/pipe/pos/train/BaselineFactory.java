@@ -1,4 +1,4 @@
-package es.ehu.si.ixa.pipe.pos.train;
+package es.ehu.si.ixa.ixa.pipe.pos.train;
 
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.postag.POSContextGenerator;

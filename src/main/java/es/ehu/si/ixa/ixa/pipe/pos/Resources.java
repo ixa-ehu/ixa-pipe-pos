@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.pipe.pos;
+package es.ehu.si.ixa.ixa.pipe.pos;
 
 import java.io.InputStream;
 import java.net.URL;
