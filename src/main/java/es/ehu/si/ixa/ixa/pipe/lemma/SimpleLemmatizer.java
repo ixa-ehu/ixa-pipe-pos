@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.ixa.pipe.lemmatize;
+package es.ehu.si.ixa.ixa.pipe.lemma;
 
 import java.io.BufferedReader;
 import java.io.IOException;

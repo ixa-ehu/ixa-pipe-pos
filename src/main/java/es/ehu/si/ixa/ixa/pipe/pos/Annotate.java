@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.ehu.si.ixa.ixa.pipe.lemmatize.DictionaryLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
 
 /**
  * Main annotation class of ixa-pipe-pos. Check this class for

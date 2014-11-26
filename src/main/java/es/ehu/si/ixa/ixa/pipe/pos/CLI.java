@@ -43,9 +43,9 @@ import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
 
-import es.ehu.si.ixa.ixa.pipe.lemmatize.DictionaryLemmatizer;
-import es.ehu.si.ixa.ixa.pipe.lemmatize.MorfologikLemmatizer;
-import es.ehu.si.ixa.ixa.pipe.lemmatize.SimpleLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.SimpleLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.pos.eval.CrossValidator;
 import es.ehu.si.ixa.ixa.pipe.pos.eval.Evaluate;
 import es.ehu.si.ixa.ixa.pipe.pos.train.FixedTrainer;

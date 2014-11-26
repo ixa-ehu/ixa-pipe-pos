@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package es.ehu.si.ixa.ixa.pipe.lemmatize;
+package es.ehu.si.ixa.ixa.pipe.lemma;
 
 import java.io.IOException;
 import java.net.URL;
@@ -39,7 +39,7 @@ import morfologik.stemming.WordData;
  *
  */
 public class MorfologikLemmatizer implements
-    es.ehu.si.ixa.ixa.pipe.lemmatize.DictionaryLemmatizer {
+    es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer {
 
   /**
    * The Morfologik steamer to perform lemmatization with FSA dictionaries.
