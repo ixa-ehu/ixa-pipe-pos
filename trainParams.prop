@@ -80,6 +80,11 @@ FeatureSet=Baseline
 # commented out this feature is not used.
 AutoDictFeatures=1
 
+# NgramDictFeatures: Provide a cutoff to automatically build a ngram
+# dictionary using the training data. The cutoff needs to be >= 1. If commented
+# out this feature is not used.
+NgramDictFeatures=1
+
 #####################################
 #### CROSS VALIDATION PARAMETERS ####
 #####################################

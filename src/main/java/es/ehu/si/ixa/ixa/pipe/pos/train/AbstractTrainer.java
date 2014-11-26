@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import opennlp.tools.cmdline.TerminateToolException;
+import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.postag.MutableTagDictionary;
 import opennlp.tools.postag.POSEvaluator;
 import opennlp.tools.postag.POSModel;
@@ -50,6 +51,10 @@ public abstract class AbstractTrainer implements Trainer {
    */
   private int dictCutOff;
   /**
+   * Cutoff value to create tag dictionary from training data.
+   */
+  private int ngramCutOff;
+  /**
    * posTaggerFactory features need to be implemented by any class extending
    * this one.
    */
@@ -80,6 +85,7 @@ public abstract class AbstractTrainer implements Trainer {
     setDictSamples(new WordTagSampleStream(dictStream));
     this.beamSize = Flags.getBeamsize(params);
     this.dictCutOff = Flags.getAutoDictFeatures(params);
+    this.ngramCutOff = Flags.getNgramDictFeatures(params);
 
   }
 
@@ -112,6 +118,24 @@ public abstract class AbstractTrainer implements Trainer {
     }
     System.out.println("Final result: " + posEvaluator.getWordAccuracy());
     return trainedModel;
+  }
+
+  /**
+   * Create a tag dictionary with the dictionary contained in the dictPath.
+   * 
+   * @param dictPath
+   *          the string pointing to the tag dictionary
+   */
+  protected final void createTagDictionary(final String dictPath) {
+    if (!dictPath.equalsIgnoreCase(Flags.DEFAULT_DICT_PATH)) {
+      try {
+        getPosTaggerFactory().setTagDictionary(
+            getPosTaggerFactory().createTagDictionary(new File(dictPath)));
+      } catch (IOException e) {
+        throw new TerminateToolException(-1,
+            "IO error while loading POS Dictionary: " + e.getMessage(), e);
+      }
+    }
   }
 
   /**
@@ -148,21 +172,26 @@ public abstract class AbstractTrainer implements Trainer {
   }
 
   /**
-   * Create a tag dictionary with the dictionary contained in the dictPath.
-   * 
-   * @param dictPath
-   *          the string pointing to the tag dictionary
+   * Create ngram dictionary from training data.
+   * @param aDictSamples the training data
+   * @param aNgramCutoff the cutoff
+   * @return ngram dictionary
    */
-  protected final void createTagDictionary(final String dictPath) {
-    if (!dictPath.equalsIgnoreCase(Flags.DEFAULT_DICT_PATH)) {
+  protected final Dictionary createNgramDictionary(
+      final ObjectStream<POSSample> aDictSamples, final int aNgramCutoff) {
+    Dictionary ngramDict = null;
+    if (aNgramCutoff != Flags.DEFAULT_DICT_CUTOFF) {
+      System.err.print("Building ngram dictionary ... ");
       try {
-        getPosTaggerFactory().setTagDictionary(
-            getPosTaggerFactory().createTagDictionary(new File(dictPath)));
+        ngramDict = POSTaggerME.buildNGramDictionary(aDictSamples, aNgramCutoff);
+        dictSamples.reset();
       } catch (IOException e) {
         throw new TerminateToolException(-1,
-            "IO error while loading POS Dictionary: " + e.getMessage(), e);
+            "IO error while building NGram Dictionary: " + e.getMessage(), e);
       }
+      System.err.println("done");
     }
+    return ngramDict;
   }
 
   /**
@@ -212,6 +241,15 @@ public abstract class AbstractTrainer implements Trainer {
    */
   protected final Integer getDictCutOff() {
     return dictCutOff;
+  }
+
+  /**
+   * Get the cutoff to create automatic ngram dictionary from training data.
+   * 
+   * @return the cutoff
+   */
+  protected final Integer getNgramDictCutOff() {
+    return ngramCutOff;
   }
 
 }

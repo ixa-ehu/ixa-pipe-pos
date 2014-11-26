@@ -100,6 +100,16 @@ public class Flags {
 		}
 		return Integer.parseInt(dictionaryFlag);
 	}
+	
+	public static Integer getNgramDictFeatures(TrainingParameters params) {
+      String dictionaryFlag = null;
+      if (params.getSettings().get("NgramDictFeatures") != null) {
+          dictionaryFlag = params.getSettings().get("NgramDictFeatures");
+      } else {
+          dictionaryFlag = Integer.toString(Flags.DEFAULT_DICT_CUTOFF);
+      }
+      return Integer.parseInt(dictionaryFlag);
+  }
 
 	public static Integer getFolds(TrainingParameters params) {
 		Integer folds = null;
