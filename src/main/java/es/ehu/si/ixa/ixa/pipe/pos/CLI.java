@@ -235,13 +235,14 @@ public class CLI {
    * Generate the annotation parameter of the CLI.
    */
   private void loadAnnotateParameters() {
+    annotateParser.addArgument("-m", "--model")
+        .required(true)
+        .help("It is required to provide a model to perform POS tagging.");
     annotateParser.addArgument("-l", "--lang")
         .choices("en", "es", "it")
         .required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
-    annotateParser.addArgument("-m", "--model")
-        .required(true)
-        .help("Choose model to perform POS tagging.");
+   
     annotateParser.addArgument("--beamsize")
         .required(false)
         .setDefault(DEFAULT_BEAM_SIZE)
@@ -304,32 +305,23 @@ public class CLI {
    * errors with paths are present
    */
   public final void eval() throws IOException {
-    String outputFile = parsedArguments.getString("outputFile");
     String testFile = parsedArguments.getString("testSet");
     String model = parsedArguments.getString("model");
     int beam = parsedArguments.getInt("beamsize");
 
     Evaluate evaluator = new Evaluate(testFile, model, beam);
     if (parsedArguments.getString("evalReport") != null) {
-      if (parsedArguments.getString("evalReport").equalsIgnoreCase("brief")) {
-        evaluator.evaluate();
+      if (parsedArguments.getString("evalReport").equalsIgnoreCase("detailed")) {
+        evaluator.detailEvaluate();
       } else if (parsedArguments.getString("evalReport").equalsIgnoreCase(
           "error")) {
         evaluator.evalError();
       } else if (parsedArguments.getString("evalReport").equalsIgnoreCase(
-          "detailed")) {
-        if (outputFile == null) {
-          System.err.println("Specify a file to save the detailed report!!");
-          System.exit(1);
-        }
-        evaluator.detailEvaluate(outputFile);
+          "brief")) {
+        evaluator.evaluate();
       }
     } else {
-      if (outputFile == null) {
-        System.err.println("Specify a file to save the detailed report!!");
-        System.exit(1);
-      }
-      evaluator.detailEvaluate(outputFile);
+      evaluator.evaluate();
     }
   }
 
@@ -337,9 +329,6 @@ public class CLI {
    * Load the evaluation parameters of the CLI.
    */
   public final void loadEvalParameters() {
-    evalParser.addArgument("-o", "--outputFile")
-        .required(false)
-        .help("Choose file to save detailed evalReport");
     evalParser.addArgument("-m", "--model")
          .required(true)
         .help("Choose model");
@@ -349,7 +338,7 @@ public class CLI {
     evalParser.addArgument("--evalReport")
         .required(false)
         .choices("brief", "detailed", "error")
-        .help("Choose type of evaluation report; defaults to detailed");
+        .help("Choose type of evaluation report; defaults to brief");
     evalParser.addArgument("--beamsize")
         .setDefault(DEFAULT_BEAM_SIZE)
         .type(Integer.class)

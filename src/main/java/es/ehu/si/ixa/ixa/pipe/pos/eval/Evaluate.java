@@ -16,17 +16,15 @@
 
 package es.ehu.si.ixa.ixa.pipe.pos.eval;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import opennlp.tools.cmdline.postag.POSEvaluationErrorListener;
 import opennlp.tools.cmdline.postag.POSTaggerFineGrainedReportListener;
+import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.postag.POSEvaluator;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSSample;
@@ -92,7 +90,7 @@ public class Evaluate {
         }
       }
     }
-    posTagger = new POSTaggerME(posModel, beamsize, 0);
+    posTagger = new POSTaggerME(posModel, beamsize, beamsize);
   }
 
   /**
@@ -110,23 +108,18 @@ public class Evaluate {
   /**
    * Detail evaluation of a model, outputting the report a file.
    *
-   * @param outputFile
-   *          the file to output the report.
    * @throws IOException
    *           the io exception if not output file provided
    */
-  public final void detailEvaluate(final String outputFile) throws IOException {
-    File reportFile = new File(outputFile);
-    OutputStream reportOutputStream = new FileOutputStream(reportFile);
+  public final void detailEvaluate() throws IOException {
     List<EvaluationMonitor<POSSample>> listeners = new LinkedList<EvaluationMonitor<POSSample>>();
     POSTaggerFineGrainedReportListener detailedFListener = new POSTaggerFineGrainedReportListener(
-        reportOutputStream);
+        System.out);
     listeners.add(detailedFListener);
     POSEvaluator evaluator = new POSEvaluator(posTagger,
         listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
     evaluator.evaluate(testSamples);
     detailedFListener.writeReport();
-    reportOutputStream.close();
   }
 
   /**

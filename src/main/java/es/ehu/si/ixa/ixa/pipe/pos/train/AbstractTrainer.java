@@ -8,7 +8,6 @@ import opennlp.tools.postag.MutableTagDictionary;
 import opennlp.tools.postag.POSEvaluator;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSSample;
-import opennlp.tools.postag.POSTagger;
 import opennlp.tools.postag.POSTaggerFactory;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.postag.TagDictionary;
@@ -103,7 +102,9 @@ public abstract class AbstractTrainer implements Trainer {
     try {
       trainedModel = POSTaggerME.train(lang, trainSamples, params,
           getPosTaggerFactory());
-      posEvaluator = evaluate(trainedModel, testSamples);
+      POSTaggerME posTagger = new POSTaggerME(trainedModel, beamSize, beamSize);
+      posEvaluator = new POSEvaluator(posTagger);
+      posEvaluator.evaluate(testSamples);
     } catch (IOException e) {
       System.err.println("IO error while loading traing and test sets!");
       e.printStackTrace();
@@ -111,27 +112,6 @@ public abstract class AbstractTrainer implements Trainer {
     }
     System.out.println("Final result: " + posEvaluator.getWordAccuracy());
     return trainedModel;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * es.ehu.si.ixa.pipe.pos.train.Trainer#evaluate(opennlp.tools.postag.POSModel
-   * , opennlp.tools.util.ObjectStream)
-   */
-  public final POSEvaluator evaluate(final POSModel trainedModel,
-      final ObjectStream<POSSample> aTestSamples) {
-    POSTagger posTagger = new POSTaggerME(trainedModel, beamSize, 0);
-    POSEvaluator posTaggerEvaluator = new POSEvaluator(posTagger);
-    try {
-      posTaggerEvaluator.evaluate(aTestSamples);
-    } catch (IOException e) {
-      System.err.println("IO error while loading test set for evaluation!");
-      e.printStackTrace();
-      System.exit(1);
-    }
-    return posTaggerEvaluator;
   }
 
   /**

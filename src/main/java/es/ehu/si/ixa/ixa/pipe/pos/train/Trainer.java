@@ -1,9 +1,6 @@
 package es.ehu.si.ixa.ixa.pipe.pos.train;
 
-import opennlp.tools.postag.POSEvaluator;
 import opennlp.tools.postag.POSModel;
-import opennlp.tools.postag.POSSample;
-import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 
 /**
@@ -20,16 +17,5 @@ public interface Trainer {
    * @return the {@code POSModel} trained
    */
   POSModel train(TrainingParameters params);
-
-  /**
-   * Evaluate the trained model.
-   * @param trainedModel
-   *          the {@code POSModel} to evaluate
-   * @param testSamples
-   *          the test set
-   * @return the accuracy of the model
-   */
-  POSEvaluator evaluate(POSModel trainedModel,
-      ObjectStream<POSSample> testSamples);
 
 }
