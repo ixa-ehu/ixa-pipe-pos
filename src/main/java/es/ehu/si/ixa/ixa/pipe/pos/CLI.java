@@ -48,8 +48,7 @@ import es.ehu.si.ixa.ixa.pipe.lemmatize.MorfologikLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemmatize.SimpleLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.pos.eval.CrossValidator;
 import es.ehu.si.ixa.ixa.pipe.pos.eval.Evaluate;
-import es.ehu.si.ixa.ixa.pipe.pos.train.BaselineTrainer;
-import es.ehu.si.ixa.ixa.pipe.pos.train.DefaultTrainer;
+import es.ehu.si.ixa.ixa.pipe.pos.train.FixedTrainer;
 import es.ehu.si.ixa.ixa.pipe.pos.train.Flags;
 import es.ehu.si.ixa.ixa.pipe.pos.train.InputOutputUtils;
 import es.ehu.si.ixa.ixa.pipe.pos.train.Trainer;
@@ -289,12 +288,7 @@ public class CLI {
       else {
         outModel = Flags.getModel(params);
       }
-    Trainer posTaggerTrainer;
-    if (Flags.getFeatureSet(params).equals("Opennlp")) {
-      posTaggerTrainer = new DefaultTrainer(params);
-    } else {
-      posTaggerTrainer = new BaselineTrainer(params);
-    }
+    Trainer posTaggerTrainer = new FixedTrainer(params);
     POSModel trainedModel = posTaggerTrainer.train(params);
     CmdLineUtil.writeModel("ixa-pipe-pos", new File(outModel), trainedModel);
   }
