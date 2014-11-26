@@ -81,12 +81,11 @@ public class CrossValidator {
   private void createPOSFactory(TrainingParameters params) {
     String featureSet = Flags.getFeatureSet(params);
     if (featureSet.equalsIgnoreCase("Opennlp")) {
-      setPosTaggerFactory(new POSTaggerFactory());
+      posTaggerFactory = new POSTaggerFactory();
     }
     else {
-      setPosTaggerFactory(new BaselineFactory());
+      posTaggerFactory = new BaselineFactory();
     }
-
   }
 
   private void getEvalListeners(TrainingParameters params) {
@@ -129,16 +128,4 @@ public class CrossValidator {
       System.out.println(detailedListener.toString());
     }
   }
-
-  /**
-   * Set/implement the posTaggerFactory to be used in the pos tagger training.
-   * 
-   * @param aPosTaggerFactory
-   *          the pos tagger factory implemented
-   */
-  private final void setPosTaggerFactory(
-      final POSTaggerFactory aPosTaggerFactory) {
-    this.posTaggerFactory = aPosTaggerFactory;
-  }
-
 }

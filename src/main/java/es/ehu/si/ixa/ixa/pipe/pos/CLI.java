@@ -46,6 +46,7 @@ import com.google.common.io.Files;
 import es.ehu.si.ixa.ixa.pipe.lemmatize.DictionaryLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemmatize.MorfologikLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemmatize.SimpleLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.pos.eval.CrossValidator;
 import es.ehu.si.ixa.ixa.pipe.pos.eval.Evaluate;
 import es.ehu.si.ixa.ixa.pipe.pos.train.BaselineTrainer;
 import es.ehu.si.ixa.ixa.pipe.pos.train.DefaultTrainer;
@@ -103,6 +104,10 @@ public class CLI {
    */
   private Subparser evalParser;
   /**
+   * The parser that manages the cross validation sub-command.
+   */
+  private Subparser crossValidateParser;
+  /**
    * Default beam size for decoding.
    */
   public static final int DEFAULT_BEAM_SIZE = 3;
@@ -118,6 +123,8 @@ public class CLI {
     loadTrainingParameters();
     evalParser = subParsers.addParser("eval").help("Evaluation CLI");
     loadEvalParameters();
+    crossValidateParser = subParsers.addParser("cross").help("Cross validation CLI");
+    loadCrossValidateParameters();
   }
 
   /**
@@ -157,11 +164,13 @@ public class CLI {
         eval();
       } else if (args[0].equals("train")) {
         train();
+      }  else if (args[0].equals("cross")) {
+        crossValidate();
       }
     } catch (ArgumentParserException e) {
       argParser.handleError(e);
       System.out.println("Run java -jar target/ixa-pipe-pos-" + version
-          + ".jar (tag|train|eval) -help for details");
+          + ".jar (tag|train|eval|cross) -help for details");
       System.exit(1);
     }
   }
@@ -343,6 +352,29 @@ public class CLI {
         .setDefault(DEFAULT_BEAM_SIZE)
         .type(Integer.class)
         .help("Choose beam size for evaluation: 1 is faster.");
+  }
+  
+  /**
+   * Main access to the cross validation.
+   * 
+   * @throws IOException
+   *           input output exception if problems with corpora
+   */
+  public final void crossValidate() throws IOException {
+
+    String paramFile = parsedArguments.getString("params");
+    TrainingParameters params = InputOutputUtils
+        .loadTrainingParameters(paramFile);
+    CrossValidator crossValidator = new CrossValidator(params);
+    crossValidator.crossValidate(params);
+  }
+  
+  /**
+   * Create the main parameters available for training NERC models.
+   */
+  private void loadCrossValidateParameters() {
+    crossValidateParser.addArgument("-p", "--params").required(true)
+        .help("Load the Cross validation parameters file\n");
   }
 
 }
