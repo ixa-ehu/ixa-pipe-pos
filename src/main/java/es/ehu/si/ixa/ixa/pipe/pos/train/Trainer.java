@@ -22,21 +22,6 @@ public interface Trainer {
   POSModel train(TrainingParameters params);
 
   /**
-   * Training via cross evaluation.
-   * @param trainData
-   *          the training data
-   * @param devData
-   *          the development data
-   * @param params
-   *          the parameters file
-   * @param evalRange
-   *          the range at which to perform each evaluation
-   * @return the {@code POSModel} trained
-   */
-  POSModel trainCrossEval(String trainData, String devData,
-      TrainingParameters params, String[] evalRange);
-
-  /**
    * Evaluate the trained model.
    * @param trainedModel
    *          the {@code POSModel} to evaluate

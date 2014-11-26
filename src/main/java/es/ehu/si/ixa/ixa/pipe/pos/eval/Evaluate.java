@@ -73,7 +73,7 @@ public class Evaluate {
   public Evaluate(final String testData, final String model, final int beamsize)
       throws IOException {
 
-    ObjectStream<String> testStream = InputOutputUtils.readInputData(testData);
+    ObjectStream<String> testStream = InputOutputUtils.readFileIntoMarkableStreamFactory(testData);
     testSamples = new WordTagSampleStream(testStream);
     InputStream trainedModelInputStream = null;
     try {

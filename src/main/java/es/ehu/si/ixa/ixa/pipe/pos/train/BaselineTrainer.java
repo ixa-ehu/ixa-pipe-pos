@@ -2,6 +2,8 @@ package es.ehu.si.ixa.ixa.pipe.pos.train;
 
 import java.io.IOException;
 
+import opennlp.tools.util.TrainingParameters;
+
 /**
  * Trainer using the {@code BaselineFactory} to train the pos tagger.
  * @author ragerri
@@ -13,30 +15,18 @@ public class BaselineTrainer extends AbstractTrainer {
    * Extends the {@code AbstractTrainer} providing the {@code BaselineFactory}
    * posTaggerFactory.
    *
-   * @param lang
-   *          the language
-   * @param trainData
-   *          the training data
-   * @param testData
-   *          the test data
-   * @param dictPath
-   *          the path to the already created tag dictionary
-   * @param dictCutOff
-   *          the cutoff to automatically create a tag dictionary from training
-   *          data
-   * @param beamsize
-   *          the beamsize for decoding
+   * @param params
+   *          the training parameters
    * @throws IOException
    *           the io exception
    */
-  public BaselineTrainer(final String lang, final String trainData,
-      final String testData, final String dictPath, final int dictCutOff,
-      final int beamsize) throws IOException {
-    super(lang, trainData, testData, dictPath, dictCutOff, beamsize);
-
+  public BaselineTrainer(final TrainingParameters params) throws IOException {
+    super(params);
+    
+    String dictPath = Flags.getDictionaryFeatures(params);
     setPosTaggerFactory(new BaselineFactory());
     this.createTagDictionary(dictPath);
-    this.createAutomaticDictionary(getDictSamples(), dictCutOff);
+    this.createAutomaticDictionary(getDictSamples(), getDictCutOff());
     
   }
 

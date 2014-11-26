@@ -3,6 +3,7 @@ package es.ehu.si.ixa.ixa.pipe.pos.train;
 import java.io.IOException;
 
 import opennlp.tools.postag.POSTaggerFactory;
+import opennlp.tools.util.TrainingParameters;
 
 /**
  * Default OpenNLP feature training, kept for upstream compatibility.
@@ -15,32 +16,18 @@ public class DefaultTrainer extends AbstractTrainer {
   /**
    * Construct a default opennlp trainer using the default
    * {@code POSTaggerFactory}.
-   *
-   * @param lang
-   *          the language
-   * @param trainData
-   *          the training data
-   * @param testData
-   *          the test data
-   * @param dictPath
-   *          the path to the tag dictionary
-   * @param dictCutOff
-   *          the cutoff to automatically build a dictionary from training data
-   * @param beamsize
-   *          the beamsize for decoding
+   * @param params
+   *          the training parameters
    * @throws IOException
    *           the io exception for input data
    */
-  public DefaultTrainer(final String lang, final String trainData,
-      final String testData, final String dictPath, final int dictCutOff,
-      final int beamsize) throws IOException {
-    super(lang, trainData, testData, dictPath, dictCutOff, beamsize);
-
+  public DefaultTrainer(final TrainingParameters params) throws IOException {
+    super(params);
+    
+    String dictPath = Flags.getDictionaryFeatures(params);
     setPosTaggerFactory(new POSTaggerFactory());
     this.createTagDictionary(dictPath);
-    this.createAutomaticDictionary(getDictSamples(), dictCutOff);
-    
-
+    this.createAutomaticDictionary(getDictSamples(), getDictCutOff());
   }
 
 }

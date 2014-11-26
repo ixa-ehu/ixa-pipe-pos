@@ -39,8 +39,9 @@ import opennlp.tools.cmdline.CmdLineUtil;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.util.TrainingParameters;
 
-import org.apache.commons.io.FilenameUtils;
 import org.jdom2.JDOMException;
+
+import com.google.common.io.Files;
 
 import es.ehu.si.ixa.ixa.pipe.lemmatize.DictionaryLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemmatize.MorfologikLemmatizer;
@@ -48,6 +49,7 @@ import es.ehu.si.ixa.ixa.pipe.lemmatize.SimpleLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.pos.eval.Evaluate;
 import es.ehu.si.ixa.ixa.pipe.pos.train.BaselineTrainer;
 import es.ehu.si.ixa.ixa.pipe.pos.train.DefaultTrainer;
+import es.ehu.si.ixa.ixa.pipe.pos.train.Flags;
 import es.ehu.si.ixa.ixa.pipe.pos.train.InputOutputUtils;
 import es.ehu.si.ixa.ixa.pipe.pos.train.Trainer;
 
@@ -228,13 +230,14 @@ public class CLI {
    */
   private void loadAnnotateParameters() {
     annotateParser.addArgument("-l", "--lang")
-        .choices("en", "es")
+        .choices("en", "es", "it")
         .required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
     annotateParser.addArgument("-m", "--model")
         .required(true)
         .help("Choose model to perform POS tagging.");
-    annotateParser.addArgument("--beamsize").setDefault(DEFAULT_BEAM_SIZE)
+    annotateParser.addArgument("--beamsize")
+        .setDefault(DEFAULT_BEAM_SIZE)
         .type(Integer.class)
         .help("Choose beam size for decoding, it defaults to 3.");
     annotateParser
@@ -257,39 +260,24 @@ public class CLI {
    *           throws an exception if errors in the various file inputs.
    */
   public final void train() throws IOException {
-    Trainer posTaggerTrainer = null;
-    String trainFile = parsedArguments.getString("input");
-    String testFile = parsedArguments.getString("testSet");
-    String devFile = parsedArguments.getString("devSet");
-    String dictPath = parsedArguments.getString("dictPath");
-    String features = parsedArguments.getString("features");
-    Integer dictCutOff = parsedArguments.getInt("autoDict");
+	// load training parameters file
+	String paramFile = parsedArguments.getString("params");
+	TrainingParameters params = InputOutputUtils
+	        .loadTrainingParameters(paramFile);
     String outModel = null;
-    // load training parameters file
-    String paramFile = parsedArguments.getString("params");
-    TrainingParameters params = InputOutputUtils
-        .loadTrainingParameters(paramFile);
-    String lang = params.getSettings().get("Language");
-    Integer beamsize = Integer.valueOf(params.getSettings().get("Beamsize"));
-
-    if (parsedArguments.get("output") != null) {
-      outModel = parsedArguments.getString("output");
+    if (params.getSettings().get("OutputModel") == null || params.getSettings().get("OutputModel").length() == 0) {
+        outModel = Files.getNameWithoutExtension(paramFile) + ".bin";
+        params.put("OutputModel", outModel);
+      }
+      else {
+        outModel = Flags.getModel(params);
+      }
+    Trainer posTaggerTrainer;
+    if (Flags.getFeatureSet(params).equals("Opennlp")) {
+      posTaggerTrainer = new DefaultTrainer(params);
     } else {
-      outModel = FilenameUtils.removeExtension(trainFile) + "-"
-          + parsedArguments.getString("features").toString() + "-model"
-          + ".bin";
+      posTaggerTrainer = new BaselineTrainer(params);
     }
-
-    if (features.equalsIgnoreCase("baseline")) {
-      posTaggerTrainer = new BaselineTrainer(lang, trainFile, testFile,
-          dictPath, dictCutOff, beamsize);
-    } else if (features.equalsIgnoreCase("opennlp")) {
-      posTaggerTrainer = new DefaultTrainer(lang, trainFile, testFile,
-          dictPath, dictCutOff, beamsize);
-    } else {
-      System.err.println("Specify valid features parameter!!");
-    }
-
     POSModel trainedModel = posTaggerTrainer.train(params);
     CmdLineUtil.writeModel("ixa-pipe-pos", new File(outModel), trainedModel);
   }
@@ -298,27 +286,9 @@ public class CLI {
    * Loads the parameters for the training CLI.
    */
   public final void loadTrainingParameters() {
-    trainParser.addArgument("-f", "--features").choices("opennlp", "baseline")
-        .required(true).help("Choose features to train POS model");
-    trainParser.addArgument("-p", "--params").required(true)
-        .help("Load the parameters file");
-    trainParser.addArgument("-i", "--input").required(true)
-        .help("Input training set");
-    trainParser.addArgument("-t", "--testSet").required(true)
-        .help("Input testset for evaluation");
-    trainParser.addArgument("-d", "--devSet").required(false)
-        .help("Input development set for cross-evaluation");
-    trainParser.addArgument("-o", "--output").required(false)
-        .help("Choose output file to save the annotation");
-    trainParser
-        .addArgument("--autoDict")
-        .type(Integer.class)
-        .required(false)
-        .setDefault(-1)
-        .help("Provide cutoff > 1 to automatically build a tag "
-        + " dictionary from the training data\n");
-    trainParser.addArgument("--dictPath").required(false)
-        .help("Provide path to tag dictionary\n");
+	  trainParser.addArgument("-p", "--params")
+	   .required(true)
+      .help("Load the training parameters file\n");
   }
 
   /**
@@ -360,15 +330,21 @@ public class CLI {
    * Load the evaluation parameters of the CLI.
    */
   public final void loadEvalParameters() {
-    evalParser.addArgument("-o", "--outputFile").required(false)
+    evalParser.addArgument("-o", "--outputFile")
+        .required(false)
         .help("Choose file to save detailed evalReport");
-    evalParser.addArgument("-m", "--model").required(true).help("Choose model");
-    evalParser.addArgument("-t", "--testSet").required(true)
+    evalParser.addArgument("-m", "--model")
+         .required(true)
+        .help("Choose model");
+    evalParser.addArgument("-t", "--testSet")
+        .required(true)
         .help("Input testset for evaluation");
-    evalParser.addArgument("--evalReport").required(false)
+    evalParser.addArgument("--evalReport")
+        .required(false)
         .choices("brief", "detailed", "error")
         .help("Choose type of evaluation report; defaults to detailed");
-    evalParser.addArgument("--beamsize").setDefault(DEFAULT_BEAM_SIZE)
+    evalParser.addArgument("--beamsize")
+        .setDefault(DEFAULT_BEAM_SIZE)
         .type(Integer.class)
         .help("Choose beam size for evaluation: 1 is faster.");
   }
