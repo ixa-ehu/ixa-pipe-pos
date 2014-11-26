@@ -82,8 +82,7 @@ public class CrossValidator {
     String featureSet = Flags.getFeatureSet(params);
     if (featureSet.equalsIgnoreCase("Opennlp")) {
       posTaggerFactory = new POSTaggerFactory();
-    }
-    else {
+    } else {
       posTaggerFactory = new BaselineFactory();
     }
   }
@@ -98,21 +97,14 @@ public class CrossValidator {
     }
   }
 
-  //TODO add ngram dictionary parameter
   public final void crossValidate(final TrainingParameters params) {
-    File dictPath = new File(Flags.getDictionaryFeatures(params));
-    // features
-    if (posTaggerFactory == null) {
-      throw new IllegalStateException(
-          "Classes derived from AbstractTrainer must "
-              + " create a POSTaggerFactory features!");
-    }
+
     POSTaggerCrossValidator validator = null;
     try {
-      validator = new POSTaggerCrossValidator(lang, params, dictPath, null, dictCutOff, posTaggerFactory.getClass().getName(), listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+      validator = getPOSTaggerCrossValidator(params);
       validator.evaluate(trainSamples, folds);
     } catch (IOException e) {
-      System.err.println("IO error while loading traing and test sets!");
+      System.err.println("IO error while loading training set!");
       e.printStackTrace();
       System.exit(1);
     } finally {
@@ -128,4 +120,27 @@ public class CrossValidator {
       System.out.println(detailedListener.toString());
     }
   }
+
+  //TODO add ngram dictionary parameter
+  private POSTaggerCrossValidator getPOSTaggerCrossValidator(
+      TrainingParameters params) {
+    File dictPath = new File(Flags.getDictionaryFeatures(params));
+    // features
+    if (posTaggerFactory == null) {
+      throw new IllegalStateException(
+          "You must create the POSTaggerFactory features!");
+    }
+    POSTaggerCrossValidator validator = null;
+    if (dictPath.getName().equals(Flags.DEFAULT_DICT_PATH)) {
+      validator = new POSTaggerCrossValidator(lang, params, null, null,
+          dictCutOff, posTaggerFactory.getClass().getName(),
+          listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+    } else {
+      validator = new POSTaggerCrossValidator(lang, params, dictPath, null,
+          dictCutOff, posTaggerFactory.getClass().getName(),
+          listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+    }
+    return validator;
+  }
+
 }
