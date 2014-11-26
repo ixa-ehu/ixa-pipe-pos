@@ -144,7 +144,7 @@ public abstract class AbstractTrainer implements Trainer {
    */
   protected final void createAutomaticDictionary(
       final ObjectStream<POSSample> aDictSamples, final int aDictCutOff) {
-    if (aDictCutOff != -1) {
+    if (aDictCutOff != Flags.DEFAULT_DICT_CUTOFF) {
       try {
         TagDictionary dict = getPosTaggerFactory().getTagDictionary();
         if (dict == null) {
@@ -174,7 +174,7 @@ public abstract class AbstractTrainer implements Trainer {
    *          the string pointing to the tag dictionary
    */
   protected final void createTagDictionary(final String dictPath) {
-    if (dictPath != null) {
+    if (!dictPath.equalsIgnoreCase(Flags.DEFAULT_DICT_PATH)) {
       try {
         getPosTaggerFactory().setTagDictionary(
             getPosTaggerFactory().createTagDictionary(new File(dictPath)));

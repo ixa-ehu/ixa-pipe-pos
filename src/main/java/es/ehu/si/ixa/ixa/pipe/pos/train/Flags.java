@@ -3,8 +3,6 @@ package es.ehu.si.ixa.ixa.pipe.pos.train;
 import opennlp.tools.util.TrainingParameters;
 
 public class Flags {
-
-	public static final String DEFAULT_FEATURE_FLAG = "no";
 	/**
 	 * Default beam size for decoding.
 	 */
@@ -13,6 +11,7 @@ public class Flags {
 	public static final String DEFAULT_EVALUATE_MODEL = "off";
 	public static final String DEFAULT_FEATURESET_FLAG = "Baseline";
 	public static final String DEFAULT_DICT_PATH = "off";
+	public static final int DEFAULT_DICT_CUTOFF = -1;
 	public static final String DEFAULT_EVAL_FORMAT = "opennlp";
 
 	private Flags() {
@@ -87,7 +86,7 @@ public class Flags {
 		if (params.getSettings().get("DictionaryFeatures") != null) {
 			dictionaryFlag = params.getSettings().get("DictionaryFeatures");
 		} else {
-			dictionaryFlag = Flags.DEFAULT_FEATURE_FLAG;
+			dictionaryFlag = Flags.DEFAULT_DICT_PATH;
 		}
 		return dictionaryFlag;
 	}
@@ -97,7 +96,7 @@ public class Flags {
 		if (params.getSettings().get("AutoDictFeatures") != null) {
 			dictionaryFlag = params.getSettings().get("AutoDictFeatures");
 		} else {
-			dictionaryFlag = Flags.DEFAULT_FEATURE_FLAG;
+			dictionaryFlag = Integer.toString(Flags.DEFAULT_DICT_CUTOFF);
 		}
 		return Integer.parseInt(dictionaryFlag);
 	}
@@ -150,7 +149,7 @@ public class Flags {
 
 	public static boolean isDictionaryFeatures(TrainingParameters params) {
 		String dictFeatures = getDictionaryFeatures(params);
-		return !dictFeatures.equalsIgnoreCase(Flags.DEFAULT_FEATURE_FLAG);
+		return !dictFeatures.equalsIgnoreCase(Flags.DEFAULT_DICT_PATH);
 	}
 
 }

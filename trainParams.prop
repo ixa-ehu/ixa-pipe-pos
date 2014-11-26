@@ -17,7 +17,7 @@
 
 # Choose between PERCEPTRON, MAXENT_QN or MAXENT
 Algorithm=PERCEPTRON
-Iterations=500
+Iterations=50
 Cutoff=0
 Threads=4
 
@@ -47,8 +47,8 @@ MaxFctEval=30000
 Language=en
 
 # TrainingCorpus:
-TrainSet=/home/ragerri/experiments/nerc/conll03/eng.train
-TestSet=/home/ragerri/experiments/nerc/conll03/eng.testb
+TrainSet=/home/ragerri/experiments/pos/penn/opennlp/data/test/0-18.opennlp
+TestSet=/home/ragerri/experiments/pos/penn/opennlp/data/test/22-24.opennlp
 
 # CorpusFormat: opennlp (word_pos), tabulated (word\tlemma\tpos)
 # CorpusFormat of the training corpus
@@ -73,12 +73,12 @@ FeatureSet=Baseline
 # DictionaryFeatures: Provide path to a tag dictionary in opennlp format.
 # This tag dictionary reduces the candidate pos tags for each entry to the tags
 # present in the dictionary only. If commented out this feature is not used.
-DictionaryFeatures=/home/ragerri/javacode/ixa-pipe-pos/pos-resources/en/pos-dictionaries
+#DictionaryFeatures=/home/ragerri/javacode/ixa-pipe-pos/pos-resources/en/pos-dictionaries
 
 # AutoDictFeatures: Provide a cutoff to automatically build a pos tag
-# dictionary using the training data. The cutoff needs to be larger than 1. If
+# dictionary using the training data. The cutoff needs to be >= 1. If
 # commented out this feature is not used.
-AutoDictFeatures=2
+AutoDictFeatures=1
 
 #####################################
 #### CROSS VALIDATION PARAMETERS ####
