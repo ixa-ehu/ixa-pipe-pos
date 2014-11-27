@@ -36,7 +36,7 @@ public class MultiWordMatcher {
   }
   
   /**
-   * Detects multiword expressions against a {@link Dictionary} ignoring case.
+   * Detects multiword expressions ignoring case.
    * 
    * @param tokens
    *          the tokenized sentence

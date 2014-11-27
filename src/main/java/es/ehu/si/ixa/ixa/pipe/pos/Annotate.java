@@ -57,9 +57,7 @@ public class Annotate {
 
   /**
    * Construct an annotator with a {@code MorphoFactory}.
-   * @param aLang the language
-   * @param model the model
-   * @param beamsize the beamsize for decoding
+   * @param properties the properties file
    * @throws IOException io exception if model not properly loaded
    */
   public Annotate(final Properties properties)
@@ -130,7 +128,7 @@ public class Annotate {
     } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
       return "C"; // conjunction
     } else if (postag.startsWith("D")) {
-      return "D"; // determiner and predeterminer
+      return "D"; // det   * @param dictLemmatizer the lemmatizererminer and predeterminer
     } else if (postag.startsWith("A")) {
       return "G"; // adjective
     } else if (postag.startsWith("NC")) {
@@ -181,7 +179,6 @@ public class Annotate {
   /**
    * Annotate morphological information to NAF.
    * @param kaf the NAF document
-   * @param dictLemmatizer the lemmatizer
    * @throws IOException the io exception
    */
   public final void annotatePOSToKAF(final KAFDocument kaf) throws IOException {
@@ -209,7 +206,6 @@ public class Annotate {
   /**
    * Annotate morphological information in tabulated CoNLL-style format.
    * @param kaf the naf input document
-   * @param dictLemmatizer the lemmatizer
    * @return the text annotated in tabulated format
    * @throws IOException throws io exception
    */
@@ -236,7 +232,6 @@ public class Annotate {
   /**
    * Annotate morphological information in tabulated CoNLL-style format.
    * @param kaf the naf input document
-   * @param dictLemmatizer the lemmatizer
    * @return the text annotated in tabulated format
    * @throws IOException throws io exception
    */

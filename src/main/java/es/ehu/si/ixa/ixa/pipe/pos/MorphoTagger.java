@@ -52,9 +52,7 @@ public class MorphoTagger {
 
   /**
    * Construct a morphotagger.
-   * @param aLang the language
-   * @param model the model
-   * @param beamsize the beamsize
+   * @param props the properties object
    */
   public MorphoTagger(final Properties props) {
     String lang = props.getProperty("language");
@@ -66,9 +64,7 @@ public class MorphoTagger {
 
   /**
    * Construct a morphotagger with {@code MorphoFactory}.
-   * @param aLang the language
-   * @param model the model
-   * @param beamsize the beamsize
+   * @param props the properties object
    * @param aMorphoFactory the morpho factory
    */
   public MorphoTagger(final Properties props, final MorphoFactory aMorphoFactory) {

@@ -82,11 +82,7 @@ public final class StringUtils {
     int i, j;
     int patternLength = patternTokens.length;
     int sentenceLength = tokens.length;
-    List<Integer> neTokens = new ArrayLpackage es.ehu.si.ixa.ixa.pipe.pos;
-
-public class StringUtils {
-
-}ist<Integer>();
+    List<Integer> neTokens = new ArrayList<Integer>();
     for (j = 0; j <= sentenceLength - patternLength; ++j) {
       for (i = 0; i < patternLength && patternTokens[i].equals(tokens[i + j]); ++i);
       if (i >= patternLength) {

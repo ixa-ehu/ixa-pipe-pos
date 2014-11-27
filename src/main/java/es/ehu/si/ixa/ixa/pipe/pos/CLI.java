@@ -218,12 +218,12 @@ public class CLI {
           "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model), version + "-" + commit);
 
       newLp.setBeginTimestamp();
-      annotator.annotatePOSToKAF(properties);
+      annotator.annotatePOSToKAF(kaf);
       newLp.setEndTimestamp();
       bwriter.write(kaf.toString());
     } else {
       // annotate to CoNLL
-      bwriter.write(annotator.annotatePOSToCoNLL(properties));
+      bwriter.write(annotator.annotatePOSToCoNLL(kaf));
     }
     bwriter.close();
     breader.close();
