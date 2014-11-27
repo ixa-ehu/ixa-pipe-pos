@@ -20,10 +20,15 @@ import ixa.kaflib.KAFDocument;
 import ixa.kaflib.WF;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.SimpleLemmatizer;
 
 /**
  * Main annotation class of ixa-pipe-pos. Check this class for
@@ -45,6 +50,10 @@ public class Annotate {
    * The factory to build morpheme objects.
    */
   private MorphoFactory morphoFactory;
+  /**
+   * The dictionary lemmatizer.
+   */
+  private DictionaryLemmatizer dictLemmatizer;
 
   /**
    * Construct an annotator with a {@code MorphoFactory}.
@@ -53,11 +62,30 @@ public class Annotate {
    * @param beamsize the beamsize for decoding
    * @throws IOException io exception if model not properly loaded
    */
-  public Annotate(final String aLang, final String model, final int beamsize)
+  public Annotate(final Properties properties)
       throws IOException {
-    this.lang = aLang;
+    this.lang = properties.getProperty("language");
+    loadResources(properties);
     morphoFactory = new MorphoFactory();
-    posTagger = new MorphoTagger(lang, model, beamsize, morphoFactory);
+    posTagger = new MorphoTagger(properties, morphoFactory);
+    
+  }
+  
+  //TODO static loading of lemmatizer dictionaries
+  private void loadResources(Properties props) {
+    String lemmatizer = props.getProperty("lemmatizer");
+    Resources resources = new Resources();
+    if (lemmatizer.equalsIgnoreCase("plain")) {
+      InputStream simpleDictInputStream = resources.getDictionary(lang);
+      dictLemmatizer = new SimpleLemmatizer(simpleDictInputStream, lang);
+    } else {
+      URL binLemmatizerURL = resources.getBinaryDict(lang);
+      try {
+        dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL, lang);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   /**
@@ -156,7 +184,7 @@ public class Annotate {
    * @param dictLemmatizer the lemmatizer
    * @throws IOException the io exception
    */
-  public final void annotatePOSToKAF(final KAFDocument kaf, final DictionaryLemmatizer dictLemmatizer) throws IOException {
+  public final void annotatePOSToKAF(final KAFDocument kaf) throws IOException {
 
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
@@ -165,7 +193,6 @@ public class Annotate {
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
-
       List<Morpheme> morphemes = posTagger.getMorphemes(tokens);
       for (int i = 0; i < morphemes.size(); i++) {
         List<WF> wfs = new ArrayList<WF>();
@@ -186,8 +213,7 @@ public class Annotate {
    * @return the text annotated in tabulated format
    * @throws IOException throws io exception
    */
-  public final String annotatePOSToCoNLL(final KAFDocument kaf,
-      final DictionaryLemmatizer dictLemmatizer) throws IOException {
+  public final String annotatePOSToCoNLL(final KAFDocument kaf) throws IOException {
     StringBuilder sb = new StringBuilder();
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
@@ -196,6 +222,34 @@ public class Annotate {
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
+      List<String> posTagged = posTagger.posAnnotate(tokens);
+      for (int i = 0; i < posTagged.size(); i++) {
+        String posTag = posTagged.get(i);
+        String lemma = dictLemmatizer.lemmatize(tokens[i], posTag); // lemma
+        sb.append(tokens[i]).append("\t").append(lemma).append("\t").append(posTag).append("\n");
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
+  }
+  
+  /**
+   * Annotate morphological information in tabulated CoNLL-style format.
+   * @param kaf the naf input document
+   * @param dictLemmatizer the lemmatizer
+   * @return the text annotated in tabulated format
+   * @throws IOException throws io exception
+   */
+  public final String annotateMultiWordsToCoNLL(final KAFDocument kaf) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    List<List<WF>> sentences = kaf.getSentences();
+    for (List<WF> sentence : sentences) {
+      //Get an array of token forms from a list of WF objects.
+      String[] tokens = new String[sentence.size()];
+      for (int i = 0; i < sentence.size(); i++) {
+        tokens[i] = sentence.get(i).getForm();
+      }
+      
       List<String> posTagged = posTagger.posAnnotate(tokens);
       for (int i = 0; i < posTagged.size(); i++) {
         String posTag = posTagged.get(i);

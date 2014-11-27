@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import opennlp.tools.postag.POSModel;
@@ -55,18 +56,12 @@ public class MorphoTagger {
    * @param model the model
    * @param beamsize the beamsize
    */
-  public MorphoTagger(final String aLang, final String model, final int beamsize) {
-    POSModel posModel = loadModel(aLang, model);
-    posTagger = new POSTaggerME(posModel, beamsize, beamsize);
-  }
-
-  /**
-   * Construct a morphotagger with default beamsize.
-   * @param aLang the language
-   * @param model the model
-   */
-  public MorphoTagger(final String aLang, final String model) {
-    this(aLang, model, CLI.DEFAULT_BEAM_SIZE);
+  public MorphoTagger(final Properties props) {
+    String lang = props.getProperty("language");
+    String model = props.getProperty("model");
+    int beamSize = Integer.parseInt(props.getProperty("beamSize"));
+    POSModel posModel = loadModel(lang, model);
+    posTagger = new POSTaggerME(posModel, beamSize, beamSize);
   }
 
   /**
@@ -76,20 +71,13 @@ public class MorphoTagger {
    * @param beamsize the beamsize
    * @param aMorphoFactory the morpho factory
    */
-  public MorphoTagger(final String aLang, final String model, final int beamsize, final MorphoFactory aMorphoFactory) {
-    POSModel posModel = loadModel(aLang, model);
-    posTagger = new POSTaggerME(posModel, beamsize, beamsize);
+  public MorphoTagger(final Properties props, final MorphoFactory aMorphoFactory) {
+    String lang = props.getProperty("language");
+    String model = props.getProperty("model");
+    int beamSize = Integer.parseInt(props.getProperty("beamSize"));
+    POSModel posModel = loadModel(lang, model);
+    posTagger = new POSTaggerME(posModel, beamSize, beamSize);
     this.morphoFactory = aMorphoFactory;
-  }
-
-  /**
-   * Construct a morphotagger with default beamsize and morpho factory.
-   * @param aLang the language
-   * @param model the model
-   * @param aMorphoFactory the factory
-   */
-  public MorphoTagger(final String aLang, final String model, final MorphoFactory aMorphoFactory) {
-    this(aLang, model, CLI.DEFAULT_BEAM_SIZE, aMorphoFactory);
   }
 
   /**

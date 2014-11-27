@@ -69,7 +69,6 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
         dictMap.put(Arrays.asList(elems[0], elems[2]), elems[1]);
       }
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     this.lang = aLang;

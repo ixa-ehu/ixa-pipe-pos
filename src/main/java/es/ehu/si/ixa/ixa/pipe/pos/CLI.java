@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.util.Properties;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
@@ -109,7 +110,7 @@ public class CLI {
   /**
    * Default beam size for decoding.
    */
-  public static final int DEFAULT_BEAM_SIZE = 3;
+  public static final String DEFAULT_BEAM_SIZE = "3";
 
   /**
    * Construct a CLI object with the three sub-parsers to manage the command
@@ -189,8 +190,8 @@ public class CLI {
       final OutputStream outputStream) throws IOException, JDOMException {
 
     String model = parsedArguments.getString("model");
-    int beamsize = parsedArguments.getInt("beamsize");
-    String lemMethod = parsedArguments.getString("lemmatize");
+    String beamSize = parsedArguments.getString("beamSize");
+    String lemmatize = parsedArguments.getString("lemmatize");
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
     breader = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
@@ -209,31 +210,20 @@ public class CLI {
     } else {
       lang = kaf.getLang();
     }
-    DictionaryLemmatizer lemmatizer = null;
-    // TODO static loading of lemmatizer dictionaries
-    Resources resources = new Resources();
-    if (lemMethod.equalsIgnoreCase("plain")) {
-      System.err.println("Using plain text dictionary");
-      InputStream dictLemmatizer = resources.getDictionary(lang);
-      lemmatizer = new SimpleLemmatizer(dictLemmatizer, lang);
-    } else {
-      System.err.println("Using default Morfologik binary dictionary.");
-      URL dictLemmatizer = resources.getBinaryDict(lang);
-      lemmatizer = new MorfologikLemmatizer(dictLemmatizer, lang);
-    }
-    Annotate annotator = new Annotate(lang, model, beamsize);
+    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize);
+    Annotate annotator = new Annotate(properties);
     // annotate to KAF
     if (parsedArguments.getBoolean("nokaf")) {
       KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
           "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model), version + "-" + commit);
 
       newLp.setBeginTimestamp();
-      annotator.annotatePOSToKAF(kaf, lemmatizer);
+      annotator.annotatePOSToKAF(properties);
       newLp.setEndTimestamp();
       bwriter.write(kaf.toString());
     } else {
       // annotate to CoNLL
-      bwriter.write(annotator.annotatePOSToCoNLL(kaf, lemmatizer));
+      bwriter.write(annotator.annotatePOSToCoNLL(properties));
     }
     bwriter.close();
     breader.close();
@@ -254,7 +244,6 @@ public class CLI {
     annotateParser.addArgument("--beamsize")
         .required(false)
         .setDefault(DEFAULT_BEAM_SIZE)
-        .type(Integer.class)
         .help("Choose beam size for decoding, it defaults to 3.");
     annotateParser.addArgument("-lem", "--lemmatize")
         .required(false)
@@ -369,6 +358,24 @@ public class CLI {
   private void loadCrossValidateParameters() {
     crossValidateParser.addArgument("-p", "--params").required(true)
         .help("Load the Cross validation parameters file\n");
+  }
+  
+  /**
+   * Set a Properties object with the CLI parameters for annotation.
+   * @param model the model parameter
+   * @param language language parameter
+   * @param beamSize the beamsize decoding
+   * @param lemmatize the lemmatization method
+   * @return the properties object
+   */
+  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize) {
+    Properties annotateProperties = new Properties();
+    annotateProperties.setProperty("model", model);
+    annotateProperties.setProperty("language", language);
+    annotateProperties.setProperty("beamSize", beamSize);
+    annotateProperties.setProperty("lemmatize", lemmatize);
+    
+    return annotateProperties;
   }
 
 }

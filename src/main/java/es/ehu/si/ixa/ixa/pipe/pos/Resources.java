@@ -49,6 +49,27 @@ public class Resources {
     }
     return dict;
   }
+  
+  /**
+   * Get the dictionary for the {@code MultiWordMatcher}.
+   *
+   * @param lang
+   *          the language
+   * @return the inputstream of the dictionary
+   */
+  public final InputStream getMultiWordDict(final String lang) {
+    InputStream dict = null;
+    if (lang.equalsIgnoreCase("en")) {
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/language-tool/en-lemmatizer.dict");
+    }
+
+    if (lang.equalsIgnoreCase("es")) {
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/freeling/es-locutions.txt");
+    }
+    return dict;
+  }
 
   /**
    * The the dictionary for the {@code MorfologikLemmatizer}.
