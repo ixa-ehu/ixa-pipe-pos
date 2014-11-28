@@ -17,6 +17,7 @@
 package es.ehu.si.ixa.ixa.pipe.pos;
 
 import ixa.kaflib.KAFDocument;
+import ixa.kaflib.Mark;
 import ixa.kaflib.WF;
 
 import java.io.IOException;
@@ -26,8 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import opennlp.tools.namefind.NameFinderME;
+import opennlp.tools.util.Span;
 import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.MultiWordMatcher;
+import es.ehu.si.ixa.ixa.pipe.lemma.MultiWordSample;
 import es.ehu.si.ixa.ixa.pipe.lemma.SimpleLemmatizer;
 
 /**
@@ -54,6 +59,10 @@ public class Annotate {
    * The dictionary lemmatizer.
    */
   private DictionaryLemmatizer dictLemmatizer;
+  /**
+   * The multiword matcher.
+   */
+  private MultiWordMatcher multiWordMatcher;
 
   /**
    * Construct an annotator with a {@code MorphoFactory}.
@@ -71,15 +80,25 @@ public class Annotate {
   
   //TODO static loading of lemmatizer dictionaries
   private void loadResources(Properties props) {
-    String lemmatizer = props.getProperty("lemmatizer");
+    String lemmatize = props.getProperty("lemmatize");
+    Boolean multiwords = Boolean.valueOf(props.getProperty("multiwords"));
     Resources resources = new Resources();
-    if (lemmatizer.equalsIgnoreCase("plain")) {
+    if (lemmatize.equalsIgnoreCase("plain")) {
       InputStream simpleDictInputStream = resources.getDictionary(lang);
       dictLemmatizer = new SimpleLemmatizer(simpleDictInputStream, lang);
-    } else {
+    } 
+    if (lemmatize.equalsIgnoreCase("bin")) {
       URL binLemmatizerURL = resources.getBinaryDict(lang);
       try {
         dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL, lang);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    if (!multiwords) {
+      InputStream multiWordDict = resources.getMultiWordDict(lang);
+      try {
+        multiWordMatcher = new MultiWordMatcher(multiWordDict);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -202,6 +221,32 @@ public class Annotate {
       }
     }
   }
+  
+  /**
+   * @param kaf the naf input document
+   * @return the text annotated in tabulated format
+   * @throws IOException throws io exception
+   */
+  public final void annotateMultiWordsToKAF(final KAFDocument kaf) throws IOException {
+    List<List<WF>> sentences = kaf.getSentences();
+    for (List<WF> sentence : sentences) {
+      //Get an array of token forms from a list of WF objects.
+      String[] tokens = new String[sentence.size()];
+      for (int i = 0; i < sentence.size(); i++) {
+        tokens[i] = sentence.get(i).getForm();
+      }
+      Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
+      Span[] finalSpans = NameFinderME.dropOverlappingSpans(multiWordSpans);
+      for (Span mwSpan : finalSpans) {
+        Integer startIndex = mwSpan.getStart();
+        Integer endIndex = mwSpan.getEnd();
+        List<WF> wfTargets = sentence.subList(startIndex, endIndex);
+        ixa.kaflib.Span<WF> wfSpan = KAFDocument.newWFSpan(wfTargets);
+        Mark markable = kaf.newMark("freeling-locutions.dat", wfSpan);
+        markable.setMorphofeat(mwSpan.getType());
+      }
+    }
+  }
 
   /**
    * Annotate morphological information in tabulated CoNLL-style format.
@@ -228,6 +273,7 @@ public class Annotate {
     }
     return sb.toString();
   }
+
   
   /**
    * Annotate morphological information in tabulated CoNLL-style format.
@@ -244,14 +290,10 @@ public class Annotate {
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
+      Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
+      MultiWordSample multiWordSample = new MultiWordSample(tokens, multiWordSpans);
+      sb.append(multiWordSample.toString()).append("\n");
       
-      List<String> posTagged = posTagger.posAnnotate(tokens);
-      for (int i = 0; i < posTagged.size(); i++) {
-        String posTag = posTagged.get(i);
-        String lemma = dictLemmatizer.lemmatize(tokens[i], posTag); // lemma
-        sb.append(tokens[i]).append("\t").append(lemma).append("\t").append(posTag).append("\n");
-      }
-      sb.append("\n");
     }
     return sb.toString();
   }

@@ -16,6 +16,13 @@ import es.ehu.si.ixa.ixa.pipe.pos.StringUtils;
 
 import opennlp.tools.util.Span;
 
+/**
+ * Reads a dictionary multiword\tmultiwordlemma\tpostag\tambiguity and
+ * matches the multiwords for each sentence.
+ * @author ragerri
+ * @version 2014-11-27
+ *
+ */
 public class MultiWordMatcher {
 
   private static final Pattern tabPattern = Pattern.compile("\t");
@@ -30,7 +37,7 @@ public class MultiWordMatcher {
       String[] lineArray = tabPattern.split(line);
       if (lineArray.length == 4) {
         Matcher lineMatcher = linePattern.matcher(lineArray[0].toLowerCase());
-        dictionary.put(lineMatcher.replaceAll(" "), lineArray[2].toLowerCase());
+        dictionary.put(lineMatcher.replaceAll(" "), lineArray[2]);
       }
     }
   }

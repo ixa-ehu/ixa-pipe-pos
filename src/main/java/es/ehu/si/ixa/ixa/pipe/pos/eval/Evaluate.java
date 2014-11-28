@@ -68,7 +68,7 @@ public class Evaluate {
    * @throws IOException
    *           if input data not available
    */
-  public Evaluate(final String testData, final String model, final int beamsize)
+  public Evaluate(final String testData, final String model, final String beamsize)
       throws IOException {
 
     ObjectStream<String> testStream = InputOutputUtils.readFileIntoMarkableStreamFactory(testData);
@@ -90,7 +90,7 @@ public class Evaluate {
         }
       }
     }
-    posTagger = new POSTaggerME(posModel, beamsize, beamsize);
+    posTagger = new POSTaggerME(posModel, Integer.parseInt(beamsize), Integer.parseInt(beamsize));
   }
 
   /**
