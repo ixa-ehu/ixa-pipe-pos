@@ -55,7 +55,7 @@ import es.ehu.si.ixa.ixa.pipe.pos.train.Trainer;
  * (ixa2.si.ehu.es/ixa-pipes). The annotate method is the main entry point.
  *
  * @author ragerri
- * @version 2014-07-08
+ * @version 2014-11-30
  */
 
 public class CLI {
@@ -188,7 +188,6 @@ public class CLI {
     String model = parsedArguments.getString("model");
     String beamSize = parsedArguments.getString("beamSize");
     String lemmatize = parsedArguments.getString("lemmatize");
-    Boolean multiwords = parsedArguments.getBoolean("multiwords");
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
     breader = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
@@ -207,7 +206,7 @@ public class CLI {
     } else {
       lang = kaf.getLang();
     }
-    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize, multiwords);
+    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize);
     Annotate annotator = new Annotate(properties);
     // annotate to KAF
     if (parsedArguments.getBoolean("nokaf")) {
@@ -216,19 +215,12 @@ public class CLI {
 
       newLp.setBeginTimestamp();
       annotator.annotatePOSToKAF(kaf);
-      //TODO the boolean
-      annotator.annotateMultiWordsToKAF(kaf);
       newLp.setEndTimestamp();
       bwriter.write(kaf.toString());
     } else {
-      if (parsedArguments.getBoolean("multiwords")) {
         // annotate to CoNLL
         bwriter.write(annotator.annotatePOSToCoNLL(kaf));
-      } else {
-        bwriter.write(annotator.annotateMultiWordsToCoNLL(kaf));
-      }
-      
-    }
+      } 
     bwriter.close();
     breader.close();
   }
@@ -260,11 +252,6 @@ public class CLI {
         .action(Arguments.storeFalse())
         .help(
             "Do not print tokens in NAF format, but conll tabulated format.\n");
-    annotateParser
-        .addArgument("-mw", "--multiwords")
-        .action(Arguments.storeFalse())
-        .help("Do multiword and clitic pronoun processing.\n");
-
   }
 
   /**
@@ -294,7 +281,7 @@ public class CLI {
   /**
    * Loads the parameters for the training CLI.
    */
-  public final void loadTrainingParameters() {
+  private final void loadTrainingParameters() {
 	  trainParser.addArgument("-p", "--params")
 	   .required(true)
       .help("Load the training parameters file\n");
@@ -329,7 +316,7 @@ public class CLI {
   /**
    * Load the evaluation parameters of the CLI.
    */
-  public final void loadEvalParameters() {
+  private final void loadEvalParameters() {
     evalParser.addArgument("-m", "--model")
          .required(true)
         .help("Choose model");
@@ -377,14 +364,12 @@ public class CLI {
    * @param lemmatize the lemmatization method
    * @return the properties object
    */
-  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize, Boolean multiwords) {
+  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize) {
     Properties annotateProperties = new Properties();
     annotateProperties.setProperty("model", model);
     annotateProperties.setProperty("language", language);
     annotateProperties.setProperty("beamSize", beamSize);
     annotateProperties.setProperty("lemmatize", lemmatize);
-    annotateProperties.setProperty("multiwords", Boolean.toString(multiwords));
-    
     return annotateProperties;
   }
 
