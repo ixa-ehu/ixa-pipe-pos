@@ -93,7 +93,7 @@ public class MultiWordSample {
     String multiWordSample = sb.toString();
     Matcher spanMatcher = spanPattern.matcher(multiWordSample);
     while (spanMatcher.find()) {
-      multiWordSample = spanMatcher.replaceAll(spanMatcher.group(1).replace(" ", "_"));
+      multiWordSample = spanMatcher.replaceAll(spanMatcher.group(1).replace(" ", "#"));
     }
     return multiWordSample;
   }

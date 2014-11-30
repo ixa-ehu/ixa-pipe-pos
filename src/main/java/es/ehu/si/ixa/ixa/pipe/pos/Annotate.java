@@ -290,10 +290,18 @@ public class Annotate {
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
+      //obtain multiword expressions
       Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
       MultiWordSample multiWordSample = new MultiWordSample(tokens, multiWordSpans);
-      sb.append(multiWordSample.toString()).append("\n");
-      
+      //create sentence tokens for postagging with multiwords
+      String[] mwTokens = multiWordSample.toString().split(" ");
+      List<String> posTagged = posTagger.posAnnotate(mwTokens);
+      for (int i = 0; i < posTagged.size(); i++) {
+        String posTag = posTagged.get(i);
+        String lemma = dictLemmatizer.lemmatize(mwTokens[i], posTag); // lemma
+        sb.append(mwTokens[i]).append("\t").append(lemma).append("\t").append(posTag).append("\n");
+      }
+      sb.append("\n");
     }
     return sb.toString();
   }
