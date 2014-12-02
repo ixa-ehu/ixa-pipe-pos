@@ -17,6 +17,7 @@
 package es.ehu.si.ixa.ixa.pipe.pos;
 
 import ixa.kaflib.KAFDocument;
+import ixa.kaflib.Term;
 import ixa.kaflib.WF;
 
 import java.io.IOException;
@@ -25,6 +26,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import opennlp.tools.namefind.NameFinderME;
+import opennlp.tools.util.Span;
 
 import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
@@ -56,6 +60,10 @@ public class Annotate {
    */
   private DictionaryLemmatizer dictLemmatizer;
   /**
+   * If true detect multiwords.
+   */
+  private Boolean multiwords;
+  /**
    * The multiword matcher.
    */
   private MultiWordMatcher multiWordMatcher;
@@ -68,7 +76,10 @@ public class Annotate {
   public Annotate(final Properties properties)
       throws IOException {
     this.lang = properties.getProperty("language");
-    multiWordMatcher = new MultiWordMatcher(properties);
+    this.multiwords = Boolean.valueOf(properties.getProperty("multiwords"));
+    if (multiwords) {
+      multiWordMatcher = new MultiWordMatcher(properties);
+    }
     loadResources(properties);
     morphoFactory = new MorphoFactory();
     posTagger = new MorphoTagger(properties, morphoFactory);
@@ -196,15 +207,34 @@ public class Annotate {
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
-      List<Morpheme> morphemes = posTagger.getMorphemes(tokens);
-      for (int i = 0; i < morphemes.size(); i++) {
-        List<WF> wfs = new ArrayList<WF>();
-        wfs.add(sentence.get(i));
-        String posId = this.getKafTagSet(morphemes.get(i).getTag());
-        String type = this.setTermType(posId);
-        String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(), morphemes.get(i).getTag());
-        morphemes.get(i).setLemma(lemma);
-        kaf.createTermOptions(type, morphemes.get(i).getLemma(), posId, morphemes.get(i).getTag(), wfs);
+      ixa.kaflib.Span<WF> wfSpan;
+      if (multiwords) {
+        Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
+        Span[] finalSpans = NameFinderME.dropOverlappingSpans(multiWordSpans);
+        for (Span mwSpan : finalSpans) {
+          Integer startIndex = mwSpan.getStart();
+          Integer endIndex = mwSpan.getEnd();
+          List<WF> wfTargets = sentence.subList(startIndex, endIndex);
+          wfSpan = KAFDocument.newWFSpan(wfTargets);
+          kaf.newTerm(wfSpan);
+        }
+        
+      } else {
+        List<Morpheme> morphemes = posTagger.getMorphemes(tokens);
+        for (int i = 0; i < morphemes.size(); i++) {
+          List<WF> wfTargets = new ArrayList<WF>();
+          wfTargets.add(sentence.get(i));
+          wfSpan = KAFDocument.newWFSpan(wfTargets);
+          Term tokenTerm = kaf.newTerm(wfSpan);
+          String posId = this.getKafTagSet(morphemes.get(i).getTag());
+          String type = this.setTermType(posId);
+          String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(), morphemes.get(i).getTag());
+          morphemes.get(i).setLemma(lemma);
+          tokenTerm.setType(type);
+          tokenTerm.setLemma(morphemes.get(i).getLemma());
+          tokenTerm.setPos(posId);
+          tokenTerm.setMorphofeat(morphemes.get(i).getTag());
+        }
       }
     }
   }

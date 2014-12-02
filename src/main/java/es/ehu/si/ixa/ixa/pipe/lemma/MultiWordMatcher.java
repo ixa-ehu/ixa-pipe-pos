@@ -98,11 +98,10 @@ public class MultiWordMatcher {
   
   /**
    * Get input text and join the multiwords found in the dictionary object.
-   * @param inputText the input text
+   * @param tokens the input text
    * @return the output text with the joined multiwords
    */
-  public final String getMultiWords(String inputText) {
-    String[] tokens = inputText.split(" ");
+  public final String getSentenceWithMultiWords(String[] tokens) {
     Span[] multiWordSpans = multiWordsToSpans(tokens);
     MultiWordSample multiWordSample = new MultiWordSample(tokens, multiWordSpans);
     String outputText = multiWordSample.toString();
