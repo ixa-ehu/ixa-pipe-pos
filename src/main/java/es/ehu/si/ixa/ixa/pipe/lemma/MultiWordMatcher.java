@@ -101,11 +101,12 @@ public class MultiWordMatcher {
    * @param tokens the input text
    * @return the output text with the joined multiwords
    */
-  public final String getSentenceWithMultiWords(String[] tokens) {
+  public final String[] getTokensWithMultiWords(String[] tokens) {
     Span[] multiWordSpans = multiWordsToSpans(tokens);
     MultiWordSample multiWordSample = new MultiWordSample(tokens, multiWordSpans);
     String outputText = multiWordSample.toString();
-    return outputText;
+    String[] outputTokens = outputText.split(" ");
+    return outputTokens;
   }
   
   /**

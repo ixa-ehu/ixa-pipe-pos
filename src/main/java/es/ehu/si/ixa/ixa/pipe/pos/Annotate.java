@@ -211,12 +211,13 @@ public class Annotate {
       if (multiwords) {
         Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
         Span[] finalSpans = NameFinderME.dropOverlappingSpans(multiWordSpans);
+        String[] multiWordTokens = multiWordMatcher.getTokensWithMultiWords(tokens);
+        List<Morpheme> morphemes = posTagger.getMorphemes(multiWordTokens);
         for (Span mwSpan : finalSpans) {
           Integer startIndex = mwSpan.getStart();
           Integer endIndex = mwSpan.getEnd();
           List<WF> wfTargets = sentence.subList(startIndex, endIndex);
           wfSpan = KAFDocument.newWFSpan(wfTargets);
-          kaf.newTerm(wfSpan);
         }
         
       } else {
