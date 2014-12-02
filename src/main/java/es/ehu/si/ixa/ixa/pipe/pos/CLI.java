@@ -188,6 +188,7 @@ public class CLI {
     String model = parsedArguments.getString("model");
     String beamSize = parsedArguments.getString("beamSize");
     String lemmatize = parsedArguments.getString("lemmatize");
+    String multiwords = Boolean.toString(parsedArguments.getBoolean("multiwords"));
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
     breader = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
@@ -206,20 +207,17 @@ public class CLI {
     } else {
       lang = kaf.getLang();
     }
-    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize);
+    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize, multiwords);
     Annotate annotator = new Annotate(properties);
-    // annotate to KAF
     if (parsedArguments.getBoolean("nokaf")) {
+      bwriter.write(annotator.annotatePOSToCoNLL(kaf));
+    } else {
       KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
           "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model), version + "-" + commit);
-
       newLp.setBeginTimestamp();
       annotator.annotatePOSToKAF(kaf);
       newLp.setEndTimestamp();
       bwriter.write(kaf.toString());
-    } else {
-        // annotate to CoNLL
-        bwriter.write(annotator.annotatePOSToCoNLL(kaf));
       } 
     bwriter.close();
     breader.close();
@@ -249,9 +247,12 @@ public class CLI {
         + " dictionary (default), 'plain' for plain text dictionary.\n");
     annotateParser
         .addArgument("--nokaf")
-        .action(Arguments.storeFalse())
+        .action(Arguments.storeTrue())
         .help(
             "Do not print tokens in NAF format, but conll tabulated format.\n");
+    annotateParser.addArgument("-mw", "--multiwords")
+        .action(Arguments.storeTrue())
+        .help("Use to detect and process multiwords.\n");
   }
 
   /**
@@ -364,12 +365,13 @@ public class CLI {
    * @param lemmatize the lemmatization method
    * @return the properties object
    */
-  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize) {
+  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize, String multiwords) {
     Properties annotateProperties = new Properties();
     annotateProperties.setProperty("model", model);
     annotateProperties.setProperty("language", language);
     annotateProperties.setProperty("beamSize", beamSize);
     annotateProperties.setProperty("lemmatize", lemmatize);
+    annotateProperties.setProperty("multiwords", multiwords);
     return annotateProperties;
   }
 

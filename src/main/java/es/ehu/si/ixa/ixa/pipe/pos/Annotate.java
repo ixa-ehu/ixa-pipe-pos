@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.lemma.MultiWordMatcher;
 import es.ehu.si.ixa.ixa.pipe.lemma.SimpleLemmatizer;
 
 /**
@@ -54,6 +55,10 @@ public class Annotate {
    * The dictionary lemmatizer.
    */
   private DictionaryLemmatizer dictLemmatizer;
+  /**
+   * The multiword matcher.
+   */
+  private MultiWordMatcher multiWordMatcher;
 
   /**
    * Construct an annotator with a {@code MorphoFactory}.
@@ -63,10 +68,10 @@ public class Annotate {
   public Annotate(final Properties properties)
       throws IOException {
     this.lang = properties.getProperty("language");
+    multiWordMatcher = new MultiWordMatcher(properties);
     loadResources(properties);
     morphoFactory = new MorphoFactory();
     posTagger = new MorphoTagger(properties, morphoFactory);
-    
   }
   
   //TODO static loading of lemmatizer dictionaries
