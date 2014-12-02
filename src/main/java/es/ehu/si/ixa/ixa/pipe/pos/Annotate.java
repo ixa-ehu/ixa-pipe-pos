@@ -36,8 +36,9 @@ import es.ehu.si.ixa.ixa.pipe.lemma.MultiWordMatcher;
 import es.ehu.si.ixa.ixa.pipe.lemma.SimpleLemmatizer;
 
 /**
- * Main annotation class of ixa-pipe-pos. Check this class for
- * examples using the ixa-pipe-pos API.
+ * Main annotation class of ixa-pipe-pos. Check this class for examples using
+ * the ixa-pipe-pos API.
+ * 
  * @author ragerri
  * @version 2014-07-09
  */
@@ -70,11 +71,13 @@ public class Annotate {
 
   /**
    * Construct an annotator with a {@code MorphoFactory}.
-   * @param properties the properties file
-   * @throws IOException io exception if model not properly loaded
+   * 
+   * @param properties
+   *          the properties file
+   * @throws IOException
+   *           io exception if model not properly loaded
    */
-  public Annotate(final Properties properties)
-      throws IOException {
+  public Annotate(final Properties properties) throws IOException {
     this.lang = properties.getProperty("language");
     this.multiwords = Boolean.valueOf(properties.getProperty("multiwords"));
     if (multiwords) {
@@ -84,15 +87,15 @@ public class Annotate {
     morphoFactory = new MorphoFactory();
     posTagger = new MorphoTagger(properties, morphoFactory);
   }
-  
-  //TODO static loading of lemmatizer dictionaries
+
+  // TODO static loading of lemmatizer dictionaries
   private void loadResources(Properties props) {
     String lemmatize = props.getProperty("lemmatize");
     Resources resources = new Resources();
     if (lemmatize.equalsIgnoreCase("plain")) {
       InputStream simpleDictInputStream = resources.getDictionary(lang);
       dictLemmatizer = new SimpleLemmatizer(simpleDictInputStream, lang);
-    } 
+    }
     if (lemmatize.equalsIgnoreCase("bin")) {
       URL binLemmatizerURL = resources.getBinaryDict(lang);
       try {
@@ -105,7 +108,7 @@ public class Annotate {
 
   /**
    * Mapping between Penn Treebank tagset and KAF tagset.
-   *
+   * 
    * @param postag
    *          treebank postag
    * @return kaf POS tag
@@ -136,7 +139,9 @@ public class Annotate {
 
   /**
    * Mapping between Ancora EAGLES PAROLE tagset and NAF.
-   * @param postag the postag
+   * 
+   * @param postag
+   *          the postag
    * @return the mapping to NAF pos tagset
    */
   private String mapSpanishTagSetToKaf(final String postag) {
@@ -145,7 +150,8 @@ public class Annotate {
     } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
       return "C"; // conjunction
     } else if (postag.startsWith("D")) {
-      return "D"; // det   * @param dictLemmatizer the lemmatizererminer and predeterminer
+      return "D"; // det * @param dictLemmatizer the lemmatizererminer and
+                  // predeterminer
     } else if (postag.startsWith("A")) {
       return "G"; // adjective
     } else if (postag.startsWith("NC")) {
@@ -165,7 +171,9 @@ public class Annotate {
 
   /**
    * Obtain the appropriate tagset according to language and postag.
-   * @param postag the postag
+   * 
+   * @param postag
+   *          the postag
    * @return the mapped tag
    */
   private String getKafTagSet(final String postag) {
@@ -181,7 +189,9 @@ public class Annotate {
 
   /**
    * Set the term type attribute based on the pos value.
-   * @param postag the postag
+   * 
+   * @param postag
+   *          the postag
    * @return the type
    */
   private String setTermType(final String postag) {
@@ -195,8 +205,11 @@ public class Annotate {
 
   /**
    * Annotate morphological information to NAF.
-   * @param kaf the NAF document
-   * @throws IOException the io exception
+   * 
+   * @param kaf
+   *          the NAF document
+   * @throws IOException
+   *           the io exception
    */
   public final void annotatePOSToKAF(final KAFDocument kaf) throws IOException {
 
@@ -207,50 +220,63 @@ public class Annotate {
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
       }
-      ixa.kaflib.Span<WF> wfSpan;
-      if (multiwords) {
-        Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
-        Span[] finalSpans = NameFinderME.dropOverlappingSpans(multiWordSpans);
-        String[] multiWordTokens = multiWordMatcher.getTokensWithMultiWords(tokens);
-        List<Morpheme> morphemes = posTagger.getMorphemes(multiWordTokens);
-        for (Span mwSpan : finalSpans) {
-          Integer startIndex = mwSpan.getStart();
-          Integer endIndex = mwSpan.getEnd();
-          List<WF> wfTargets = sentence.subList(startIndex, endIndex);
-          wfSpan = KAFDocument.newWFSpan(wfTargets);
-        }
-        
-      } else {
-        List<Morpheme> morphemes = posTagger.getMorphemes(tokens);
-        for (int i = 0; i < morphemes.size(); i++) {
-          List<WF> wfTargets = new ArrayList<WF>();
-          wfTargets.add(sentence.get(i));
-          wfSpan = KAFDocument.newWFSpan(wfTargets);
-          Term tokenTerm = kaf.newTerm(wfSpan);
-          String posId = this.getKafTagSet(morphemes.get(i).getTag());
-          String type = this.setTermType(posId);
-          String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(), morphemes.get(i).getTag());
-          morphemes.get(i).setLemma(lemma);
-          tokenTerm.setType(type);
-          tokenTerm.setLemma(morphemes.get(i).getLemma());
-          tokenTerm.setPos(posId);
-          tokenTerm.setMorphofeat(morphemes.get(i).getTag());
-        }
+      List<Morpheme> morphemes = posTagger.getMorphemes(tokens);
+      for (int i = 0; i < morphemes.size(); i++) {
+        List<WF> wfTargets = new ArrayList<WF>();
+        wfTargets.add(sentence.get(i));
+        ixa.kaflib.Span<WF> wfSpan = KAFDocument.newWFSpan(wfTargets);
+        Term tokenTerm = kaf.newTerm(wfSpan);
+        String posId = this.getKafTagSet(morphemes.get(i).getTag());
+        String type = this.setTermType(posId);
+        String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(),
+            morphemes.get(i).getTag());
+        morphemes.get(i).setLemma(lemma);
+        tokenTerm.setType(type);
+        tokenTerm.setLemma(morphemes.get(i).getLemma());
+        tokenTerm.setPos(posId);
+        tokenTerm.setMorphofeat(morphemes.get(i).getTag());
+
+      }
+    }
+  }
+
+  public final void annotateMultiWordPOSToKAF(final KAFDocument kaf) {
+    List<List<WF>> sentences = kaf.getSentences();
+    for (List<WF> wfs : sentences) {
+      String[] tokens = new String[wfs.size()];
+      Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
+      Span[] finalSpans = NameFinderME.dropOverlappingSpans(multiWordSpans);
+      for (int i = 0; i < wfs.size(); i++) {
+        tokens[i] = wfs.get(i).getForm();
+      }
+     
+      String[] multiWordTokens = multiWordMatcher
+          .getTokensWithMultiWords(tokens);
+      List<Morpheme> morphemes = posTagger.getMorphemes(multiWordTokens);
+      
+      for (Span mwSpan : finalSpans) {
+        Integer startIndex = mwSpan.getStart();
+        Integer endIndex = mwSpan.getEnd();
+        List<WF> wfTargets = wfs.subList(startIndex, endIndex);      
       }
     }
   }
 
   /**
    * Annotate morphological information in tabulated CoNLL-style format.
-   * @param kaf the naf input document
+   * 
+   * @param kaf
+   *          the naf input document
    * @return the text annotated in tabulated format
-   * @throws IOException throws io exception
+   * @throws IOException
+   *           throws io exception
    */
-  public final String annotatePOSToCoNLL(final KAFDocument kaf) throws IOException {
+  public final String annotatePOSToCoNLL(final KAFDocument kaf)
+      throws IOException {
     StringBuilder sb = new StringBuilder();
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> sentence : sentences) {
-      //Get an array of token forms from a list of WF objects.
+      // Get an array of token forms from a list of WF objects.
       String[] tokens = new String[sentence.size()];
       for (int i = 0; i < sentence.size(); i++) {
         tokens[i] = sentence.get(i).getForm();
@@ -259,7 +285,8 @@ public class Annotate {
       for (int i = 0; i < posTagged.size(); i++) {
         String posTag = posTagged.get(i);
         String lemma = dictLemmatizer.lemmatize(tokens[i], posTag); // lemma
-        sb.append(tokens[i]).append("\t").append(lemma).append("\t").append(posTag).append("\n");
+        sb.append(tokens[i]).append("\t").append(lemma).append("\t")
+            .append(posTag).append("\n");
       }
       sb.append("\n");
     }

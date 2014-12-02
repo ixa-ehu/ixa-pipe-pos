@@ -42,7 +42,7 @@ import opennlp.tools.util.Span;
 public class MultiWordMatcher {
 
   private static final Pattern tabPattern = Pattern.compile("\t");
-  private static final Pattern linePattern = Pattern.compile("_");
+  private static final Pattern linePattern = Pattern.compile("#");
   private static Map<String, String> dictionary;
   
   /**
