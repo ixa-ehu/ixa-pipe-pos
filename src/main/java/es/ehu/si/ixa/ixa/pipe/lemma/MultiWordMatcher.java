@@ -30,23 +30,22 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import es.ehu.si.ixa.ixa.pipe.pos.StringUtils;
+import com.google.common.base.Joiner;
 
 import opennlp.tools.util.Span;
+import es.ehu.si.ixa.ixa.pipe.pos.StringUtils;
 
 /**
  * Reads a dictionary multiword\tmultiwordlemma\tpostag\tambiguity and
  * matches the multiwords for each sentence.
  * @author ragerri
- * @version 2014-11-27
+ * @version 2014-12-03
  *
  */
 public class MultiWordMatcher {
 
   private static final Pattern tabPattern = Pattern.compile("\t");
   private static final Pattern linePattern = Pattern.compile("#");
-  //private static final Pattern spanPattern = Pattern.compile("<START:\\w+>\\s+(.*?)\\s+<END>");
-  private static final String SPAN_PATTERN = "<START:\\w+>\\s+(.+)?\\s+<END>";
   private static Map<String, String> dictionary;
   
   /**
@@ -89,7 +88,7 @@ public class MultiWordMatcher {
    *          the language
    * @return the inputstream of the dictionary
    */
-  public final InputStream getMultiWordDict(final String lang) {
+  private final InputStream getMultiWordDict(final String lang) {
     InputStream dict = null;
     if (lang.equalsIgnoreCase("gl")) {
       dict = getClass().getResourceAsStream(
@@ -109,11 +108,22 @@ public class MultiWordMatcher {
    */
   public final String[] getTokensWithMultiWords(String[] tokens) {
     Span[] multiWordSpans = multiWordsToSpans(tokens);
-    List<String> sentence = Arrays.asList(tokens);
+    List<String> tokenList = new ArrayList<String>(Arrays.asList(tokens));
+    int counter = 0;
     for (Span mwSpan : multiWordSpans) {
-      
+      int fromIndex = mwSpan.getStart() - counter;
+      int toIndex = mwSpan.getEnd() - counter;
+      //add to the counter the length of the sublist removed
+      //to allow the fromIndex and toIndex to match wrt to the tokenList indexes
+      counter =+ tokenList.subList(fromIndex, toIndex).size() - 1;
+      //create the multiword joining the sublist
+      String multiWord = Joiner.on("#").join(tokenList.subList(fromIndex, toIndex));
+      //remove the sublist containing the tokens in the span
+      tokenList.subList(fromIndex, toIndex).clear();
+      //add the multiword containing the tokens in one Span
+      tokenList.add(fromIndex, multiWord);
     }
-    return sentence.toArray(new String[sentence.size()]);
+    return tokenList.toArray(new String[tokenList.size()]);
   }
   
   /**

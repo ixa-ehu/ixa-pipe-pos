@@ -236,25 +236,35 @@ public class Annotate {
         term.setLemma(morphemes.get(i).getLemma());
         term.setPos(posId);
         term.setMorphofeat(morphemes.get(i).getTag());
-        System.err.println(morphemes.get(i).getWord() + ": " + tokenSpans.get(i).toString());
       }
     }
   }
   
+  /**
+   * Creates the multiword spans. It get an initial list of spans (one per token)
+   * and creates a multiword span when a multiword is detected.
+   * @param tokens the list of tokens
+   * @param wfs the list of WFs
+   * @param tokenSpans the list of initial token spans
+   */
   private void getMultiWordSpans(String[] tokens, List<WF> wfs, List<ixa.kaflib.Span<WF>> tokenSpans) {
     Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
     int counter = 0;
     for (Span mwSpan : multiWordSpans) {
-      Integer startIndex = mwSpan.getStart();
-      Integer endIndex = mwSpan.getEnd();
-      //create multiword targets
-      List<WF> wfTargets = wfs.subList(startIndex, endIndex);
+      Integer fromIndex = mwSpan.getStart() - counter;
+      Integer toIndex = mwSpan.getEnd() - counter;
+      // add to the counter the length of the span removed
+      counter =+ tokenSpans.subList(fromIndex, toIndex).size() - 1;
+      //create multiword targets and Span
+      List<WF> wfTargets = wfs.subList(mwSpan.getStart(), mwSpan.getEnd());
       ixa.kaflib.Span<WF> multiWordSpan = KAFDocument.newWFSpan(wfTargets);
-      //remove the WF spans corresponding to the multiword span
-      tokenSpans.subList(startIndex, endIndex).clear();
+      //remove the token Spans corresponding to the multiword span
+      tokenSpans.subList(fromIndex, toIndex).clear();
       //add the new Span containing several WFs (multiWordSpan)
-      tokenSpans.add(startIndex - counter, multiWordSpan);
-      counter =+ mwSpan.length() - 1;
+      // the counter is used to allow matching the spans to the
+      //tokenSpans list indexes
+      tokenSpans.add(fromIndex, multiWordSpan);
+      
     }
   }
 
@@ -288,37 +298,6 @@ public class Annotate {
     }
     return sb.toString();
   }
-  
-  /*public final void annotatePOSToKAF(final KAFDocument kaf) throws IOException {
-
-  List<List<WF>> sentences = kaf.getSentences();
-  for (List<WF> wfs : sentences) {
-    
-    List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
-    String[] tokens = new String[wfs.size()];
-    for (int i = 0; i < wfs.size(); i++) {
-      tokens[i] = wfs.get(i).getForm();
-      List<WF> wfTarget = new ArrayList<WF>();
-      wfTarget.add(wfs.get(i));
-      tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
-    }
-    List<Morpheme> morphemes = posTagger.getMorphemes(tokens);
-    for (int i = 0; i < morphemes.size(); i++) {
-      ixa.kaflib.Span<WF> wfSpan = tokenSpans.get(i);
-      Term tokenTerm = kaf.newTerm(wfSpan);
-      String posId = this.getKafTagSet(morphemes.get(i).getTag());
-      String type = this.setTermType(posId);
-      String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(),
-          morphemes.get(i).getTag());
-      morphemes.get(i).setLemma(lemma);
-      tokenTerm.setType(type);
-      tokenTerm.setLemma(morphemes.get(i).getLemma());
-      tokenTerm.setPos(posId);
-      tokenTerm.setMorphofeat(morphemes.get(i).getTag());
-
-    }
-  }
-}*/
 
 
 }
