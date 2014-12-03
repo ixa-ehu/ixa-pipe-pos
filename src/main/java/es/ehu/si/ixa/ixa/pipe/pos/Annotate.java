@@ -243,6 +243,7 @@ public class Annotate {
   
   private void getMultiWordSpans(String[] tokens, List<WF> wfs, List<ixa.kaflib.Span<WF>> tokenSpans) {
     Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
+    int counter = 0;
     for (Span mwSpan : multiWordSpans) {
       Integer startIndex = mwSpan.getStart();
       Integer endIndex = mwSpan.getEnd();
@@ -252,7 +253,8 @@ public class Annotate {
       //remove the WF spans corresponding to the multiword span
       tokenSpans.subList(startIndex, endIndex).clear();
       //add the new Span containing several WFs (multiWordSpan)
-      tokenSpans.add(startIndex, multiWordSpan);
+      tokenSpans.add(startIndex - counter, multiWordSpan);
+      counter =+ mwSpan.length() - 1;
     }
   }
 

@@ -19,12 +19,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import opennlp.tools.util.Span;
 
 /**
- * Class for holding multiwords for a single unit of text.
+ * Class for holding multiwords for a sentence.
  * @author ragerri
  * @version 2014-11-30
  */
@@ -34,7 +33,6 @@ public class MultiWordSample {
   private final List<String> tokens;
   private final List<Span> names;
   public static final String DEFAULT_TYPE = "UNK";
-  public static final Pattern spanPattern = Pattern.compile("<START:\\w+>\\s+((.*?)(\\s+)(.*?))\\s+<END>");
 
   public MultiWordSample(String id, String[] sentence, Span[] multiwords) {
 
@@ -109,5 +107,6 @@ public class MultiWordSample {
     String multiWordSample = sb.toString();
     return multiWordSample;
   }
+  
 }
 

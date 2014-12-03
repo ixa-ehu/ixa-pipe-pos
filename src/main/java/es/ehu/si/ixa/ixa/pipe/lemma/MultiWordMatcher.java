@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +45,8 @@ public class MultiWordMatcher {
 
   private static final Pattern tabPattern = Pattern.compile("\t");
   private static final Pattern linePattern = Pattern.compile("#");
+  //private static final Pattern spanPattern = Pattern.compile("<START:\\w+>\\s+(.*?)\\s+<END>");
+  private static final String SPAN_PATTERN = "<START:\\w+>\\s+(.+)?\\s+<END>";
   private static Map<String, String> dictionary;
   
   /**
@@ -72,6 +76,8 @@ public class MultiWordMatcher {
       if (lineArray.length == 4) {
         Matcher lineMatcher = linePattern.matcher(lineArray[0].toLowerCase());
         dictionary.put(lineMatcher.replaceAll(" "), lineArray[2]);
+      } else {
+        System.err.println("WARNING: line starting with " + lineArray[0] + " is not well-formed; skipping!!");
       }
     }
   }
@@ -103,19 +109,11 @@ public class MultiWordMatcher {
    */
   public final String[] getTokensWithMultiWords(String[] tokens) {
     Span[] multiWordSpans = multiWordsToSpans(tokens);
-    MultiWordSample multiWordSample = new MultiWordSample(tokens, multiWordSpans);
-    System.err.println("output sample: " + multiWordSample.toString());
-    Matcher spanMatcher = MultiWordSample.spanPattern.matcher(multiWordSample.toString());
-    String outputText = null;
-    while (spanMatcher.find()) {
-      outputText = spanMatcher.replaceAll(spanMatcher.group(1).replace(" ", "#"));
+    List<String> sentence = Arrays.asList(tokens);
+    for (Span mwSpan : multiWordSpans) {
+      
     }
-    if (outputText == null) {
-      outputText = multiWordSample.toString();
-    }
-    System.err.println("output multiwords: " + outputText);
-    String[] outputTokens = outputText.split(" ");
-    return outputTokens;
+    return sentence.toArray(new String[sentence.size()]);
   }
   
   /**
