@@ -182,6 +182,9 @@ public class Annotate {
     if (lang.equalsIgnoreCase("es")) {
       tag = this.mapSpanishTagSetToKaf(postag);
     }
+    if (lang.equalsIgnoreCase("gl")) {
+      tag = this.mapSpanishTagSetToKaf(postag);
+    }
     return tag;
   }
 

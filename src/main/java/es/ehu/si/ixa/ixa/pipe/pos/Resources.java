@@ -42,10 +42,12 @@ public class Resources {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/language-tool/en-lemmatizer.dict");
     }
-
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-lemmatizer.dict");
+    } else {
+      System.err.println("There is not dictionary for that language in the src/main/resources directory!!");
+      System.exit(1);
     }
     return dict;
   }
@@ -61,10 +63,16 @@ public class Resources {
       dictURL = getClass().getResource(
           "/lemmatizer-dicts/language-tool/english.dict");
     }
-
     if (lang.equalsIgnoreCase("es")) {
       dictURL = getClass().getResource(
           "/lemmatizer-dicts/freeling/spanish.dict");
+    }
+    if (lang.equalsIgnoreCase("gl")) {
+      dictURL = getClass().getResource(
+          "/lemmatizer-dicts/freeling/spanish.dict");
+    } else {
+      System.err.println("There is not dictionary for that language in the src/main/resources directory!!");
+      System.exit(1);
     }
     return dictURL;
   }
@@ -83,6 +91,11 @@ public class Resources {
       }
     }
     if (lang.equalsIgnoreCase("es")) {
+      if (postag.startsWith("NP")) {
+        constantTag = "NP00000";
+      }
+    }
+    if (lang.equalsIgnoreCase("gl")) {
       if (postag.startsWith("NP")) {
         constantTag = "NP00000";
       }
