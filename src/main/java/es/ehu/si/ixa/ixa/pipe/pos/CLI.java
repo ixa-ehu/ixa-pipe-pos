@@ -215,7 +215,8 @@ public class CLI {
       KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
           "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model), version + "-" + commit);
       newLp.setBeginTimestamp();
-      annotator.annotatePOSToKAF(kaf);
+      //annotator.annotatePOSToKAF(kaf);
+      annotator.annotateMultiWordPOSToKAF(kaf);
       newLp.setEndTimestamp();
       bwriter.write(kaf.toString());
       } 

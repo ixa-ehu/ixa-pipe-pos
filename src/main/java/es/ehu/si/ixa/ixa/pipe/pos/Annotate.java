@@ -243,21 +243,45 @@ public class Annotate {
   public final void annotateMultiWordPOSToKAF(final KAFDocument kaf) {
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> wfs : sentences) {
+      
+      List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
+      List<Morpheme> morphemes;
       String[] tokens = new String[wfs.size()];
-      Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
-      Span[] finalSpans = NameFinderME.dropOverlappingSpans(multiWordSpans);
       for (int i = 0; i < wfs.size(); i++) {
         tokens[i] = wfs.get(i).getForm();
-      }
-     
+        List<WF> wfTarget = new ArrayList<WF>();
+        wfTarget.add(wfs.get(i));
+        tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
+      }     
       String[] multiWordTokens = multiWordMatcher
           .getTokensWithMultiWords(tokens);
-      List<Morpheme> morphemes = posTagger.getMorphemes(multiWordTokens);
-      
+      System.err.println("trace 1 " + multiWordTokens.length);
+      morphemes = posTagger.getMorphemes(multiWordTokens);
+      System.err.println("trace 2 " + morphemes.size());
+      Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
+      Span[] finalSpans = NameFinderME.dropOverlappingSpans(multiWordSpans);
       for (Span mwSpan : finalSpans) {
         Integer startIndex = mwSpan.getStart();
         Integer endIndex = mwSpan.getEnd();
-        List<WF> wfTargets = wfs.subList(startIndex, endIndex);      
+        List<WF> wfTargets = wfs.subList(startIndex, endIndex);
+        ixa.kaflib.Span<WF> multiWordSpan = KAFDocument.newWFSpan(wfTargets);
+        System.err.println("trace 3 " + tokenSpans.size());
+        tokenSpans.subList(startIndex, startIndex + 1).clear();
+        System.err.println("trace 4 " + tokenSpans.size());
+        tokenSpans.add(startIndex, multiWordSpan);
+        System.err.println("trace 5" + tokenSpans.size());
+      }
+      for (int i = 0; i < morphemes.size(); i++) {
+        Term multiWordTerm = kaf.newTerm(tokenSpans.get(i));
+        String posId = this.getKafTagSet(morphemes.get(i).getTag());
+        String type = this.setTermType(posId);
+        String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(),
+            morphemes.get(i).getTag());
+        morphemes.get(i).setLemma(lemma);
+        multiWordTerm.setType(type);
+        multiWordTerm.setLemma(morphemes.get(i).getLemma());
+        multiWordTerm.setPos(posId);
+        multiWordTerm.setMorphofeat(morphemes.get(i).getTag());
       }
     }
   }
