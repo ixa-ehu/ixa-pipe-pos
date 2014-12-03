@@ -104,7 +104,16 @@ public class MultiWordMatcher {
   public final String[] getTokensWithMultiWords(String[] tokens) {
     Span[] multiWordSpans = multiWordsToSpans(tokens);
     MultiWordSample multiWordSample = new MultiWordSample(tokens, multiWordSpans);
-    String outputText = multiWordSample.toString();
+    System.err.println("output sample: " + multiWordSample.toString());
+    Matcher spanMatcher = MultiWordSample.spanPattern.matcher(multiWordSample.toString());
+    String outputText = null;
+    while (spanMatcher.find()) {
+      outputText = spanMatcher.replaceAll(spanMatcher.group(1).replace(" ", "#"));
+    }
+    if (outputText == null) {
+      outputText = multiWordSample.toString();
+    }
+    System.err.println("output multiwords: " + outputText);
     String[] outputTokens = outputText.split(" ");
     return outputTokens;
   }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opennlp.tools.util.Span;
@@ -35,7 +34,7 @@ public class MultiWordSample {
   private final List<String> tokens;
   private final List<Span> names;
   public static final String DEFAULT_TYPE = "UNK";
-  public static final Pattern spanPattern = Pattern.compile("<START:\\w+>\\s+(.*?)\\s+<END>");
+  public static final Pattern spanPattern = Pattern.compile("<START:\\w+>\\s+((.*?)(\\s+)(.*?))\\s+<END>");
 
   public MultiWordSample(String id, String[] sentence, Span[] multiwords) {
 
@@ -108,10 +107,6 @@ public class MultiWordSample {
       }
     }
     String multiWordSample = sb.toString();
-    Matcher spanMatcher = spanPattern.matcher(multiWordSample);
-    while (spanMatcher.find()) {
-      multiWordSample = spanMatcher.replaceAll(spanMatcher.group(1).replace(" ", "#"));
-    }
     return multiWordSample;
   }
 }
