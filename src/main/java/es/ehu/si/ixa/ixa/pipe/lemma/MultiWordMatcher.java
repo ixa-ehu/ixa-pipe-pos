@@ -68,6 +68,10 @@ public class MultiWordMatcher {
     dictionary = new HashMap<String, String>();
     String lang = props.getProperty("language");
     InputStream dictInputStream = getMultiWordDict(lang);
+    if (dictInputStream == null) {
+      System.err.println("ERROR: Not multiword dictionary for that language in src/main/resources!!");
+      System.exit(1);
+    }
     BufferedReader breader = new BufferedReader(new InputStreamReader(dictInputStream, Charset.forName("UTF-8")));
     String line;
     while ((line = breader.readLine()) != null) {

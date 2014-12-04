@@ -87,7 +87,9 @@ public class Annotate {
   }
 
   // TODO static loading of lemmatizer dictionaries
-  /** Load the lemmatizer dictionaries by language and format.
+  /** Load the lemmatizer dictionaries by language and format. Exits if
+   * no lemmatizer dictionary (plain or binary) is available for the input
+   * language.
    * @param props the props object
    */
   private void loadResources(Properties props) {
@@ -95,10 +97,18 @@ public class Annotate {
     Resources resources = new Resources();
     if (lemmatize.equalsIgnoreCase("plain")) {
       InputStream simpleDictInputStream = resources.getDictionary(lang);
+      if (simpleDictInputStream == null) {
+        System.err.println("ERROR: No plain lemmatizer dictionary available for this language in src/main/resources!!");
+        System.exit(1);
+      }
       dictLemmatizer = new SimpleLemmatizer(simpleDictInputStream, lang);
     }
     if (lemmatize.equalsIgnoreCase("bin")) {
       URL binLemmatizerURL = resources.getBinaryDict(lang);
+      if (binLemmatizerURL == null) {
+        System.err.println("ERROR: No binary lemmatizer dictionary available for this language in src/main/resources!!");
+        System.exit(1);
+      }
       try {
         dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL, lang);
       } catch (IOException e) {
