@@ -26,6 +26,7 @@ the [installation instructions](#installation).
   + [Evaluation](#evaluation)
 3. [API via Maven Dependency](#api)
 4. [Git installation](#installation)
+5. [Adding your language](#extend)
 
 ## OVERVIEW
 
@@ -304,6 +305,22 @@ To install the module in the local maven repository, usually located in ~/.m2/, 
 ````shell
 mvn clean install
 ````
+
+## Extend
+
+To add your language to ixa-pipe-pos the following steps are required: 
+
++ Create lemmatizer and (if required) multiword dictionaries following the format of those distributed in **pos-resources.tgz**.
+  + **Create binary dictionaries (FSA):** Starting from the plain text tabulated dictionaries, do the following steps:
+    + Get Morfologik standalone binary: http://sourceforge.net/projects/morfologik/files/morfologik-stemming/
+    + java -jar morfologik-tools-1.6.0-standalone.jar tab2morph --annotation "*" -i  ~/javacode/ixa-pipe-pos/pos-resources/lemmatizer-dicts/freeling/es-lemmatizer.dict -o spanish.morph
+    + java -jar morfologik-tools-1.6.0-standalone.jar fsa_build -i spanish.morph -o spanish.dict
+    + **Create a *.info file like spanish.info**
++ **Modify the classes** CLI, Resources and Annotate (and if multiword is required also MultiWordMatcher) adding for your language the same information that it is available for other languages.
++ Train a model. **It is important that the tagset of the dictionaries and corpus be the same**. Also it is recommended to train a model with an external dictionary (see tag-dicts dictionaries distributed in pos-resources tarball).
++ Add documentation to this README.md.
++ **Do a pull request** to merge the changes with your new language.
++ Send us the resources and models created if you want them to be distributed with ixa-pipe-pos (Apache License 2.0 is favoured).
 
 ## Contact information
 
