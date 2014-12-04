@@ -15,24 +15,17 @@ and install this repository instead of using the releases provided in
 [http://ixa2.si.ehu.es/ixa-pipes], please scroll down to the end of the document for
 the [installation instructions](#installation).
 
-**NOTICE!!**: We temporarily rely on Apache OpenNLP 1.6.0-SNAPSHOT version.
-Therefore, before installing/using this module as explained in this README,
-**please install Apache OpenNLP 1.6.0 like this**:
-
-````shell
-git clone https://github.com/apache/opennlp
-cd opennlp/opennlp
-mvn clean install
-````
-
 ## TABLE OF CONTENTS 
 
 1. [Overview of ixa-pipe-pos](#overview)
-  + [Distributed resources](#models)
+  + [Distributed resources](#resources)
+  + [Distributed models](#models)
 2. [Usage of ixa-pipe-pos](#usage)
   + [POS tagging/lemmatizing](#tagging)
   + [Training your own models](#training)
   + [Evaluation](#evaluation)
+3. [API via Maven Dependency](#api)
+4. [Git installation](#installation)
 
 ## OVERVIEW
 
@@ -47,12 +40,36 @@ provide two fast POS tagging models:
 + **Dictionary-based lemmatization** for English and Spanish. 
 
 For this first release we provide two reasonably fast POS tagging models based on the Perceptron (Collins 2002) and 
-Maximum Entropy (Ratnaparkhi 1999) algorithms. To avoid duplication of efforts, we use the machine learning API 
-provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added dictionary-based lemmatization. 
+Maximum Entropy (Ratnaparkhi 1999) algorithms. To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, etc, as described below.
+
+ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details).
+
+### Resources
+
+**The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of 
+this tarball in the **src/main/resources/** directory inside ixa-pipe-pos.
+
+The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz)
+package. Note that the dictionaries come with their own licences, please do comply with them:
+
++ **Lemmatizer Dictionaries**:
+  + **English**:
+    + **Plain text dictionary**: en-lemmatizer.dict is a "word\tlemma\tpostag" dictionary in plain text to perform lemmatization.
+    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as a finite state automata. 
+      using the morfologik-stemming project (see NOTICE file for details). **this is the default**
+  + **Spanish**:
+    + **Plain text dictionary**: es-lemmatizer.dict.
+    + **Morfologik stemming**: spanish.dict.
+
++ **Multiword Dictionaries**:
+  + **Spanish**: es-locutions.dict contains a list of multiword expressions in Spanish.
+  + **Galician**: gl-locutions.dict contains a list of multiword expressions in Galician.
+
+To use the resources "as is" just download the package, copy it and untar it intto the src/main/resources directory. 
 
 ### Models
 
-The following resources are provided in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz) package: 
+The following pre-trained models are provided in the [pos-models-$version.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package: 
 
 + **English POS Models**:
   + Penn Treebank: **en-pos-perceptron-c0-b3-dev.bin**: 97.06
@@ -63,20 +80,6 @@ The following resources are provided in the [pos-resources.tgz](http://ixa2.si.e
   models. Therefore, we provide both types, based on maxent and perceptron.
   + Ancora: **es-pos-maxent-750-c0-b3.bin**: 98.88 Word accuracy.
   + Ancora: **es-pos-perceptron-c0-b3.bin**: 98.24 Word accuracy (**this is the default**). 
-
-Furthermore, the following resources **are required for lemmatization**, available in the [lemmatizer-dicts.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tgz)
-package. Note that the dictionaries come with their own licences, please do comply with them:
-
-+ **Lemmatizer Dictionaries**:
-  + **English**:
-    + **Plain text dictionary**: en-lemmatizer.dict is a "word lemma postag" dictionary in plain text to perform lemmatization.
-    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as a finite state automata. 
-      using the morfologik-stemming project (see NOTICE file for details). This method uses 10% of RAM with respect to the plain text dictionary (**this is the default**).
-  + **Spanish**:
-    + **Plain text dictionary**: es-lemmatizer.dict.
-    + **Morfologik stemming**: spanish.dict.
-
-ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details).
 
 ## USAGE
 
@@ -101,7 +104,7 @@ java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval) -help
 If you are in hurry, just execute: 
 
 ````shell
-cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag
+cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag -m model.bin
 ````
 
 If you want to know more, please follow reading.
@@ -127,50 +130,23 @@ There are several options to tag with ixa-pipe-pos:
 + **lemmatize**: choose dictionary method to perform lemmatization:
   + **bin**: Morfologik binary dictionary (**default**).
   + **plain**: plain text dictionary.
++ **multiwords**: activates the multiword detection option.
 
 **Tagging Example**: 
 
 ````shell
-cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag
+cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag -m model.bin
 ````
 
 ### Training
 
-The following options are available via the train subcommand:
+To train a new model, you just need to pass a training parameters file as an
+argument. Every training option is documented in the template trainParams.prop file.
 
-+ **features**: currently we provide 2 local feature sets plus non-local
-features using lexicons:
-  + **opennlp**: Apache OpenNLP featureset, kept for compatibility.
-  + **baseline**: local features adding bigrams and trigrams.
-  + **autoDict**: pass this parameter to automatically build a tag dictionary
-  from the training data.
-  + **dictPath**: pass this parameter to use an already existing tag dictionary
-  Check Apache OpenNLP documentation for the dictionary format.
-+ **input**: the training dataset.
-+ **testSet**: self-explanatory, the test dataset.
-+ **devSet**: the development set if cross evaluation is chosen to find the
-  right number of iterations (this option is still very experimental).
-+ **output**: the model name resulting of the training. If not output is
-  chosen, ixa-pipe-pos will save the model in a file named following the
-  features used.
-+ **params**: this is where most of the training options are specified.
-  + **Algorithm**: choose between PERCEPTRON or MAXENT.
-  + **Iterations**: choose number of iterations.
-  + **Cutoff**: consider only events above the cutoff number specified.
-  + **Threads**: multi-threading, only works with MAXENT.
-  + **Language**: en or es. 
-  + **Beamsize**: choose beamsize for decoding. It defaults to 3.
-  + **Corpus**: corpus format. Currently opennlp native format supported.
-  + **CrossEval**: choose the range of iterations at which to perform
-  evaluation. This parameter tells the trainer to find the best number of
-  iterations for MAXENT training on a development set. Then that iteration
-  number will be used to train the final model. In a very experimental state. 
-+ autoDict: automatically generate tag dictionary from training data
-+ dictPath: use an already existing tag dictionary to train
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.pos-$version.jar train -f baseline -p trainParams.txt -i train.data -t test.data -o test-pos.bin
+java -jar target/ixa.pipe.pos-$version.jar train -p trainParams.prop
 ````
 
 ### Evaluation
@@ -193,17 +169,26 @@ options:
 java -jar target/ixa.pipe.nerc-$version.jar eval -m test-pos.bin -l en -t test.data 
 ````
 
-## JAVADOC
+## API
 
-It is possible to generate the javadoc of the module by executing:
+The easiest way to use ixa-pipe-pos programatically is via Apache Maven. Add
+this dependency to your pom.xml:
 
 ````shell
-cd ixa-pipe-pos/
-mvn javadoc:jar
+<dependency>
+  <groupId>es.ehu.si.ixa</grouId>
+  <artifactId>ixa.pipe.pos</artifactId>
+  <version>1.3.0</version>
+</dependency>
 ````
 
-Which will create a jar file core/target/ixa-pipe-pos-$version-javadoc.jar
+## JAVADOC
 
+The javadoc of the module is located here:
+
+````shell
+ixa-pipe-pos/target/ixa-pipe-pos-$version-javadoc.jar
+````
 ## Module contents
 
 The contents of the module are the following:
@@ -211,6 +196,7 @@ The contents of the module are the following:
     + formatter.xml           Apache OpenNLP code formatter for Eclipse SDK
     + pom.xml                 maven pom file which deals with everything related to compilation and execution of the module
     + src/                    java source code of the module and required resources
+    + trainParams.prop      A template properties file containing documention
     + Furthermore, the installation process, as described in the README.md, will generate another directory:
     target/                 it contains binary executable and other directories
 
@@ -286,19 +272,17 @@ git clone https://github.com/ixa-ehu/ixa-pipe-pos
 
 ### 4. Download the Resources
 
-You will need to download the trained models and other resources and copy them to ixa-pipe-pos/src/main/resources/
+You will need to download the resources and copy them to ixa-pipe-pos/src/main/resources/
 for the module to work properly:
 
-Download the models and dictionaries and untar the archive into the src/main/resources directory:
+Download the resources and untar the archive into the src/main/resources directory:
 
 ````shell
 cd ixa-pipe-pos/src/main/resources
 wget http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz
-wget http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tgz
 tar xvzf pos-resources.tgz
-tar xvzf lemmatizer-dicts.tgz
 ````
-The pos-resources contains the baseline models to which ixa-pipe-pos backs off if not model is provided as parameter for tagging.
+The pos-resources contains the required dictionaries for ixa-pipe-pos to run.
 
 ### 5. Compile
 
