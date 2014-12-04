@@ -90,13 +90,14 @@ public class MultiWordMatcher {
    */
   private final InputStream getMultiWordDict(final String lang) {
     InputStream dict = null;
-    if (lang.equalsIgnoreCase("gl")) {
-      dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/freeling/gl-locutions.txt");
-    }
+    
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-locutions.txt");
+    }
+    if (lang.equalsIgnoreCase("gl")) {
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/freeling/gl-locutions.txt");
     }
     return dict;
   }

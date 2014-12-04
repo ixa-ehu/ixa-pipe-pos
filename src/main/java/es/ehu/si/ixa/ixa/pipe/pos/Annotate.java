@@ -284,17 +284,30 @@ public class Annotate {
       throws IOException {
     StringBuilder sb = new StringBuilder();
     List<List<WF>> sentences = kaf.getSentences();
-    for (List<WF> sentence : sentences) {
+    for (List<WF> wfs : sentences) {
+      
+      List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
+      List<Morpheme> morphemes = null; 
       // Get an array of token forms from a list of WF objects.
-      String[] tokens = new String[sentence.size()];
-      for (int i = 0; i < sentence.size(); i++) {
-        tokens[i] = sentence.get(i).getForm();
+      String[] tokens = new String[wfs.size()];
+      for (int i = 0; i < wfs.size(); i++) {
+        tokens[i] = wfs.get(i).getForm();
+        List<WF> wfTarget = new ArrayList<WF>();
+        wfTarget.add(wfs.get(i));
+        tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
-      List<String> posTagged = posTagger.posAnnotate(tokens);
-      for (int i = 0; i < posTagged.size(); i++) {
-        String posTag = posTagged.get(i);
-        String lemma = dictLemmatizer.lemmatize(tokens[i], posTag); // lemma
-        sb.append(tokens[i]).append("\t").append(lemma).append("\t")
+      if (multiwords) {
+        String[] multiWordTokens = multiWordMatcher.getTokensWithMultiWords(tokens);
+        morphemes = posTagger.getMorphemes(multiWordTokens);
+        getMultiWordSpans(tokens, wfs, tokenSpans);
+      } else {
+        morphemes = posTagger.getMorphemes(tokens);
+      }
+      for (int i = 0; i < morphemes.size(); i++) {
+        String posTag = morphemes.get(i).getTag();
+        String word = morphemes.get(i).getWord();
+        String lemma = dictLemmatizer.lemmatize(word, posTag);
+        sb.append(word).append("\t").append(lemma).append("\t")
             .append(posTag).append("\n");
       }
       sb.append("\n");

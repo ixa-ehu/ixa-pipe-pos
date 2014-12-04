@@ -45,9 +45,6 @@ public class Resources {
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-lemmatizer.dict");
-    } else {
-      System.err.println("There is not dictionary for that language in the src/main/resources directory!!");
-      System.exit(1);
     }
     return dict;
   }
@@ -70,9 +67,6 @@ public class Resources {
     if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource(
           "/lemmatizer-dicts/freeling/spanish.dict");
-    } else {
-      System.err.println("There is not dictionary for that language in the src/main/resources directory!!");
-      System.exit(1);
     }
     return dictURL;
   }
