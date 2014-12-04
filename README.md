@@ -56,11 +56,14 @@ package. Note that the dictionaries come with their own licences, please do comp
 + **Lemmatizer Dictionaries**:
   + **English**:
     + **Plain text dictionary**: en-lemmatizer.dict is a "word\tlemma\tpostag" dictionary in plain text to perform lemmatization.
-    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as a finite state automata. 
-      using the morfologik-stemming project (see NOTICE file for details). **this is the default**
+    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as Finite State Automata. 
+      using the morfologik-stemming project (see NOTICE file for details). **this is the default for every language**
   + **Spanish**:
     + **Plain text dictionary**: es-lemmatizer.dict.
     + **Morfologik stemming**: spanish.dict.
+  + **Galician**:
+    + **Plain text**: gl-lemmatizer.dict
+    + **Morfologik stemming**: galician.dict
 
 + **Multiword Dictionaries**:
   + **Spanish**: es-locutions.dict contains a list of multiword expressions in Spanish.
