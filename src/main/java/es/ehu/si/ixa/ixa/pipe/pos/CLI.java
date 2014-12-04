@@ -67,7 +67,7 @@ public class CLI {
   private final String version = CLI.class.getPackage()
       .getImplementationVersion();
   /**
-   * Get the git commit of the ixa-pipe-nerc compiled by looking at the MANIFEST
+   * Get the git commit of the ixa-pipe-pos compiled by looking at the MANIFEST
    * file.
    */
   private final String commit = CLI.class.getPackage().getSpecificationVersion();
@@ -231,7 +231,7 @@ public class CLI {
         .required(true)
         .help("It is required to provide a model to perform POS tagging.");
     annotateParser.addArgument("-l", "--lang")
-        .choices("en", "es", "it")
+        .choices("en", "es", "gl", "it")
         .required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
    

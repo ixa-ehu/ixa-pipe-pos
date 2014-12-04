@@ -87,6 +87,9 @@ public class Annotate {
   }
 
   // TODO static loading of lemmatizer dictionaries
+  /** Load the lemmatizer dictionaries by language and format.
+   * @param props the props object
+   */
   private void loadResources(Properties props) {
     String lemmatize = props.getProperty("lemmatize");
     Resources resources = new Resources();
@@ -136,7 +139,7 @@ public class Annotate {
   }
 
   /**
-   * Mapping between Ancora EAGLES PAROLE tagset and NAF.
+   * Mapping between EAGLES PAROLE tagset and NAF.
    * 
    * @param postag
    *          the postag
@@ -148,8 +151,7 @@ public class Annotate {
     } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
       return "C"; // conjunction
     } else if (postag.startsWith("D")) {
-      return "D"; // det * @param dictLemmatizer the lemmatizererminer and
-                  // predeterminer
+      return "D"; // det predeterminer
     } else if (postag.startsWith("A")) {
       return "G"; // adjective
     } else if (postag.startsWith("NC")) {

@@ -46,6 +46,10 @@ public class Resources {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-lemmatizer.dict");
     }
+    if (lang.equalsIgnoreCase("gl")) {
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/freeling/gl-lemmatizer.dict");
+    }
     return dict;
   }
 
@@ -66,7 +70,7 @@ public class Resources {
     }
     if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource(
-          "/lemmatizer-dicts/freeling/spanish.dict");
+          "/lemmatizer-dicts/freeling/galician.dict");
     }
     return dictURL;
   }
@@ -91,7 +95,7 @@ public class Resources {
     }
     if (lang.equalsIgnoreCase("gl")) {
       if (postag.startsWith("NP")) {
-        constantTag = "NP00000";
+        constantTag = "NP000";
       }
     }
     return constantTag;
