@@ -189,6 +189,7 @@ public class CLI {
     String beamSize = parsedArguments.getString("beamSize");
     String lemmatize = parsedArguments.getString("lemmatize");
     String multiwords = Boolean.toString(parsedArguments.getBoolean("multiwords"));
+    String dictag = Boolean.toString(parsedArguments.getBoolean("dictag"));
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
     breader = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
@@ -207,7 +208,7 @@ public class CLI {
     } else {
       lang = kaf.getLang();
     }
-    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize, multiwords);
+    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize, multiwords, dictag);
     Annotate annotator = new Annotate(properties);
     if (parsedArguments.getBoolean("nokaf")) {
       bwriter.write(annotator.annotatePOSToCoNLL(kaf));
@@ -253,6 +254,9 @@ public class CLI {
     annotateParser.addArgument("-mw", "--multiwords")
         .action(Arguments.storeTrue())
         .help("Use to detect and process multiwords.\n");
+    annotateParser.addArgument("-d", "--dictag")
+        .action(Arguments.storeTrue())
+        .help("Post process POS tagger output with a monosemic dictionary.\n");
   }
 
   /**
@@ -365,13 +369,14 @@ public class CLI {
    * @param lemmatize the lemmatization method
    * @return the properties object
    */
-  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize, String multiwords) {
+  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize, String multiwords, String dictag) {
     Properties annotateProperties = new Properties();
     annotateProperties.setProperty("model", model);
     annotateProperties.setProperty("language", language);
     annotateProperties.setProperty("beamSize", beamSize);
     annotateProperties.setProperty("lemmatize", lemmatize);
     annotateProperties.setProperty("multiwords", multiwords);
+    annotateProperties.setProperty("dictag", dictag);
     return annotateProperties;
   }
 

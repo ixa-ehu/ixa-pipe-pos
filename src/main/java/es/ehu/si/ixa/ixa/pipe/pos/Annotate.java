@@ -32,13 +32,15 @@ import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemma.MultiWordMatcher;
 import es.ehu.si.ixa.ixa.pipe.lemma.SimpleLemmatizer;
+import es.ehu.si.ixa.ixa.pipe.pos.dict.DictionaryTagger;
+import es.ehu.si.ixa.ixa.pipe.pos.dict.MorfologikMorphoTagger;
 
 /**
  * Main annotation class of ixa-pipe-pos. Check this class for examples using
  * the ixa-pipe-pos API.
  * 
  * @author ragerri
- * @version 2014-07-09
+ * @version 2014-12-05
  */
 public class Annotate {
 
@@ -66,6 +68,14 @@ public class Annotate {
    * The multiword matcher.
    */
   private MultiWordMatcher multiWordMatcher;
+  /**
+   * If true detect postprocess tagger output with monosemic dictionary.
+   */
+  private Boolean dictag;
+  /**
+   * The the dictionary postagger.
+   */
+  private DictionaryTagger dictMorphoTagger;
 
   /**
    * Construct an annotator with a {@code MorphoFactory}.
@@ -78,10 +88,14 @@ public class Annotate {
   public Annotate(final Properties properties) throws IOException {
     this.lang = properties.getProperty("language");
     this.multiwords = Boolean.valueOf(properties.getProperty("multiwords"));
+    this.dictag = Boolean.valueOf(properties.getProperty("dictag"));
     if (multiwords) {
       multiWordMatcher = new MultiWordMatcher(properties);
     }
-    loadResources(properties);
+    if (dictag) {
+      loadMorphoTaggerDicts(properties);
+    }
+    loadLemmatizerDicts(properties);
     morphoFactory = new MorphoFactory();
     posTagger = new MorphoTagger(properties, morphoFactory);
   }
@@ -92,7 +106,7 @@ public class Annotate {
    * language.
    * @param props the props object
    */
-  private void loadResources(Properties props) {
+  private void loadLemmatizerDicts(Properties props) {
     String lemmatize = props.getProperty("lemmatize");
     Resources resources = new Resources();
     if (lemmatize.equalsIgnoreCase("plain")) {
@@ -116,6 +130,26 @@ public class Annotate {
       }
     }
   }
+  
+//TODO static loading of lemmatizer dictionaries
+ /** Load the pos tagger dictionaries by language and format. Exits if
+  * no pos tagger dictionary (binary) is available for the input
+  * language.
+  * @param props the props object
+  */
+ private void loadMorphoTaggerDicts(Properties props) {
+   Resources resources = new Resources();
+   URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(lang);
+   if (binDictMorphoTaggerURL == null) {
+     System.err.println("ERROR: No binary POS tagger dictionary available for this language in src/main/resources!!");
+     System.exit(1);
+   }
+   try {
+    dictMorphoTagger = new MorfologikMorphoTagger(binDictMorphoTaggerURL, lang);
+  } catch (IOException e) {
+    e.printStackTrace();
+  }
+ }
 
   /**
    * Mapping between Penn Treebank tagset and KAF tagset.
@@ -156,7 +190,7 @@ public class Annotate {
    * @return the mapping to NAF pos tagset
    */
   private String mapSpanishTagSetToKaf(final String postag) {
-    if (postag.equalsIgnoreCase("RB") || postag.equalsIgnoreCase("RN")) {
+    if (postag.equalsIgnoreCase("RG") || postag.equalsIgnoreCase("RN")) {
       return "A"; // adverb
     } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
       return "C"; // conjunction
@@ -242,6 +276,10 @@ public class Annotate {
       }
       for (int i = 0; i < morphemes.size(); i++) {
         Term term = kaf.newTerm(tokenSpans.get(i));
+        if (dictag) {
+          String dictPosTag = dictMorphoTagger.tag(morphemes.get(i).getWord(), morphemes.get(i).getTag());
+          morphemes.get(i).setTag(dictPosTag);
+        }
         String posId = this.getKafTagSet(morphemes.get(i).getTag());
         String type = this.setTermType(posId);
         String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(),
@@ -318,6 +356,10 @@ public class Annotate {
       for (int i = 0; i < morphemes.size(); i++) {
         String posTag = morphemes.get(i).getTag();
         String word = morphemes.get(i).getWord();
+        if (dictag) {
+          String dictPosTag = dictMorphoTagger.tag(word, posTag);
+          morphemes.get(i).setTag(dictPosTag);
+        }
         String lemma = dictLemmatizer.lemmatize(word, posTag);
         sb.append(word).append("\t").append(lemma).append("\t")
             .append(posTag).append("\n");

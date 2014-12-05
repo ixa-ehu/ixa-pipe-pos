@@ -74,6 +74,24 @@ public class Resources {
     }
     return dictURL;
   }
+  
+  /**
+   * The the dictionary for the {@code MorfologikLemmatizer}.
+   * @param lang the language
+   * @return the URL of the dictonary
+   */
+  public final URL getBinaryTaggerDict(final String lang) {
+    URL dictURL = null;
+    if (lang.equalsIgnoreCase("es")) {
+      dictURL = getClass().getResource(
+          "/lemmatizer-dicts/freeling/spanish-monosemic.dict");
+    }
+    if (lang.equalsIgnoreCase("gl")) {
+      dictURL = getClass().getResource(
+          "/lemmatizer-dicts/freeling/galician-monosemic.dict");
+    }
+    return dictURL;
+  }
 
   /**
    * Ad-hoc assignment of constant tags, typically proper names.
