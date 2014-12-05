@@ -31,43 +31,44 @@ the [installation instructions](#installation).
 ## OVERVIEW
 
 ixa-pipe-pos provides POS tagging and lemmatization for English and Spanish. We
-provide two fast POS tagging models: 
+provide Perceptron based (Collins 2002) POS tagging models: 
 
 + **POS tagging models for English** trained and evaluated using the WSJ treebank as explained 
   in K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic 
   dependency network. In Proceedings of HLT-NAACL’03, 2003. 
-+ **POS tagging models for Spanish** trained and evaluated using the Ancora corpus; it was randomly
-  divided in 90% for training (450K words) and 10% testing (50K words). 
++ **POS tagging models for Spanish** trained and evaluated via 5-fold and 10-fold cross validation using the Ancora corpus. 
 + **Dictionary-based lemmatization** for English and Spanish. 
 
-For this first release we provide two reasonably fast POS tagging models based on the Perceptron (Collins 2002) and 
-Maximum Entropy (Ratnaparkhi 1999) algorithms. To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, etc, as described below.
+The POS tagging models are based on the Perceptron (Collins 2002) algorithm. To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
 
 ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details).
 
 ### Resources
 
-**The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of 
-this tarball in the **src/main/resources/** directory inside ixa-pipe-pos.
+**The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos.
 
 The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz)
 package. Note that the dictionaries come with their own licences, please do comply with them:
 
 + **Lemmatizer Dictionaries**:
   + **English**:
-    + **Plain text dictionary**: en-lemmatizer.dict is a "word\tlemma\tpostag" dictionary in plain text to perform lemmatization.
-    + **Morfologik-stemming**: english.dict is the same as en-lemmas.dict but binarized as Finite State Automata. 
-      using the morfologik-stemming project (see NOTICE file for details). **this is the default for every language**
+    + **Plain text dictionary**: en-lemmatizer.txt is a "word\tlemma\tpostag" dictionary in plain text to perform lemmatization.
+    + **Morfologik-stemming**: english.dict is the same as en-lemmatizer.txt but binarized as Finite State Automata using the morfologik-stemming project (see NOTICE file for details). **this is the default for every language**
   + **Spanish**:
-    + **Plain text dictionary**: es-lemmatizer.dict.
+    + **Plain text dictionary**: es-lemmatizer.txt
     + **Morfologik stemming**: spanish.dict.
   + **Galician**:
-    + **Plain text**: gl-lemmatizer.dict
+    + **Plain text**: gl-lemmatizer.txt
     + **Morfologik stemming**: galician.dict
 
 + **Multiword Dictionaries**:
   + **Spanish**: es-locutions.dict contains a list of multiword expressions in Spanish.
   + **Galician**: gl-locutions.dict contains a list of multiword expressions in Galician.
+
++ **Monosemic Tag Dictionaries**:
+  + **Spanish**: es-monosemic.dict is the monosemic version of the lemmatizer
+    dictionary for Spanish. This is used for post-processing the results of the
+    POS tagger if and when the option **--dictag** is activated in CLI.
 
 To use the resources "as is" just download the package, copy it and untar it intto the src/main/resources directory. 
 
