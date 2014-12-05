@@ -101,10 +101,13 @@ public class Annotate {
   }
 
   // TODO static loading of lemmatizer dictionaries
-  /** Load the lemmatizer dictionaries by language and format. Exits if
-   * no lemmatizer dictionary (plain or binary) is available for the input
+  /**
+   * Load the lemmatizer dictionaries by language and format. Exits if no
+   * lemmatizer dictionary (plain or binary) is available for the input
    * language.
-   * @param props the props object
+   * 
+   * @param props
+   *          the props object
    */
   private void loadLemmatizerDicts(Properties props) {
     String lemmatize = props.getProperty("lemmatize");
@@ -112,7 +115,8 @@ public class Annotate {
     if (lemmatize.equalsIgnoreCase("plain")) {
       InputStream simpleDictInputStream = resources.getDictionary(lang);
       if (simpleDictInputStream == null) {
-        System.err.println("ERROR: No plain lemmatizer dictionary available for this language in src/main/resources!!");
+        System.err
+            .println("ERROR: No plain lemmatizer dictionary available for this language in src/main/resources!!");
         System.exit(1);
       }
       dictLemmatizer = new SimpleLemmatizer(simpleDictInputStream, lang);
@@ -120,7 +124,8 @@ public class Annotate {
     if (lemmatize.equalsIgnoreCase("bin")) {
       URL binLemmatizerURL = resources.getBinaryDict(lang);
       if (binLemmatizerURL == null) {
-        System.err.println("ERROR: No binary lemmatizer dictionary available for this language in src/main/resources!!");
+        System.err
+            .println("ERROR: No binary lemmatizer dictionary available for this language in src/main/resources!!");
         System.exit(1);
       }
       try {
@@ -130,26 +135,30 @@ public class Annotate {
       }
     }
   }
-  
-//TODO static loading of lemmatizer dictionaries
- /** Load the pos tagger dictionaries by language and format. Exits if
-  * no pos tagger dictionary (binary) is available for the input
-  * language.
-  * @param props the props object
-  */
- private void loadMorphoTaggerDicts(Properties props) {
-   Resources resources = new Resources();
-   URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(lang);
-   if (binDictMorphoTaggerURL == null) {
-     System.err.println("ERROR: No binary POS tagger dictionary available for this language in src/main/resources!!");
-     System.exit(1);
-   }
-   try {
-    dictMorphoTagger = new MorfologikMorphoTagger(binDictMorphoTaggerURL, lang);
-  } catch (IOException e) {
-    e.printStackTrace();
+
+  // TODO static loading of postag dictionaries
+  /**
+   * Load the pos tagger dictionaries by language and format. Exits if no pos
+   * tagger dictionary (binary) is available for the input language.
+   * 
+   * @param props
+   *          the props object
+   */
+  private void loadMorphoTaggerDicts(Properties props) {
+    Resources resources = new Resources();
+    URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(lang);
+    if (binDictMorphoTaggerURL == null) {
+      System.err
+          .println("ERROR: No binary POS tagger dictionary available for this language in src/main/resources!!");
+      System.exit(1);
+    }
+    try {
+      dictMorphoTagger = new MorfologikMorphoTagger(binDictMorphoTaggerURL,
+          lang);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
- }
 
   /**
    * Mapping between Penn Treebank tagset and KAF tagset.
@@ -252,12 +261,14 @@ public class Annotate {
 
   /**
    * Annotate morphological information into a NAF document.
-   * @param kaf the NAF document
+   * 
+   * @param kaf
+   *          the NAF document
    */
   public final void annotatePOSToKAF(final KAFDocument kaf) {
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> wfs : sentences) {
-      
+
       List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
       List<Morpheme> morphemes = null;
       String[] tokens = new String[wfs.size()];
@@ -268,7 +279,8 @@ public class Annotate {
         tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
       if (multiwords) {
-        String[] multiWordTokens = multiWordMatcher.getTokensWithMultiWords(tokens);
+        String[] multiWordTokens = multiWordMatcher
+            .getTokensWithMultiWords(tokens);
         morphemes = posTagger.getMorphemes(multiWordTokens);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
@@ -277,7 +289,8 @@ public class Annotate {
       for (int i = 0; i < morphemes.size(); i++) {
         Term term = kaf.newTerm(tokenSpans.get(i));
         if (dictag) {
-          String dictPosTag = dictMorphoTagger.tag(morphemes.get(i).getWord(), morphemes.get(i).getTag());
+          String dictPosTag = dictMorphoTagger.tag(morphemes.get(i).getWord(),
+              morphemes.get(i).getTag());
           morphemes.get(i).setTag(dictPosTag);
         }
         String posId = this.getKafTagSet(morphemes.get(i).getTag());
@@ -292,32 +305,37 @@ public class Annotate {
       }
     }
   }
-  
+
   /**
-   * Creates the multiword spans. It get an initial list of spans (one per token)
-   * and creates a multiword span when a multiword is detected.
-   * @param tokens the list of tokens
-   * @param wfs the list of WFs
-   * @param tokenSpans the list of initial token spans
+   * Creates the multiword spans. It get an initial list of spans (one per
+   * token) and creates a multiword span when a multiword is detected.
+   * 
+   * @param tokens
+   *          the list of tokens
+   * @param wfs
+   *          the list of WFs
+   * @param tokenSpans
+   *          the list of initial token spans
    */
-  private void getMultiWordSpans(String[] tokens, List<WF> wfs, List<ixa.kaflib.Span<WF>> tokenSpans) {
+  private void getMultiWordSpans(String[] tokens, List<WF> wfs,
+      List<ixa.kaflib.Span<WF>> tokenSpans) {
     Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
     int counter = 0;
     for (Span mwSpan : multiWordSpans) {
       Integer fromIndex = mwSpan.getStart() - counter;
       Integer toIndex = mwSpan.getEnd() - counter;
       // add to the counter the length of the span removed
-      counter =+ tokenSpans.subList(fromIndex, toIndex).size() - 1;
-      //create multiword targets and Span
+      counter = +tokenSpans.subList(fromIndex, toIndex).size() - 1;
+      // create multiword targets and Span
       List<WF> wfTargets = wfs.subList(mwSpan.getStart(), mwSpan.getEnd());
       ixa.kaflib.Span<WF> multiWordSpan = KAFDocument.newWFSpan(wfTargets);
-      //remove the token Spans corresponding to the multiword span
+      // remove the token Spans corresponding to the multiword span
       tokenSpans.subList(fromIndex, toIndex).clear();
-      //add the new Span containing several WFs (multiWordSpan)
+      // add the new Span containing several WFs (multiWordSpan)
       // the counter is used to allow matching the spans to the
-      //tokenSpans list indexes
+      // tokenSpans list indexes
       tokenSpans.add(fromIndex, multiWordSpan);
-      
+
     }
   }
 
@@ -335,9 +353,9 @@ public class Annotate {
     StringBuilder sb = new StringBuilder();
     List<List<WF>> sentences = kaf.getSentences();
     for (List<WF> wfs : sentences) {
-      
+
       List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
-      List<Morpheme> morphemes = null; 
+      List<Morpheme> morphemes = null;
       // Get an array of token forms from a list of WF objects.
       String[] tokens = new String[wfs.size()];
       for (int i = 0; i < wfs.size(); i++) {
@@ -347,7 +365,8 @@ public class Annotate {
         tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
       if (multiwords) {
-        String[] multiWordTokens = multiWordMatcher.getTokensWithMultiWords(tokens);
+        String[] multiWordTokens = multiWordMatcher
+            .getTokensWithMultiWords(tokens);
         morphemes = posTagger.getMorphemes(multiWordTokens);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
@@ -361,13 +380,12 @@ public class Annotate {
           morphemes.get(i).setTag(dictPosTag);
         }
         String lemma = dictLemmatizer.lemmatize(word, posTag);
-        sb.append(word).append("\t").append(lemma).append("\t")
-            .append(posTag).append("\n");
+        sb.append(word).append("\t").append(lemma).append("\t").append(posTag)
+            .append("\n");
       }
       sb.append("\n");
     }
     return sb.toString();
   }
-
 
 }
