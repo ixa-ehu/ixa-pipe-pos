@@ -112,6 +112,10 @@ public class CrossValidator {
     }
   }
 
+  /**
+   * Cross validate when no separate testset is available.
+   * @param params the training parameters
+   */
   public final void crossValidate(final TrainingParameters params) {
 
     POSTaggerCrossValidator validator = null;
@@ -136,6 +140,11 @@ public class CrossValidator {
     }
   }
 
+  /**
+   * Get the postagger cross validator.
+   * @param params the training parameters
+   * @return the pos tagger cross validator
+   */
   private POSTaggerCrossValidator getPOSTaggerCrossValidator(
       TrainingParameters params) {
     File dictPath = new File(Flags.getDictionaryFeatures(params));
