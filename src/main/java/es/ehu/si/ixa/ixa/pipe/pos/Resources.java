@@ -40,15 +40,15 @@ public class Resources {
     InputStream dict = null;
     if (lang.equalsIgnoreCase("en")) {
       dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/language-tool/en-lemmatizer.dict");
+          "/lemmatizer-dicts/language-tool/en-lemmatizer.txt");
     }
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/freeling/es-lemmatizer.dict");
+          "/lemmatizer-dicts/freeling/es-lemmatizer.txt");
     }
     if (lang.equalsIgnoreCase("gl")) {
       dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/freeling/gl-lemmatizer.dict");
+          "/lemmatizer-dicts/freeling/gl-lemmatizer.txt");
     }
     return dict;
   }
