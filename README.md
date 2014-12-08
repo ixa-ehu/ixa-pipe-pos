@@ -36,8 +36,7 @@ provide two fast POS tagging models:
 + **POS tagging models for English** trained and evaluated using the WSJ treebank as explained 
   in K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic 
   dependency network. In Proceedings of HLT-NAACL’03, 2003. 
-+ **POS tagging models for Spanish** trained and evaluated using the Ancora corpus; it was randomly
-  divided in 90% for training (450K words) and 10% testing (50K words). 
++ **POS tagging models for Spanish** trained and evaluated using the Ancora corpus via 5-fold and 10-fold cross-validation.
 + **Dictionary-based lemmatization** for English and Spanish. 
 
 For this first release we provide two reasonably fast POS tagging models based on the Perceptron (Collins 2002) and 
@@ -78,12 +77,11 @@ The following pre-trained models are provided in the [pos-models-$version.tgz](h
 + **English POS Models**:
   + Penn Treebank: **en-pos-perceptron-c0-b3-dev.bin**: 97.06
 
-+ **Spanish POS Models**: we obtained better results overall with Maximum Entropy
-  models (Ratnapharki 1999). The best results are obtained when a c0 (cutoff 0)
-  is used, but those models are slower for production than the Perceptron
-  models. Therefore, we provide both types, based on maxent and perceptron.
-  + Ancora: **es-pos-maxent-750-c0-b3.bin**: 98.88 Word accuracy.
-  + Ancora: **es-pos-perceptron-c0-b3.bin**: 98.24 Word accuracy (**this is the default**). 
++ **Spanish POS Models**: We provide two Perceptron models:
+  + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy via 10-fold cross validation
+  + Ancora: **es-perceptron-baseline-ancora.bin**: With Baseline features, this is slightly faster. 
+
+Remember that for Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag CLI option**.
 
 ## USAGE
 
