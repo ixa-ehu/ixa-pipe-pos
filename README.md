@@ -168,7 +168,7 @@ options:
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.nerc-$version.jar eval -m test-pos.bin -l en -t test.data 
+java -jar target/ixa.pipe.pos-$version.jar eval -m test-pos.bin -l en -t test.data 
 ````
 
 ## API
@@ -178,9 +178,9 @@ this dependency to your pom.xml:
 
 ````shell
 <dependency>
-  <groupId>es.ehu.si.ixa</grouId>
-  <artifactId>ixa.pipe.pos</artifactId>
-  <version>1.3.0</version>
+    <groupId>es.ehu.si.ixa</groupId>
+    <artifactId>ixa-pipe-pos</artifactId>
+    <version>1.3.0</version>
 </dependency>
 ````
 
