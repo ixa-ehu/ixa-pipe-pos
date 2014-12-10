@@ -74,8 +74,8 @@ To use the resources "as is" just download the package, copy it and untar it int
 
 The following pre-trained models are provided in the [pos-models-$version.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package: 
 
-+ **English POS Models**:
-  + Penn Treebank: **en-pos-perceptron-c0-b3-dev.bin**: 97.06
++ **English POS Models**: Maxent model:
+  + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.74
 
 + **Spanish POS Models**: We provide two Perceptron models:
   + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy via 10-fold cross validation
