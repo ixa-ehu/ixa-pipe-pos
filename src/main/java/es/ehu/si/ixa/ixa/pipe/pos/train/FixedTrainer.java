@@ -55,7 +55,7 @@ public class FixedTrainer extends AbstractTrainer {
    */
   private final POSTaggerFactory getTrainerFactory(TrainingParameters params) {
     POSTaggerFactory posTaggerFactory = null;
-    String featureSet = Flags.getDictionaryFeatures(params);
+    String featureSet = Flags.getFeatureSet(params);
     Dictionary ngramDictionary = null;
     if (Flags.getNgramDictFeatures(params) != Flags.DEFAULT_DICT_CUTOFF) {
       ngramDictionary = createNgramDictionary(getDictSamples(), getNgramDictCutOff());
