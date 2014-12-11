@@ -36,7 +36,7 @@ provide Perceptron based (Collins 2002) POS tagging models:
 + **POS tagging models for English** trained and evaluated using the WSJ treebank as explained 
   in K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic 
   dependency network. In Proceedings of HLT-NAACL’03, 2003. 
-+ **POS tagging models for Spanish** trained and evaluated via 5-fold and 10-fold cross validation using the Ancora corpus. 
++ **POS tagging models for Spanish** trained and evaluated using the Ancora corpus via 5-fold and 10-fold cross-validation.
 + **Dictionary-based lemmatization** for English and Spanish. 
 
 The POS tagging models are based on the Perceptron (Collins 2002) algorithm. To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
@@ -76,15 +76,14 @@ To use the resources "as is" just download the package, copy it and untar it int
 
 The following pre-trained models are provided in the [pos-models-$version.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package: 
 
-+ **English POS Models**:
-  + Penn Treebank: **en-pos-perceptron-c0-b3-dev.bin**: 97.06
++ **English POS Models**: Maxent model:
+  + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.74
 
-+ **Spanish POS Models**: we obtained better results overall with Maximum Entropy
-  models (Ratnapharki 1999). The best results are obtained when a c0 (cutoff 0)
-  is used, but those models are slower for production than the Perceptron
-  models. Therefore, we provide both types, based on maxent and perceptron.
-  + Ancora: **es-pos-maxent-750-c0-b3.bin**: 98.88 Word accuracy.
-  + Ancora: **es-pos-perceptron-c0-b3.bin**: 98.24 Word accuracy (**this is the default**). 
++ **Spanish POS Models**: We provide two Perceptron models:
+  + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy via 10-fold cross validation
+  + Ancora: **es-perceptron-baseline-ancora.bin**: With Baseline features, this is slightly faster. 
+
+Remember that for Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag CLI option**.
 
 ## USAGE
 
@@ -173,7 +172,7 @@ options:
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.nerc-$version.jar eval -m test-pos.bin -l en -t test.data 
+java -jar target/ixa.pipe.pos-$version.jar eval -m test-pos.bin -l en -t test.data 
 ````
 
 ## API
@@ -183,9 +182,9 @@ this dependency to your pom.xml:
 
 ````shell
 <dependency>
-  <groupId>es.ehu.si.ixa</grouId>
-  <artifactId>ixa.pipe.pos</artifactId>
-  <version>1.3.0</version>
+    <groupId>es.ehu.si.ixa</groupId>
+    <artifactId>ixa-pipe-pos</artifactId>
+    <version>1.3.0</version>
 </dependency>
 ````
 
