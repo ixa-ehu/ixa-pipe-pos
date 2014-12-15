@@ -159,19 +159,21 @@ public class CrossValidator {
         validator = new POSTaggerCrossValidator(lang, params, null, null,
             null, posTaggerFactory.getClass().getName(),
             listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
-      }
-      validator = new POSTaggerCrossValidator(lang, params, null, null,
-          dictCutOff, posTaggerFactory.getClass().getName(),
-          listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+      } else {
+        validator = new POSTaggerCrossValidator(lang, params, null, null,
+            dictCutOff, posTaggerFactory.getClass().getName(),
+            listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+      } 
     } else {
       if (this.dictCutOff == Flags.DEFAULT_DICT_CUTOFF) {
         validator = new POSTaggerCrossValidator(lang, params, dictPath, null,
             null, posTaggerFactory.getClass().getName(),
             listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+      } else {
+        validator = new POSTaggerCrossValidator(lang, params, dictPath, null,
+            dictCutOff, posTaggerFactory.getClass().getName(),
+            listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
       }
-      validator = new POSTaggerCrossValidator(lang, params, dictPath, null,
-          dictCutOff, posTaggerFactory.getClass().getName(),
-          listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
     }
     return validator;
   }
