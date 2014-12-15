@@ -136,7 +136,7 @@ public class CrossValidator {
     if (detailedListener == null) {
       System.out.println(validator.getWordAccuracy());
     } else {
-      System.out.println(detailedListener.toString());
+      System.out.println(validator.getWordAccuracy());
     }
   }
 
