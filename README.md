@@ -36,7 +36,7 @@ provide Perceptron (Collins 2002) and Maximum Entroy (Ratnapharki 1999) POS tagg
   in K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic 
   dependency network. In Proceedings of HLT-NAACL’03, 2003. 
 + **POS tagging models for Spanish** trained and evaluated using the [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 5-fold and 10-fold cross-validation.
-+ + **POS tagging models for Galician** trained and evaluated using the [CTAG corpus](http://sli.uvigo.es/CTAG/) via 5-fold and 10-fold cross-validation.
++ **POS tagging models for Galician** trained and evaluated using the [CTAG corpus](http://sli.uvigo.es/CTAG/) via 5-fold and 10-fold cross-validation.
 + **Dictionary-based lemmatization** for English, Galician and Spanish.
 + **Multiword detection** and **post-processing** of probabilistic model results using a monosemic dictionary for Spanish.
 
@@ -51,9 +51,8 @@ To avoid duplication of efforts, we use and contribute to the machine learning A
 The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz)
 package. Note that the dictionaries come with their own licences, please do comply with them:
 
-+ **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologic-stemming project](https://github.com/morfologik/morfologik-stemming): 
-  + english.dict, galician.dict, spanish.dict
-Via API you can also pass a plain text dictionary of the same tabulated format.
++ **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming): 
+  + english.dict, galician.dict, spanish.dict. Via API you can also pass a plain text dictionary of the same tabulated format.
 
 + **Multiword Dictionaries**: "multi#word\tab\multi#lemma\tab\postag\tabambiguity" dictionaries to detect multiword expressions. Currently vailable: 
   + es-locutions.dict for **Spanish** and gl-locutions.dict in **Galician**.
