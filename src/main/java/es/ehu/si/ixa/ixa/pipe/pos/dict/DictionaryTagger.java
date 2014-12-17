@@ -26,7 +26,7 @@ package es.ehu.si.ixa.ixa.pipe.pos.dict;
 public interface DictionaryTagger {
 
   /**
-   * Lemmatize by dictionary lookup.
+   * Postag by dictionary lookup.
    *
    * @param word the surface form word
    * @param posTag the posTag to be post-processed

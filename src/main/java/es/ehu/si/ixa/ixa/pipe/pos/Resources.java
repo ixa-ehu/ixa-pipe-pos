@@ -76,9 +76,9 @@ public class Resources {
   }
   
   /**
-   * The the dictionary for the {@code MorfologikLemmatizer}.
+   * The the dictionary for the {@code MorfologikMorphoTagger}.
    * @param lang the language
-   * @return the URL of the dictonary
+   * @return the URL of the dictionary
    */
   public final URL getBinaryTaggerDict(final String lang) {
     URL dictURL = null;

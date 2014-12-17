@@ -62,7 +62,7 @@ public class SimpleMorphoTagger implements DictionaryTagger {
   }
 
   /* (non-Javadoc)
-   * @see es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String, java.lang.String, java.lang.String)
+   * @see es.ehu.si.ixa.ixa.pipe.pos.dict.DictionaryTagger#tag(java.lang.String, java.lang.String)
    */
   public String tag(final String word, final String postag) {
     // lookup postag as value of the map

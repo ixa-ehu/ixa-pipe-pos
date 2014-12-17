@@ -112,7 +112,7 @@ public class Annotate {
     URL binLemmatizerURL = resources.getBinaryDict(lang);
     if (binLemmatizerURL == null) {
       System.err
-          .println("ERROR: No binary lemmatizer dictionary available for this language in src/main/resources!!");
+          .println("ERROR: No binary lemmatizer dictionary available for language " + lang + " in src/main/resources!!");
       System.exit(1);
     }
     try {
@@ -135,7 +135,7 @@ public class Annotate {
     URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(lang);
     if (binDictMorphoTaggerURL == null) {
       System.err
-          .println("ERROR: No binary POS tagger dictionary available for this language in src/main/resources!!");
+          .println("ERROR: No binary POS tagger dictionary available for language " +  lang + " in src/main/resources!!");
       System.exit(1);
     }
     try {
@@ -207,6 +207,39 @@ public class Annotate {
       return "O"; // other
     }
   }
+  
+  /**
+   * Mapping between CTAG tagset and NAF.
+   * 
+   * @param postag
+   *          the postag
+   * @return the mapping to NAF pos tagset
+   */
+  private String mapGalicianTagSetToKaf(final String postag) {
+    if (postag.startsWith("R")) {
+      return "A"; // adverb
+    } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
+      return "C"; // conjunction
+    } else if (postag.startsWith("D") || postag.startsWith("G") || postag.startsWith("X") || postag.startsWith("Q") || 
+        postag.startsWith("T") || postag.startsWith("I") | postag.startsWith("M")) {
+      return "D"; // det predeterminer
+    } else if (postag.startsWith("A")) {
+      return "G"; // adjective
+    } else if (postag.startsWith("NC")) {
+      return "N"; // common noun
+    } else if (postag.startsWith("NP")) {
+      return "R"; // proper noun
+    } else if (postag.startsWith("S")) {
+      return "P"; // preposition
+    } else if (postag.startsWith("P")) {
+      return "Q"; // pronoun
+    } else if (postag.startsWith("V")) {
+      return "V"; // verb
+    } else {
+      return "O"; // other
+    }
+  }
+
 
   /**
    * Obtain the appropriate tagset according to language and postag.
@@ -224,7 +257,7 @@ public class Annotate {
       tag = this.mapSpanishTagSetToKaf(postag);
     }
     if (lang.equalsIgnoreCase("gl")) {
-      tag = this.mapSpanishTagSetToKaf(postag);
+      tag = this.mapGalicianTagSetToKaf(postag);
     }
     return tag;
   }
@@ -311,11 +344,11 @@ public class Annotate {
       Integer fromIndex = mwSpan.getStart() - counter;
       Integer toIndex = mwSpan.getEnd() - counter;
       // add to the counter the length of the span removed
-      counter = +tokenSpans.subList(fromIndex, toIndex).size() - 1;
+      counter =+ tokenSpans.subList(fromIndex, toIndex).size() - 1;
       // create multiword targets and Span
       List<WF> wfTargets = wfs.subList(mwSpan.getStart(), mwSpan.getEnd());
       ixa.kaflib.Span<WF> multiWordSpan = KAFDocument.newWFSpan(wfTargets);
-      // remove the token Spans corresponding to the multiword span
+      // remove the token Spans to be replaced by the multiword span
       tokenSpans.subList(fromIndex, toIndex).clear();
       // add the new Span containing several WFs (multiWordSpan)
       // the counter is used to allow matching the spans to the

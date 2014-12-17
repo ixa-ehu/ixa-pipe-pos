@@ -69,7 +69,7 @@ public class MultiWordMatcher {
     String lang = props.getProperty("language");
     InputStream dictInputStream = getMultiWordDict(lang);
     if (dictInputStream == null) {
-      System.err.println("ERROR: Not multiword dictionary for that language in src/main/resources!!");
+      System.err.println("ERROR: Not multiword dictionary for language " + lang + " in src/main/resources!!");
       System.exit(1);
     }
     BufferedReader breader = new BufferedReader(new InputStreamReader(dictInputStream, Charset.forName("UTF-8")));
@@ -94,7 +94,7 @@ public class MultiWordMatcher {
    */
   private final InputStream getMultiWordDict(final String lang) {
     InputStream dict = null;
-    
+    //TODO complete locutions dictionary and binarize
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-locutions.txt");
@@ -123,7 +123,7 @@ public class MultiWordMatcher {
       counter =+ tokenList.subList(fromIndex, toIndex).size() - 1;
       //create the multiword joining the sublist
       String multiWord = Joiner.on("#").join(tokenList.subList(fromIndex, toIndex));
-      //remove the sublist containing the tokens in the span
+      //remove the sublist containing the tokens to be replaced in the span
       tokenList.subList(fromIndex, toIndex).clear();
       //add the multiword containing the tokens in one Span
       tokenList.add(fromIndex, multiWord);
