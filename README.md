@@ -2,8 +2,7 @@
 ixa-pipe-pos
 ============
 
-ixa-pipe-pos is a Part of Speech tagger for English and Spanish. 
-ixa-pipe-pos is part of IXA pipes, a multilingual NLP pipeline developed 
+ixa-pipe-pos is a multilingual Part of Speech tagger, currently offering pre-trained models for English, Galician and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual NLP pipeline developed 
 by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. 
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
@@ -30,69 +29,64 @@ the [installation instructions](#installation).
 
 ## OVERVIEW
 
-ixa-pipe-pos provides POS tagging and lemmatization for English and Spanish. We
-provide Perceptron based (Collins 2002) POS tagging models: 
+ixa-pipe-pos provides POS tagging and lemmatization several languages. We
+provide Perceptron (Collins 2002) and Maximum Entroy (Ratnapharki 1999) POS tagging models: 
 
 + **POS tagging models for English** trained and evaluated using the WSJ treebank as explained 
   in K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic 
   dependency network. In Proceedings of HLT-NAACL’03, 2003. 
-+ **POS tagging models for Spanish** trained and evaluated using the Ancora corpus via 5-fold and 10-fold cross-validation.
-+ **Dictionary-based lemmatization** for English and Spanish. 
++ **POS tagging models for Spanish** trained and evaluated using the [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 5-fold and 10-fold cross-validation.
++ + **POS tagging models for Galician** trained and evaluated using the [CTAG corpus](http://sli.uvigo.es/CTAG/) via 5-fold and 10-fold cross-validation.
++ **Dictionary-based lemmatization** for English, Galician and Spanish.
++ **Multiword detection** and **post-processing** of probabilistic model results using a monosemic dictionary for Spanish.
 
-The POS tagging models are based on the Perceptron (Collins 2002) algorithm. To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
+To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
 
-ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details).
+**ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details)**.
 
 ### Resources
 
-**The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos.
+**The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos before compilation.
 
 The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz)
 package. Note that the dictionaries come with their own licences, please do comply with them:
 
-+ **Lemmatizer Dictionaries**:
-  + **English**:
-    + **Plain text dictionary**: en-lemmatizer.txt is a "word\tlemma\tpostag" dictionary in plain text to perform lemmatization.
-    + **Morfologik-stemming**: english.dict is the same as en-lemmatizer.txt but binarized as Finite State Automata using the morfologik-stemming project (see NOTICE file for details). **this is the default for every language**
-  + **Spanish**:
-    + **Plain text dictionary**: es-lemmatizer.txt
-    + **Morfologik stemming**: spanish.dict.
-  + **Galician**:
-    + **Plain text**: gl-lemmatizer.txt
-    + **Morfologik stemming**: galician.dict
++ **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologic-stemming project](https://github.com/morfologik/morfologik-stemming): 
+  + english.dict, galician.dict, spanish.dict
+Via API you can also pass a plain text dictionary of the same tabulated format.
 
-+ **Multiword Dictionaries**:
-  + **Spanish**: es-locutions.dict contains a list of multiword expressions in Spanish.
-  + **Galician**: gl-locutions.dict contains a list of multiword expressions in Galician.
++ **Multiword Dictionaries**: "multi#word\tab\multi#lemma\tab\postag\tabambiguity" dictionaries to detect multiword expressions. Currently vailable: 
+  + es-locutions.dict for **Spanish** and gl-locutions.dict in **Galician**.
 
-+ **Monosemic Tag Dictionaries**:
-  + **Spanish**: es-monosemic.dict is the monosemic version of the lemmatizer
-    dictionary for Spanish. This is used for post-processing the results of the
-    POS tagger if and when the option **--dictag** is activated in CLI.
++ **Monosemic Tag Dictionaries**: the monosemic versions of the lemmatizer dictionaries. This is used for post-processing the results of the POS tagger if and when the option **--dictag** is activated in CLI. Currently available:
+  + spanish-monosemic.dict, galician-monosemic.dict.
 
-To use the resources "as is" just download the package, copy it and untar it intto the src/main/resources directory. 
+**It is required before compilation** to download the package, copy it and untar it into the src/main/resources directory. 
 
 ### Models
 
 The following pre-trained models are provided in the [pos-models-$version.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package: 
 
-+ **English POS Models**: Maxent model:
++ **English POS Models**:
   + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.74
+  + Penn Treebank: **en-perceptron-baseline-penn.bin**: 96.60
 
 + **Spanish POS Models**: We provide two Perceptron models:
-  + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy via 10-fold cross validation
-  + Ancora: **es-perceptron-baseline-ancora.bin**: With Baseline features, this is slightly faster. 
+  + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy in 10-fold cross validation.
+  + Ancora: **es-perceptron-baseline-ancora.bin**: With Baseline features, this is slightly faster and obtains 97.35 word accuracy in 10-fold cross validation.
 
-Remember that for Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag CLI option**.
++ **Galician POS Model**: Perceptron model trained with CTAG corpus: 
+  + Automatic dictionary created from training data: **gl-perceptron-baseline-autodict05-ctag.bin**
+
+Remember that for Galician and Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag** CLI option.
 
 ## USAGE
 
 ixa-pipe-pos provides 3 basic functionalities:
 
-1. **tag**: reads a NAF document containing *wf* and *term* elements and tags named
-   entities.
-2. **train**: trains new model for English or Spanish with several options
-   available.
+1. **tag**: reads a NAF document containing *wf* elements and creates *term* elements with the morphological information.
+2. **train**: trains new models for with several options
+   available (read trainParams.prop file for details).
 3. **eval**: evaluates a trained model with a given test set.
 
 Each of these functionalities are accessible by adding (tag|train|eval) as a
@@ -113,7 +107,7 @@ cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar t
 
 If you want to know more, please follow reading.
 
-ixa-pipe-pos reads NAF documents (with *wf* and *term* elements) via standard input and outputs NAF
+ixa-pipe-pos reads NAF documents containing *wf* elements via standard input and outputs NAF
 through standard output. The NAF format specification is here:
 
 (http://wordpress.let.vupr.nl/naf/)
@@ -123,17 +117,12 @@ You can get the necessary input for ixa-pipe-pos by piping it with
 
 There are several options to tag with ixa-pipe-pos: 
 
++ **model**: it is **required** to provide the model to do the tagging.
 + **lang**: choose between en and es. If no language is chosen, the one specified
   in the NAF header will be used.
-+ **model**: provide the model to do the tagging. If no model is provided via
-  this parameter, ixa-pipe-pos will revert to the baseline model distributed
-  in the release.  
 + **beamsize**: choose beam size for decoding. There is no definitive evidence
   that using larger or smaller beamsize actually improves accuracy. It is known
   to slow things down considerably if beamsize is set to 100, for example.
-+ **lemmatize**: choose dictionary method to perform lemmatization:
-  + **bin**: Morfologik binary dictionary (**default**).
-  + **plain**: plain text dictionary.
 + **multiwords**: activates the multiword detection option.
 + **dictag**: post-process the Statistical POS tagger output via a monosemic
   postag dictionary.
@@ -184,7 +173,7 @@ this dependency to your pom.xml:
 <dependency>
     <groupId>es.ehu.si.ixa</groupId>
     <artifactId>ixa-pipe-pos</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
 </dependency>
 ````
 
@@ -323,7 +312,7 @@ To add your language to ixa-pipe-pos the following steps are required:
     + java -jar morfologik-tools-1.6.0-standalone.jar fsa_build -i spanish.morph -o spanish.dict
     + **Create a *.info file like spanish.info**
 + **Modify the classes** CLI, Resources and Annotate; if multiword is required also MultiWordMatcher; if monosemic dictionaries for post-processing also MorfologikMorphoTagger) adding for your language the same information that it is available for other languages.
-+ Train a model. **It is important that the tagset of the dictionaries and corpus be the same**. Also it is recommended to train a model with an external dictionary (see tag-dicts dictionaries distributed in pos-resources tarball).
++ Train a model. **It is crucial that the tagset of the dictionaries and corpus be the same**. Also it is recommended to train a model with an external dictionary (the external tag dictionary needs to be in opennlp tag format).
 + Add documentation to this README.md.
 + **Do a pull request** to merge the changes with your new language.
 + Send us the resources and models created if you want them to be distributed with ixa-pipe-pos (Apache License 2.0 is favoured).
