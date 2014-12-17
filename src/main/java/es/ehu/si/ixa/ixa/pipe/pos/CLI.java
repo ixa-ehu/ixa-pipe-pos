@@ -187,7 +187,6 @@ public class CLI {
 
     String model = parsedArguments.getString("model");
     String beamSize = parsedArguments.getString("beamSize");
-    String lemmatize = parsedArguments.getString("lemmatize");
     String multiwords = Boolean.toString(parsedArguments.getBoolean("multiwords"));
     String dictag = Boolean.toString(parsedArguments.getBoolean("dictag"));
     BufferedReader breader = null;
@@ -208,7 +207,7 @@ public class CLI {
     } else {
       lang = kaf.getLang();
     }
-    Properties properties = setAnnotateProperties(model, lang, beamSize, lemmatize, multiwords, dictag);
+    Properties properties = setAnnotateProperties(model, lang, beamSize, multiwords, dictag);
     Annotate annotator = new Annotate(properties);
     if (parsedArguments.getBoolean("nokaf")) {
       bwriter.write(annotator.annotatePOSToCoNLL(kaf));
@@ -240,12 +239,6 @@ public class CLI {
         .required(false)
         .setDefault(DEFAULT_BEAM_SIZE)
         .help("Choose beam size for decoding, it defaults to 3.");
-    annotateParser.addArgument("-lem", "--lemmatize")
-        .required(false)
-        .choices("bin", "plain")
-        .setDefault("bin")
-        .help("Lemmatization method: Choose 'bin' for binary Morfologik "
-        + " dictionary (default), 'plain' for plain text dictionary.\n");
     annotateParser
         .addArgument("--nokaf")
         .action(Arguments.storeTrue())
@@ -369,12 +362,11 @@ public class CLI {
    * @param lemmatize the lemmatization method
    * @return the properties object
    */
-  private Properties setAnnotateProperties(String model, String language, String beamSize, String lemmatize, String multiwords, String dictag) {
+  private Properties setAnnotateProperties(String model, String language, String beamSize, String multiwords, String dictag) {
     Properties annotateProperties = new Properties();
     annotateProperties.setProperty("model", model);
     annotateProperties.setProperty("language", language);
     annotateProperties.setProperty("beamSize", beamSize);
-    annotateProperties.setProperty("lemmatize", lemmatize);
     annotateProperties.setProperty("multiwords", multiwords);
     annotateProperties.setProperty("dictag", dictag);
     return annotateProperties;

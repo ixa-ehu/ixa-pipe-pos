@@ -21,7 +21,6 @@ import ixa.kaflib.Term;
 import ixa.kaflib.WF;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ import opennlp.tools.util.Span;
 import es.ehu.si.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.lemma.MultiWordMatcher;
-import es.ehu.si.ixa.ixa.pipe.lemma.SimpleLemmatizer;
 import es.ehu.si.ixa.ixa.pipe.pos.dict.DictionaryTagger;
 import es.ehu.si.ixa.ixa.pipe.pos.dict.MorfologikMorphoTagger;
 
@@ -102,37 +100,25 @@ public class Annotate {
 
   // TODO static loading of lemmatizer dictionaries
   /**
-   * Load the lemmatizer dictionaries by language and format. Exits if no
-   * lemmatizer dictionary (plain or binary) is available for the input
+   * Load the binary lemmatizer dictionaries by language. Exits if no
+   * lemmatizer dictionary (binary) is available for the input
    * language.
    * 
    * @param props
    *          the props object
    */
   private void loadLemmatizerDicts(Properties props) {
-    String lemmatize = props.getProperty("lemmatize");
     Resources resources = new Resources();
-    if (lemmatize.equalsIgnoreCase("plain")) {
-      InputStream simpleDictInputStream = resources.getDictionary(lang);
-      if (simpleDictInputStream == null) {
-        System.err
-            .println("ERROR: No plain lemmatizer dictionary available for this language in src/main/resources!!");
-        System.exit(1);
-      }
-      dictLemmatizer = new SimpleLemmatizer(simpleDictInputStream, lang);
+    URL binLemmatizerURL = resources.getBinaryDict(lang);
+    if (binLemmatizerURL == null) {
+      System.err
+          .println("ERROR: No binary lemmatizer dictionary available for this language in src/main/resources!!");
+      System.exit(1);
     }
-    if (lemmatize.equalsIgnoreCase("bin")) {
-      URL binLemmatizerURL = resources.getBinaryDict(lang);
-      if (binLemmatizerURL == null) {
-        System.err
-            .println("ERROR: No binary lemmatizer dictionary available for this language in src/main/resources!!");
-        System.exit(1);
-      }
-      try {
-        dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL, lang);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    try {
+      dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL, lang);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
