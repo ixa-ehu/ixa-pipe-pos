@@ -38,7 +38,8 @@ provide Perceptron (Collins 2002) and Maximum Entroy (Ratnapharki 1999) POS tagg
 + **POS tagging models for Spanish** trained and evaluated using the [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 5-fold and 10-fold cross-validation.
 + **POS tagging models for Galician** trained and evaluated using the [CTAG corpus](http://sli.uvigo.es/CTAG/) via 5-fold and 10-fold cross-validation.
 + **Dictionary-based lemmatization** for English, Galician and Spanish.
-+ **Multiword detection** and **post-processing** of probabilistic model results using a monosemic dictionary for Spanish.
++ **Multiword detection** for Spanish and Galician. 
++ **Post-processing** of probabilistic model pos tags using monosemic dictionaries (Spanish and Galician).
 
 To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
 
