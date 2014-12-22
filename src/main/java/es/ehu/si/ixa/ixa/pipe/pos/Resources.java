@@ -48,7 +48,7 @@ public class Resources {
     }
     if (lang.equalsIgnoreCase("gl")) {
       dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/freeling/gl-lemmatizer.txt");
+          "/lemmatizer-dicts/ctag/gl-lemmatizer.txt");
     }
     return dict;
   }
@@ -70,7 +70,7 @@ public class Resources {
     }
     if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource(
-          "/lemmatizer-dicts/freeling/galician.dict");
+          "/lemmatizer-dicts/ctag/galician.dict");
     }
     return dictURL;
   }
@@ -88,7 +88,7 @@ public class Resources {
     }
     if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource(
-          "/lemmatizer-dicts/freeling/galician-monosemic.dict");
+          "/lemmatizer-dicts/ctag/galician-monosemic.dict");
     }
     return dictURL;
   }

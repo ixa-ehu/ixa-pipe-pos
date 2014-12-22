@@ -101,7 +101,7 @@ public class MultiWordMatcher {
     }
     if (lang.equalsIgnoreCase("gl")) {
       dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/freeling/gl-locutions.txt");
+          "/lemmatizer-dicts/ctag/gl-locutions.txt");
     }
     return dict;
   }
