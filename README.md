@@ -74,8 +74,8 @@ The following pre-trained models are provided in the [pos-models-$version.tgz](h
   + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy in 10-fold cross validation.
   + Ancora: **es-perceptron-baseline-ancora.bin**: With Baseline features, this is slightly faster and obtains 97.35 word accuracy in 10-fold cross validation.
 
-+ **Galician POS Model**: Perceptron model trained with CTAG corpus: 
-  + Automatic dictionary created from training data: **gl-perceptron-baseline-autodict05-ctag.bin**
++ **Galician POS Model**:
+  + CTAG corpus with an automatic dictionary created from training data **gl-perceptron-baseline-autodict05-ctag.bin**: 98.55 word accuracy in 10-fold cross validation.
 
 Remember that for Galician and Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag** CLI option.
 
