@@ -62,7 +62,7 @@ public class MorfologikMorphoTagger implements DictionaryTagger {
    * @return the hashmap with the word as key and the postag as value
    */
   public String tag(final String word, String posTag) {
-    List<WordData> wdList = dictLookup.lookup(word);
+    List<WordData> wdList = dictLookup.lookup(word.toLowerCase());
     String newPosTag = null;
     for (WordData wd : wdList) {
       newPosTag = wd.getTag().toString();
