@@ -66,7 +66,7 @@ public class SimpleMorphoTagger implements DictionaryTagger {
    */
   public String tag(final String word, final String postag) {
     // lookup postag as value of the map
-    String newPosTag = dictMap.get(word);
+    String newPosTag = dictMap.get(word.toLowerCase());
     if (newPosTag == null) {
       newPosTag = postag;
     }
