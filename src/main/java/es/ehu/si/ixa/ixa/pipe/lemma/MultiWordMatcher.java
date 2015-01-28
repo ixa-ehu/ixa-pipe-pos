@@ -1,5 +1,5 @@
 /* 
- *Copyright 2014 Rodrigo Agerri
+ *Copyright 2015 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import es.ehu.si.ixa.ixa.pipe.pos.StringUtils;
  * Reads a dictionary multiword\tmultiwordlemma\tpostag\tambiguity and
  * matches the multiwords for each sentence.
  * @author ragerri
- * @version 2014-12-03
+ * @version 2015-01-28
  *
  */
 public class MultiWordMatcher {
@@ -118,9 +118,10 @@ public class MultiWordMatcher {
     for (Span mwSpan : multiWordSpans) {
       int fromIndex = mwSpan.getStart() - counter;
       int toIndex = mwSpan.getEnd() - counter;
+      //System.err.println(fromIndex + " " + toIndex);
       //add to the counter the length of the sublist removed
       //to allow the fromIndex and toIndex to match wrt to the tokenList indexes
-      counter =+ tokenList.subList(fromIndex, toIndex).size() - 1;
+      counter = counter + tokenList.subList(fromIndex, toIndex).size() - 1;
       //create the multiword joining the sublist
       String multiWord = Joiner.on("#").join(tokenList.subList(fromIndex, toIndex));
       //remove the sublist containing the tokens to be replaced in the span

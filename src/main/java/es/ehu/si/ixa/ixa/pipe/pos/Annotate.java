@@ -71,7 +71,7 @@ public class Annotate {
    */
   private Boolean dictag;
   /**
-   * The the dictionary postagger.
+   * The monosemic dictionary postagger.
    */
   private DictionaryTagger dictMorphoTagger;
 
@@ -344,7 +344,7 @@ public class Annotate {
       Integer fromIndex = mwSpan.getStart() - counter;
       Integer toIndex = mwSpan.getEnd() - counter;
       // add to the counter the length of the span removed
-      counter =+ tokenSpans.subList(fromIndex, toIndex).size() - 1;
+      counter = counter + tokenSpans.subList(fromIndex, toIndex).size() - 1;
       // create multiword targets and Span
       List<WF> wfTargets = wfs.subList(mwSpan.getStart(), mwSpan.getEnd());
       ixa.kaflib.Span<WF> multiWordSpan = KAFDocument.newWFSpan(wfTargets);
@@ -354,7 +354,6 @@ public class Annotate {
       // the counter is used to allow matching the spans to the
       // tokenSpans list indexes
       tokenSpans.add(fromIndex, multiWordSpan);
-
     }
   }
 
@@ -399,7 +398,7 @@ public class Annotate {
           morphemes.get(i).setTag(dictPosTag);
         }
         String lemma = dictLemmatizer.lemmatize(word, posTag);
-        sb.append(word).append("\t").append(lemma).append("\t").append(posTag)
+        sb.append(word).append("\t").append(lemma).append("\t").append(morphemes.get(i).getTag())
             .append("\n");
       }
       sb.append("\n");
