@@ -2,8 +2,8 @@
 ixa-pipe-pos
 ============
 
-ixa-pipe-pos is a multilingual Part of Speech tagger, currently offering pre-trained models for English, Galician and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual NLP pipeline developed 
-by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. 
+ixa-pipe-pos is a multilingual Part of Speech tagger, currently offering pre-trained models for English, Galician and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed
+by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.4.0**.
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
 pipes tools but also for **official releases, including source code and binary
@@ -14,7 +14,7 @@ and install this repository instead of using the releases provided in
 [http://ixa2.si.ehu.es/ixa-pipes], please scroll down to the end of the document for
 the [installation instructions](#installation).
 
-## TABLE OF CONTENTS 
+## TABLE OF CONTENTS
 
 1. [Overview of ixa-pipe-pos](#overview)
   + [Distributed resources](#resources)
@@ -30,15 +30,14 @@ the [installation instructions](#installation).
 ## OVERVIEW
 
 ixa-pipe-pos provides POS tagging and lemmatization several languages. We
-provide Perceptron (Collins 2002) and Maximum Entroy (Ratnapharki 1999) POS tagging models: 
+provide Perceptron (Collins 2002) and Maximum Entropy (Ratnapharki 1999) POS tagging models:
 
-+ **POS tagging models for English** trained and evaluated using the WSJ treebank as explained 
-  in K. Toutanova, D. Klein, and C. D. Manning. Feature-rich part-of-speech tagging with a cyclic 
-  dependency network. In Proceedings of HLT-NAACL’03, 2003. 
-+ **POS tagging models for Spanish** trained and evaluated using the [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 5-fold and 10-fold cross-validation.
-+ **POS tagging models for Galician** trained and evaluated using the [CTAG corpus](http://sli.uvigo.es/CTAG/) via 5-fold and 10-fold cross-validation.
++ **POS tagging models for English** trained and evaluated using the WSJ treebank with the usual
+partitions (Ratnapharki 1999).
++ **POS tagging models for Spanish** trained and evaluated using the [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 10-fold cross-validation.
++ **POS tagging models for Galician** trained and evaluated using the [CTAG corpus](http://sli.uvigo.es/CTAG/) via 10-fold cross-validation.
 + **Dictionary-based lemmatization** for English, Galician and Spanish.
-+ **Multiword detection** for Spanish and Galician. 
++ **Multiword detection** for Spanish and Galician.
 + **Post-processing** of probabilistic model pos tags using monosemic dictionaries (Spanish and Galician).
 
 To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
@@ -52,24 +51,23 @@ To avoid duplication of efforts, we use and contribute to the machine learning A
 The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz)
 package. Note that the dictionaries come with their own licences, please do comply with them:
 
-+ **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming): 
++ **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming):
   + english.dict, galician.dict, spanish.dict. Via API you can also pass a plain text dictionary of the same tabulated format.
 
-+ **Multiword Dictionaries**: "multi#word\tab\multi#lemma\tab\postag\tabambiguity" dictionaries to detect multiword expressions. Currently vailable: 
++ **Multiword Dictionaries**: "multi#word\tab\multi#lemma\tab\postag\tabambiguity" dictionaries to detect multiword expressions. Currently vailable:
   + es-locutions.dict for **Spanish** and gl-locutions.dict in **Galician**.
 
 + **Monosemic Tag Dictionaries**: the monosemic versions of the lemmatizer dictionaries. This is used for post-processing the results of the POS tagger if and when the option **--dictag** is activated in CLI. Currently available:
   + spanish-monosemic.dict, galician-monosemic.dict.
 
-**It is required before compilation** to download the package, copy it and untar it into the src/main/resources directory. 
+**It is required before compilation** to download the package, copy it and untar it into the src/main/resources directory.
 
 ### Models
 
-The following pre-trained models are provided in the [pos-models-$version.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package: 
+The following pre-trained models are provided in the [pos-models-$version.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package:
 
 + **English POS Models**:
-  + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.74
-  + Penn Treebank: **en-perceptron-baseline-penn.bin**: 96.60
+  + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.81
 
 + **Spanish POS Models**: We provide two Perceptron models:
   + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy in 10-fold cross validation.
@@ -82,24 +80,25 @@ Remember that for Galician and Spanish the output of the statistical models can 
 
 ## USAGE
 
-ixa-pipe-pos provides 3 basic functionalities:
+ixa-pipe-pos provides 4 basic functionalities:
 
 1. **tag**: reads a NAF document containing *wf* elements and creates *term* elements with the morphological information.
 2. **train**: trains new models for with several options
-   available (read trainParams.prop file for details).
+   available (read trainParams.properties file for details).
 3. **eval**: evaluates a trained model with a given test set.
+4. **cross**: perform cross-validation evaluation.
 
-Each of these functionalities are accessible by adding (tag|train|eval) as a
+Each of these functionalities are accessible by adding (tag|train|eval|cross) as a
 subcommand to ixa-pipe-pos-$version.jar. Please read below and check the -help
-parameter: 
+parameter:
 
 ````shell
-java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval) -help
+java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval|cross) -help
 ````
 
 ### Tagging
 
-If you are in hurry, just execute: 
+If you are in hurry, just execute:
 
 ````shell
 cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag -m model.bin
@@ -112,22 +111,22 @@ through standard output. The NAF format specification is here:
 
 (http://wordpress.let.vupr.nl/naf/)
 
-You can get the necessary input for ixa-pipe-pos by piping it with 
-[ixa-pipe-tok](https://github.com/ixa-ehu/ixa-pipe-tok). 
+You can get the necessary input for ixa-pipe-pos by piping it with
+[ixa-pipe-tok](https://github.com/ixa-ehu/ixa-pipe-tok).
 
-There are several options to tag with ixa-pipe-pos: 
+There are several options to tag with ixa-pipe-pos:
 
 + **model**: it is **required** to provide the model to do the tagging.
 + **lang**: choose between en and es. If no language is chosen, the one specified
   in the NAF header will be used.
-+ **beamsize**: choose beam size for decoding. There is no definitive evidence
++ **beamSize**: choose beam size for decoding. There is no definitive evidence
   that using larger or smaller beamsize actually improves accuracy. It is known
   to slow things down considerably if beamsize is set to 100, for example.
 + **multiwords**: activates the multiword detection option.
 + **dictag**: post-process the Statistical POS tagger output via a monosemic
   postag dictionary.
 
-**Tagging Example**: 
+**Tagging Example**:
 
 ````shell
 cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag -m model.bin
@@ -136,32 +135,31 @@ cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar t
 ### Training
 
 To train a new model, you just need to pass a training parameters file as an
-argument. Every training option is documented in the template trainParams.prop file.
+argument. Every training option is documented in the template trainParams.properties file.
 
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.pos-$version.jar train -p trainParams.prop
+java -jar target/ixa.pipe.pos-$version.jar train -p trainParams.properties
 ````
 
 ### Evaluation
 
 To evaluate a trained model, the eval subcommand provides the following
-options: 
+options:
 
 + **model**: input the name of the model to evaluate.
 + **testSet**: testset to evaluate the model.
-+ **evalReport**: choose the detail in displaying the results: 
++ **evalReport**: choose the detail in displaying the results:
   + **brief**: it just prints the word accuracy.
-  + **detailed**: detailed report with confusion matrixes and so on. 
+  + **detailed**: detailed report with confusion matrixes and so on.
   + **error**: print to stderr all the false positives.
-+ **corpus**: choose between native opennlp and conll 2003 formats.
 + **beamsize**: choose beamsize for decoding.
 
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.pos-$version.jar eval -m test-pos.bin -l en -t test.data 
+java -jar target/ixa.pipe.pos-$version.jar eval -m test-pos.bin -l en -t test.data
 ````
 
 ## API
@@ -171,9 +169,9 @@ this dependency to your pom.xml:
 
 ````shell
 <dependency>
-    <groupId>es.ehu.si.ixa</groupId>
+    <groupId>eus.ixa</groupId>
     <artifactId>ixa-pipe-pos</artifactId>
-    <version>1.3.1</version>
+    <version>1.4.0</version>
 </dependency>
 ````
 
@@ -191,7 +189,7 @@ The contents of the module are the following:
     + formatter.xml           Apache OpenNLP code formatter for Eclipse SDK
     + pom.xml                 maven pom file which deals with everything related to compilation and execution of the module
     + src/                    java source code of the module and required resources
-    + trainParams.prop      A template properties file containing documention
+    + trainParams.properties      A template properties file containing documention
     + Furthermore, the installation process, as described in the README.md, will generate another directory:
     target/                 it contains binary executable and other directories
 
@@ -203,19 +201,19 @@ Installing the ixa-pipe-pos requires the following steps:
 If you already have installed in your machine the Java 1.7+ and MAVEN 3, please go to step 3
 directly. Otherwise, follow these steps:
 
-### 1. Install JDK 1.7
+### 1. Install JDK 1.7 or JDK 1.8
 
-If you do not install JDK 1.7 in a default location, you will probably need to configure the PATH in .bashrc or .bash_profile:
+If you do not install JDK 1.7+ in a default location, you will probably need to configure the PATH in .bashrc or .bash_profile:
 
 ````shell
-export JAVA_HOME=/yourpath/local/java7
+export JAVA_HOME=/yourpath/local/java8
 export PATH=${JAVA_HOME}/bin:${PATH}
 ````
 
 If you use tcsh you will need to specify it in your .login as follows:
 
 ````shell
-setenv JAVA_HOME /usr/java/java17
+setenv JAVA_HOME /usr/java/java8
 setenv PATH ${JAVA_HOME}/bin:${PATH}
 ````
 
@@ -225,7 +223,7 @@ If you re-login into your shell and run the command
 java -version
 ````
 
-You should now see that your JDK is 1.7
+You should now see that your JDK is 1.7+
 
 ### 2. Install MAVEN 3
 
@@ -292,7 +290,7 @@ Most importantly, there you will find the module executable:
 ixa-pipe-pos-$version.jar
 
 This executable contains every dependency the module needs, so it is completely portable as long
-as you have a JVM 1.7 installed.
+as you have a JVM 1.7 or newer installed.
 
 To install the module in the local maven repository, usually located in ~/.m2/, execute:
 
@@ -302,12 +300,12 @@ mvn clean install
 
 ## Extend
 
-To add your language to ixa-pipe-pos the following steps are required: 
+To add your language to ixa-pipe-pos the following steps are required:
 
 + Create lemmatizer and (if required) multiword and monosemic dictionaries following the format of those distributed in **pos-resources.tgz**.
   + **Create binary dictionaries (FSA):** Starting from the plain text tabulated dictionaries, do the following steps:
     + Get Morfologik standalone binary: http://sourceforge.net/projects/morfologik/files/morfologik-stemming/
-    + java -jar morfologik-tools-1.6.0-standalone.jar tab2morph --annotation "*" -i  
+    + java -jar morfologik-tools-1.6.0-standalone.jar tab2morph --annotation "*" -i
     ~/javacode/ixa-pipe-pos/pos-resources/lemmatizer-dicts/freeling/es-lemmatizer.dict -o spanish.morph
     + java -jar morfologik-tools-1.6.0-standalone.jar fsa_build -i spanish.morph -o spanish.dict
     + **Create a *.info file like spanish.info**
@@ -324,6 +322,5 @@ Rodrigo Agerri
 IXA NLP Group
 University of the Basque Country (UPV/EHU)
 E-20018 Donostia-San Sebastián
-rodrigo.agerri@ehu.es
+rodrigo.agerri@ehu.eus
 ````
-
