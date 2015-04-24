@@ -64,8 +64,8 @@ package. Note that the dictionaries come with their own licences, please do comp
 
 ### Models
 
-+ Latest models: [pos-models-1.4.x](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.4.0.tar.gz) package:
-+ 1.3.x models: [pos-models-1.3.x](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package:
++ Latest models: [pos-models-1.4.x](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.4.0.tar.gz).
++ 1.3.x models: [pos-models-1.3.x](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz).
 
 + **English POS Models**:
   + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.81
