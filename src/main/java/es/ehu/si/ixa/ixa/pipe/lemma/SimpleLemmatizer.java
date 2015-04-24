@@ -73,6 +73,14 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
     }
     this.lang = aLang;
   }
+  
+  /**
+   * Get the Map containing the dictionary.
+   * @return dictMap the Map
+   */
+  public HashMap<List<String>, String> getDictMap() {
+    return dictMap;
+  }
 
   /**
    * Get the dictionary keys (word and postag).
