@@ -50,8 +50,8 @@ public class MultiWordMatcher {
   
   /**
    * Construct a multiword matcher with a dictionary for a given language.
-   * @param props
-   * @throws IOException
+   * @param props the properties options
+   * @throws IOException throw exception is files does not exist
    */
   public MultiWordMatcher(Properties props) throws IOException {
     if (dictionary == null) {
@@ -173,7 +173,7 @@ public class MultiWordMatcher {
   }
   
   /**
-   * Get the <key,value> size of the dictionary.
+   * Get the key,value size of the dictionary.
    * @return maximum token count in the dictionary
    */
   public int getMaxTokenCount() {

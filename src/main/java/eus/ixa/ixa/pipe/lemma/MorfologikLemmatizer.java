@@ -58,7 +58,7 @@ public class MorfologikLemmatizer implements
    *
    * @param dictURL the URL containing the dictionary
    * @param aLang the language
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException if an exception is illegal
    * @throws IOException throws an exception if dictionary path is not correct
    */
   public MorfologikLemmatizer(final URL dictURL, String aLang)

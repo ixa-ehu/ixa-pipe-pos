@@ -123,32 +123,17 @@ public class CLI {
     loadCrossValidateParameters();
   }
 
-  /**
-   * The main method.
-   *
-   * @param args
-   *          the arguments
-   * @throws IOException
-   *           the input output exception if not file is available
-   * @throws JDOMException
-   *           as the input is a NAF file, a JDOMException could be thrown
-   */
-  public static void main(final String[] args) throws IOException,
-      JDOMException {
+  public static void main(final String[] args) throws JDOMException, IOException {
 
     CLI cmdLine = new CLI();
     cmdLine.parseCLI(args);
   }
 
   /**
-   * Parse the command interface parameters with the argParser.
-   *
-   * @param args
-   *          the arguments passed through the CLI
-   * @throws IOException
-   *           exception if problems with the incoming data
-   * @throws JDOMException 
-   * @throws JWNLException
+   * Parse the command line options.
+   * @param args the arguments
+   * @throws IOException if io error
+   * @throws JDOMException if malformed XML
    */
   public final void parseCLI(final String[] args) throws IOException, JDOMException {
     try {
@@ -181,6 +166,7 @@ public class CLI {
    *          the output stream
    * @throws IOException
    *           the exception if not input is provided
+   * @throws JDOMException if malformed XML
    */
   public final void annotate(final InputStream inputStream,
       final OutputStream outputStream) throws IOException, JDOMException {
