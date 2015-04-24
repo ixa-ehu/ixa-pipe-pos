@@ -35,8 +35,8 @@ public class SimpleMorphoTagger implements DictionaryTagger {
   /**
    * The hashmap containing the dictionary.
    */
-  private HashMap<String, String> dictMap;
-  
+  private final HashMap<String, String> dictMap;
+
   /**
    * Construct a hashmap from the input tab separated dictionary.
    * 
@@ -44,33 +44,36 @@ public class SimpleMorphoTagger implements DictionaryTagger {
    * 
    * @param dictionary
    *          the input dictionary via inputstream
-   * @param aLang the language
+   * @param aLang
+   *          the language
    */
   public SimpleMorphoTagger(final InputStream dictionary, final String aLang) {
-    dictMap = new HashMap<String, String>();
-    BufferedReader breader = new BufferedReader(new InputStreamReader(
+    this.dictMap = new HashMap<String, String>();
+    final BufferedReader breader = new BufferedReader(new InputStreamReader(
         dictionary));
     String line;
     try {
       while ((line = breader.readLine()) != null) {
-        String[] elems = line.split("\t");
-        dictMap.put(elems[0], elems[2]);
+        final String[] elems = line.split("\t");
+        this.dictMap.put(elems[0], elems[2]);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
 
-  /* (non-Javadoc)
-   * @see es.ehu.si.ixa.ixa.pipe.pos.dict.DictionaryTagger#tag(java.lang.String, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see es.ehu.si.ixa.ixa.pipe.pos.dict.DictionaryTagger#tag(java.lang.String,
+   * java.lang.String)
    */
   public String tag(final String word, final String postag) {
     // lookup postag as value of the map
-    String newPosTag = dictMap.get(word.toLowerCase());
+    String newPosTag = this.dictMap.get(word.toLowerCase());
     if (newPosTag == null) {
       newPosTag = postag;
     }
     return newPosTag;
   }
 }
-

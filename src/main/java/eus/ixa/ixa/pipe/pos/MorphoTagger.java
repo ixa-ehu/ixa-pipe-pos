@@ -29,6 +29,7 @@ import opennlp.tools.postag.POSTaggerME;
 
 /**
  * POS tagging module based on Apache OpenNLP machine learning API.
+ * 
  * @author ragerri
  * @version 2014-04-24
  */
@@ -38,13 +39,12 @@ public class MorphoTagger {
   /**
    * The morpho tagger.
    */
-  private POSTaggerME posTagger;
+  private final POSTaggerME posTagger;
   /**
-   * The models to use for every language. The keys of the hash are the
-   * language codes, the values the models.
+   * The models to use for every language. The keys of the hash are the language
+   * codes, the values the models.
    */
-  private static ConcurrentHashMap<String, POSModel> posModels =
-      new ConcurrentHashMap<String, POSModel>();
+  private static ConcurrentHashMap<String, POSModel> posModels = new ConcurrentHashMap<String, POSModel>();
   /**
    * The morpho factory.
    */
@@ -52,63 +52,79 @@ public class MorphoTagger {
 
   /**
    * Construct a morphotagger.
-   * @param props the properties object
+   * 
+   * @param props
+   *          the properties object
    */
   public MorphoTagger(final Properties props) {
-    String lang = props.getProperty("language");
-    String model = props.getProperty("model");
-    int beamSize = Integer.parseInt(props.getProperty("beamSize"));
-    POSModel posModel = loadModel(lang, model);
-    posTagger = new POSTaggerME(posModel, beamSize, beamSize);
+    final String lang = props.getProperty("language");
+    final String model = props.getProperty("model");
+    final int beamSize = Integer.parseInt(props.getProperty("beamSize"));
+    final POSModel posModel = loadModel(lang, model);
+    this.posTagger = new POSTaggerME(posModel, beamSize, beamSize);
   }
 
   /**
    * Construct a morphotagger with {@code MorphoFactory}.
-   * @param props the properties object
-   * @param aMorphoFactory the morpho factory
+   * 
+   * @param props
+   *          the properties object
+   * @param aMorphoFactory
+   *          the morpho factory
    */
   public MorphoTagger(final Properties props, final MorphoFactory aMorphoFactory) {
-    String lang = props.getProperty("language");
-    String model = props.getProperty("model");
-    int beamSize = Integer.parseInt(props.getProperty("beamSize"));
-    POSModel posModel = loadModel(lang, model);
-    posTagger = new POSTaggerME(posModel, beamSize, beamSize);
+    final String lang = props.getProperty("language");
+    final String model = props.getProperty("model");
+    final int beamSize = Integer.parseInt(props.getProperty("beamSize"));
+    final POSModel posModel = loadModel(lang, model);
+    this.posTagger = new POSTaggerME(posModel, beamSize, beamSize);
     this.morphoFactory = aMorphoFactory;
   }
 
   /**
    * Get morphological analysis from a tokenized sentence.
-   * @param tokens the tokenized sentence
+   * 
+   * @param tokens
+   *          the tokenized sentence
    * @return a list of {@code Morpheme} objects containing morphological info
    */
   public final List<Morpheme> getMorphemes(final String[] tokens) {
-    List<String> origPosTags = posAnnotate(tokens);
-    List<Morpheme> morphemes = getMorphemesFromStrings(origPosTags, tokens);
+    final List<String> origPosTags = posAnnotate(tokens);
+    final List<Morpheme> morphemes = getMorphemesFromStrings(origPosTags,
+        tokens);
     return morphemes;
   }
+
   /**
    * Produce postags from a tokenized sentence.
-   * @param tokens the sentence
+   * 
+   * @param tokens
+   *          the sentence
    * @return a list containing the postags
    */
   public final List<String> posAnnotate(final String[] tokens) {
-    String[] annotatedText = posTagger.tag(tokens);
-    List<String> posTags = new ArrayList<String>(Arrays.asList(annotatedText));
+    final String[] annotatedText = this.posTagger.tag(tokens);
+    final List<String> posTags = new ArrayList<String>(
+        Arrays.asList(annotatedText));
     return posTags;
   }
 
   /**
    * Create {@code Morpheme} objects from the output of posAnnotate.
-   * @param posTags the postags
-   * @param tokens the tokens
+   * 
+   * @param posTags
+   *          the postags
+   * @param tokens
+   *          the tokens
    * @return a list of morpheme objects
    */
-  public final List<Morpheme> getMorphemesFromStrings(final List<String> posTags, final String[] tokens) {
-    List<Morpheme> morphemes = new ArrayList<Morpheme>();
+  public final List<Morpheme> getMorphemesFromStrings(
+      final List<String> posTags, final String[] tokens) {
+    final List<Morpheme> morphemes = new ArrayList<Morpheme>();
     for (int i = 0; i < posTags.size(); i++) {
-      String word = tokens[i];
-      String tag = posTags.get(i);
-      Morpheme morpheme = morphoFactory.createMorpheme(word, tag);
+      final String word = tokens[i];
+      final String tag = posTags.get(i);
+      final Morpheme morpheme = this.morphoFactory.createMorpheme(word, tag);
       morphemes.add(morpheme);
     }
     return morphemes;
@@ -117,20 +133,22 @@ public class MorphoTagger {
   /**
    * Loads statically the probabilistic model. Every instance of this finder
    * will share the same model.
-   *
-   * @param lang the language
-   * @param model the model to be loaded
+   * 
+   * @param lang
+   *          the language
+   * @param model
+   *          the model to be loaded
    * @return the model as a {@link POSModel} object
    */
   private final POSModel loadModel(final String lang, final String model) {
-    long lStartTime = new Date().getTime();
+    final long lStartTime = new Date().getTime();
     try {
       posModels.putIfAbsent(lang, new POSModel(new FileInputStream(model)));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     }
-    long lEndTime = new Date().getTime();
-    long difference = lEndTime - lStartTime;
+    final long lEndTime = new Date().getTime();
+    final long difference = lEndTime - lStartTime;
     System.err.println("ixa-pipe-pos model loaded in: " + difference
         + " miliseconds ... [DONE]");
     return posModels.get(lang);

@@ -24,6 +24,7 @@ import opennlp.tools.util.Span;
 
 /**
  * Class for holding multiwords for a sentence.
+ * 
  * @author ragerri
  * @version 2014-11-30
  */
@@ -34,7 +35,8 @@ public class MultiWordSample {
   private final List<Span> names;
   public static final String DEFAULT_TYPE = "UNK";
 
-  public MultiWordSample(String id, String[] sentence, Span[] multiwords) {
+  public MultiWordSample(final String id, final String[] sentence,
+      Span[] multiwords) {
 
     this.id = id;
     if (sentence == null) {
@@ -43,36 +45,45 @@ public class MultiWordSample {
     if (multiwords == null) {
       multiwords = new Span[0];
     }
-    this.tokens = Collections.unmodifiableList(new ArrayList<String>(Arrays.asList(sentence)));
-    this.names = Collections.unmodifiableList(new ArrayList<Span>(Arrays.asList(multiwords)));
-    // TODO: Check that multiword spans are not overlapping, otherwise throw exception
+    this.tokens = Collections.unmodifiableList(new ArrayList<String>(Arrays
+        .asList(sentence)));
+    this.names = Collections.unmodifiableList(new ArrayList<Span>(Arrays
+        .asList(multiwords)));
+    // TODO: Check that multiword spans are not overlapping, otherwise throw
+    // exception
   }
 
-  public MultiWordSample(String[] sentence, Span[] names) {
+  public MultiWordSample(final String[] sentence, final Span[] names) {
     this(null, sentence, names);
   }
 
   public String getId() {
-    return id;
+    return this.id;
   }
 
   public String[] getSentence() {
-    return tokens.toArray(new String[tokens.size()]);
+    return this.tokens.toArray(new String[this.tokens.size()]);
   }
 
   public Span[] getNames() {
-    return names.toArray(new Span[names.size()]);
+    return this.names.toArray(new Span[this.names.size()]);
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public int hashCode() {
+    assert false : "hashCode not designed";
+    return 42; // any arbitrary constant will do
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
 
     if (this == obj) {
       return true;
     } else if (obj instanceof MultiWordSample) {
-      MultiWordSample a = (MultiWordSample) obj;
-      return Arrays.equals(getSentence(), a.getSentence()) &&
-          Arrays.equals(getNames(), a.getNames());
+      final MultiWordSample a = (MultiWordSample) obj;
+      return Arrays.equals(getSentence(), a.getSentence())
+          && Arrays.equals(getNames(), a.getNames());
     } else {
       return false;
     }
@@ -80,11 +91,11 @@ public class MultiWordSample {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    
-    for (int tokenIndex = 0; tokenIndex < tokens.size(); tokenIndex++) {
+    final StringBuilder sb = new StringBuilder();
 
-      for (Span name : names) {
+    for (int tokenIndex = 0; tokenIndex < this.tokens.size(); tokenIndex++) {
+
+      for (final Span name : this.names) {
         if (name.getStart() == tokenIndex) {
           sb.append("<START:").append(name.getType()).append("> ");
         }
@@ -93,20 +104,20 @@ public class MultiWordSample {
           sb.append("<END>").append(' ');
         }
       }
-      sb.append(tokens.get(tokenIndex)).append(' ');
+      sb.append(this.tokens.get(tokenIndex)).append(' ');
     }
 
-    if (tokens.size() > 1)
+    if (this.tokens.size() > 1) {
       sb.setLength(sb.length() - 1);
+    }
 
-    for (Span name : names) {
-      if (name.getEnd() == tokens.size()) {
+    for (final Span name : this.names) {
+      if (name.getEnd() == this.tokens.size()) {
         sb.append(' ').append("<END>");
       }
     }
-    String multiWordSample = sb.toString();
+    final String multiWordSample = sb.toString();
     return multiWordSample;
   }
-  
-}
 
+}

@@ -24,14 +24,16 @@ import opennlp.tools.util.TrainingParameters;
 
 /**
  * FixedTrainer to train the pos tagger.
+ * 
  * @author ragerri
  * @version 2014-11-26
  */
 public class FixedTrainer extends AbstractTrainer {
 
   /**
-   * Extends the {@code AbstractTrainer} providing some {@code POSTaggerFactory}.
-   *
+   * Extends the {@code AbstractTrainer} providing some {@code POSTaggerFactory}
+   * .
+   * 
    * @param params
    *          the training parameters
    * @throws IOException
@@ -39,37 +41,43 @@ public class FixedTrainer extends AbstractTrainer {
    */
   public FixedTrainer(final TrainingParameters params) throws IOException {
     super(params);
-    
-    String dictPath = Flags.getDictionaryFeatures(params);
+
+    final String dictPath = Flags.getDictionaryFeatures(params);
     setPosTaggerFactory(getTrainerFactory(params));
     createTagDictionary(dictPath);
     createAutomaticDictionary(getDictSamples(), getDictCutOff());
-    
+
   }
-  
+
   /**
    * Instantiate the {@code POSTaggerFactory} according to the features
    * specified in the parameters properties file.
-   * @param params the training parameters
+   * 
+   * @param params
+   *          the training parameters
    * @return the factory
    */
-  private final POSTaggerFactory getTrainerFactory(TrainingParameters params) {
+  private final POSTaggerFactory getTrainerFactory(
+      final TrainingParameters params) {
     POSTaggerFactory posTaggerFactory = null;
-    String featureSet = Flags.getFeatureSet(params);
+    final String featureSet = Flags.getFeatureSet(params);
     Dictionary ngramDictionary = null;
     if (Flags.getNgramDictFeatures(params) != Flags.DEFAULT_DICT_CUTOFF) {
-      ngramDictionary = createNgramDictionary(getDictSamples(), getNgramDictCutOff());
+      ngramDictionary = createNgramDictionary(getDictSamples(),
+          getNgramDictCutOff());
     }
     if (featureSet.equalsIgnoreCase("Opennlp")) {
       try {
-        posTaggerFactory = POSTaggerFactory.create(POSTaggerFactory.class.getName(), ngramDictionary, null);
-      } catch (InvalidFormatException e) {
+        posTaggerFactory = POSTaggerFactory.create(
+            POSTaggerFactory.class.getName(), ngramDictionary, null);
+      } catch (final InvalidFormatException e) {
         e.printStackTrace();
       }
     } else {
       try {
-        posTaggerFactory = POSTaggerFactory.create(BaselineFactory.class.getName(), ngramDictionary, null);
-      } catch (InvalidFormatException e) {
+        posTaggerFactory = POSTaggerFactory.create(
+            BaselineFactory.class.getName(), ngramDictionary, null);
+      } catch (final InvalidFormatException e) {
         e.printStackTrace();
       }
     }

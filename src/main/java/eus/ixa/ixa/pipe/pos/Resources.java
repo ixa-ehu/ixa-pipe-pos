@@ -22,16 +22,16 @@ import java.net.URL;
 /**
  * Class to load the appropriate lemmatization dictionaries according to the
  * input language.
- *
+ * 
  * @author ragerri
  * @version 2014-07-08
- *
+ * 
  */
 public class Resources {
 
   /**
    * Get the dictionary for the {@code SimpleLemmatizer}.
-   *
+   * 
    * @param lang
    *          the language
    * @return the inputstream of the dictionary
@@ -55,7 +55,9 @@ public class Resources {
 
   /**
    * The the dictionary for the {@code MorfologikLemmatizer}.
-   * @param lang the language
+   * 
+   * @param lang
+   *          the language
    * @return the URL of the dictonary
    */
   public final URL getBinaryDict(final String lang) {
@@ -69,15 +71,16 @@ public class Resources {
           "/lemmatizer-dicts/freeling/spanish.dict");
     }
     if (lang.equalsIgnoreCase("gl")) {
-      dictURL = getClass().getResource(
-          "/lemmatizer-dicts/ctag/galician.dict");
+      dictURL = getClass().getResource("/lemmatizer-dicts/ctag/galician.dict");
     }
     return dictURL;
   }
-  
+
   /**
    * The the dictionary for the {@code MorfologikMorphoTagger}.
-   * @param lang the language
+   * 
+   * @param lang
+   *          the language
    * @return the URL of the dictionary
    */
   public final URL getBinaryTaggerDict(final String lang) {
@@ -95,8 +98,11 @@ public class Resources {
 
   /**
    * Ad-hoc assignment of constant tags, typically proper names.
-   * @param lang the language
-   * @param postag the tag
+   * 
+   * @param lang
+   *          the language
+   * @param postag
+   *          the tag
    * @return the constant tag
    */
   public final String setTagConstant(final String lang, final String postag) {

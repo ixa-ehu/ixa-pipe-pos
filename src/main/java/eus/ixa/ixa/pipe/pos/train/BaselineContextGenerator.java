@@ -29,7 +29,7 @@ import opennlp.tools.util.StringList;
  * provides more contextual features such as bigrams to the
  * {@code @DefaultPOSContextGenerator}. These extra features require at least
  * 2GB memory to train, more if training data is large.
- *
+ * 
  * @author ragerri
  * @version 2014-07-08
  */
@@ -70,14 +70,15 @@ public class BaselineContextGenerator implements POSContextGenerator {
   /**
    * The tag dictionary.
    */
-  private Dictionary dict;
+  private final Dictionary dict;
   /**
    * The dictionary ngrams.
    */
-  private String[] dictGram;
+  private final String[] dictGram;
 
   /**
    * Initializes the current instance.
+   * 
    * @param aDict
    *          the dictionary
    */
@@ -87,6 +88,7 @@ public class BaselineContextGenerator implements POSContextGenerator {
 
   /**
    * Initializes the current instance.
+   * 
    * @param cacheSize
    *          the cache size
    * @param aDict
@@ -94,20 +96,21 @@ public class BaselineContextGenerator implements POSContextGenerator {
    */
   public BaselineContextGenerator(final int cacheSize, final Dictionary aDict) {
     this.dict = aDict;
-    dictGram = new String[1];
+    this.dictGram = new String[1];
     if (cacheSize > 0) {
-      contextsCache = new Cache(cacheSize);
+      this.contextsCache = new Cache(cacheSize);
     }
   }
 
   /**
    * Obtain prefixes for each token.
+   * 
    * @param lex
    *          the current word
    * @return the prefixes
    */
   protected static String[] getPrefixes(final String lex) {
-    String[] prefs = new String[PREFIX_LENGTH];
+    final String[] prefs = new String[PREFIX_LENGTH];
     for (int li = 2, ll = PREFIX_LENGTH; li < ll; li++) {
       prefs[li] = lex.substring(0, Math.min(li + 1, lex.length()));
     }
@@ -116,12 +119,13 @@ public class BaselineContextGenerator implements POSContextGenerator {
 
   /**
    * Obtain suffixes for each token.
+   * 
    * @param lex
    *          the word
    * @return the suffixes
    */
   protected static String[] getSuffixes(final String lex) {
-    String[] suffs = new String[SUFFIX_LENGTH];
+    final String[] suffs = new String[SUFFIX_LENGTH];
     for (int li = 0, ll = SUFFIX_LENGTH; li < ll; li++) {
       suffs[li] = lex.substring(Math.max(lex.length() - li - 1, 0));
     }
@@ -130,6 +134,7 @@ public class BaselineContextGenerator implements POSContextGenerator {
 
   /*
    * (non-Javadoc)
+   * 
    * @see opennlp.tools.postag.POSContextGenerator#getContext(int,
    * java.lang.String[], java.lang.String[], java.lang.Object[])
    */
@@ -141,6 +146,7 @@ public class BaselineContextGenerator implements POSContextGenerator {
   /**
    * Returns the context for making a pos tag decision at the specified token
    * index given the specified tokens and previous tags.
+   * 
    * @param index
    *          The index of the token for which the context is provided.
    * @param tokens
@@ -163,11 +169,11 @@ public class BaselineContextGenerator implements POSContextGenerator {
       if (tokens.length > index + 2) {
         nextnext = tokens[index + 2].toString();
       } else {
-        nextnext = SE; // Sentence End
+        nextnext = this.SE; // Sentence End
       }
 
     } else {
-      next = SE; // Sentence End
+      next = this.SE; // Sentence End
     }
 
     if (index - 1 >= 0) {
@@ -178,38 +184,39 @@ public class BaselineContextGenerator implements POSContextGenerator {
         prevprev = tokens[index - 2].toString();
         tagprevprev = tags[index - 2];
       } else {
-        prevprev = SB; // Sentence Beginning
+        prevprev = this.SB; // Sentence Beginning
       }
     } else {
-      prev = SB; // Sentence Beginning
+      prev = this.SB; // Sentence Beginning
     }
-    String cacheKey = index + tagprev + tagprevprev;
-    if (contextsCache != null) {
-      if (wordsKey == tokens) {
-        String[] cachedContexts = (String[]) contextsCache.get(cacheKey);
+    final String cacheKey = index + tagprev + tagprevprev;
+    if (this.contextsCache != null) {
+      if (this.wordsKey == tokens) {
+        final String[] cachedContexts = (String[]) this.contextsCache
+            .get(cacheKey);
         if (cachedContexts != null) {
           return cachedContexts;
         }
       } else {
-        contextsCache.clear();
-        wordsKey = tokens;
+        this.contextsCache.clear();
+        this.wordsKey = tokens;
       }
     }
-    List<String> featureList = new ArrayList<String>();
+    final List<String> featureList = new ArrayList<String>();
     featureList.add("default");
     // add the word itself
     featureList.add("w=" + lex);
-    dictGram[0] = lex;
-    if (dict == null || !dict.contains(new StringList(dictGram))) {
+    this.dictGram[0] = lex;
+    if (this.dict == null || !this.dict.contains(new StringList(this.dictGram))) {
       // do some basic suffix analysis
-      String[] suffs = getSuffixes(lex);
-      for (int i = 0; i < suffs.length; i++) {
-        featureList.add("suf=" + suffs[i]);
+      final String[] suffs = getSuffixes(lex);
+      for (final String suff : suffs) {
+        featureList.add("suf=" + suff);
       }
 
-      String[] prefs = getPrefixes(lex);
-      for (int i = 0; i < prefs.length; i++) {
-        featureList.add("pre=" + prefs[i]);
+      final String[] prefs = getPrefixes(lex);
+      for (final String pref : prefs) {
+        featureList.add("pre=" + pref);
       }
       // see if the word has any special characters
       if (lex.indexOf('-') != -1) {
@@ -250,9 +257,10 @@ public class BaselineContextGenerator implements POSContextGenerator {
 
       }
     }
-    String[] contexts = featureList.toArray(new String[featureList.size()]);
-    if (contextsCache != null) {
-      contextsCache.put(cacheKey, contexts);
+    final String[] contexts = featureList
+        .toArray(new String[featureList.size()]);
+    if (this.contextsCache != null) {
+      this.contextsCache.put(cacheKey, contexts);
     }
     return contexts;
   }

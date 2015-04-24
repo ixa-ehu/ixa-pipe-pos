@@ -18,9 +18,10 @@ package eus.ixa.ixa.pipe.pos;
 
 /**
  * Class for objects containing morphological information.
+ * 
  * @author ragerri
  * @version 2014-07-08
- *
+ * 
  */
 public class Morpheme {
 
@@ -45,8 +46,11 @@ public class Morpheme {
 
   /**
    * Construct a morpheme object.
-   * @param aWord the word
-   * @param aTag the tag
+   * 
+   * @param aWord
+   *          the word
+   * @param aTag
+   *          the tag
    */
   public Morpheme(final String aWord, final String aTag) {
     this.word = aWord;
@@ -55,9 +59,13 @@ public class Morpheme {
 
   /**
    * Construct a morpheme object with lemma.
-   * @param aWord the word
-   * @param aTag the tag
-   * @param aLemma the lemma
+   * 
+   * @param aWord
+   *          the word
+   * @param aTag
+   *          the tag
+   * @param aLemma
+   *          the lemma
    */
   public Morpheme(final String aWord, final String aTag, final String aLemma) {
     this.word = aWord;
@@ -67,50 +75,59 @@ public class Morpheme {
 
   /**
    * Get the word.
+   * 
    * @return the word
    */
   public final String getWord() {
-    return word;
+    return this.word;
   }
 
   /**
    * Get the morphological tag.
+   * 
    * @return the morphological tag
    */
   public final String getTag() {
-    return tag;
+    return this.tag;
   }
 
   /**
    * Get the lemma.
+   * 
    * @return the lemma
    */
   public final String getLemma() {
-    return lemma;
+    return this.lemma;
   }
 
   /**
    * Set the value of the word.
-   * @param aWord the word
+   * 
+   * @param aWord
+   *          the word
    */
   public final void setValue(final String aWord) {
-    word = aWord;
+    this.word = aWord;
   }
 
   /**
    * Set the morphological tag.
-   * @param aTag the morphological tag
+   * 
+   * @param aTag
+   *          the morphological tag
    */
   public final void setTag(final String aTag) {
-    tag = aTag.toUpperCase();
+    this.tag = aTag.toUpperCase();
   }
 
   /**
    * Set the lemma.
-   * @param aLemma the lemma
+   * 
+   * @param aLemma
+   *          the lemma
    */
   public final void setLemma(final String aLemma) {
-    lemma = aLemma;
+    this.lemma = aLemma;
   }
 
 }

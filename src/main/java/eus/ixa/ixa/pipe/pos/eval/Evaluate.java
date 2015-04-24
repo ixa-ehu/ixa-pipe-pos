@@ -37,7 +37,7 @@ import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
 
 /**
  * Evaluation class mostly inspired by {@link POSEvaluator}.
- *
+ * 
  * @author ragerri
  * @version 2014-07-08
  */
@@ -46,7 +46,7 @@ public class Evaluate {
   /**
    * The reference corpus to evaluate against.
    */
-  private ObjectStream<POSSample> testSamples;
+  private final ObjectStream<POSSample> testSamples;
   /**
    * Static instance of {@link TokenNameFinderModel}.
    */
@@ -54,11 +54,11 @@ public class Evaluate {
   /**
    * An instance of the probabilistic {@link POSTaggerME}.
    */
-  private POSTaggerME posTagger;
+  private final POSTaggerME posTagger;
 
   /**
    * Construct an evaluator. The features are encoded in the model itself.
-   *
+   * 
    * @param testData
    *          the reference data to evaluate against
    * @param model
@@ -68,72 +68,74 @@ public class Evaluate {
    * @throws IOException
    *           if input data not available
    */
-  public Evaluate(final String testData, final String model, final String beamsize)
-      throws IOException {
+  public Evaluate(final String testData, final String model,
+      final String beamsize) throws IOException {
 
-    ObjectStream<String> testStream = InputOutputUtils.readFileIntoMarkableStreamFactory(testData);
-    testSamples = new WordTagSampleStream(testStream);
+    final ObjectStream<String> testStream = InputOutputUtils
+        .readFileIntoMarkableStreamFactory(testData);
+    this.testSamples = new WordTagSampleStream(testStream);
     InputStream trainedModelInputStream = null;
     try {
       if (posModel == null) {
         trainedModelInputStream = new FileInputStream(model);
         posModel = new POSModel(trainedModelInputStream);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     } finally {
       if (trainedModelInputStream != null) {
         try {
           trainedModelInputStream.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
           System.err.println("Could not load model!");
         }
       }
     }
-    posTagger = new POSTaggerME(posModel, Integer.parseInt(beamsize), Integer.parseInt(beamsize));
+    this.posTagger = new POSTaggerME(posModel, Integer.parseInt(beamsize),
+        Integer.parseInt(beamsize));
   }
 
   /**
    * Evaluate and print precision, recall and F measure.
-   *
+   * 
    * @throws IOException
    *           if test corpus not loaded
    */
   public final void evaluate() throws IOException {
-    POSEvaluator evaluator = new POSEvaluator(posTagger);
-    evaluator.evaluate(testSamples);
+    final POSEvaluator evaluator = new POSEvaluator(this.posTagger);
+    evaluator.evaluate(this.testSamples);
     System.out.println(evaluator.getWordAccuracy());
   }
 
   /**
    * Detail evaluation of a model, outputting the report a file.
-   *
+   * 
    * @throws IOException
    *           the io exception if not output file provided
    */
   public final void detailEvaluate() throws IOException {
-    List<EvaluationMonitor<POSSample>> listeners = new LinkedList<EvaluationMonitor<POSSample>>();
-    POSTaggerFineGrainedReportListener detailedFListener = new POSTaggerFineGrainedReportListener(
+    final List<EvaluationMonitor<POSSample>> listeners = new LinkedList<EvaluationMonitor<POSSample>>();
+    final POSTaggerFineGrainedReportListener detailedFListener = new POSTaggerFineGrainedReportListener(
         System.out);
     listeners.add(detailedFListener);
-    POSEvaluator evaluator = new POSEvaluator(posTagger,
+    final POSEvaluator evaluator = new POSEvaluator(this.posTagger,
         listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
-    evaluator.evaluate(testSamples);
+    evaluator.evaluate(this.testSamples);
     detailedFListener.writeReport();
   }
 
   /**
    * Evaluate and print every error.
-   *
+   * 
    * @throws IOException
    *           if test corpus not loaded
    */
   public final void evalError() throws IOException {
-    List<EvaluationMonitor<POSSample>> listeners = new LinkedList<EvaluationMonitor<POSSample>>();
+    final List<EvaluationMonitor<POSSample>> listeners = new LinkedList<EvaluationMonitor<POSSample>>();
     listeners.add(new POSEvaluationErrorListener());
-    POSEvaluator evaluator = new POSEvaluator(posTagger,
+    final POSEvaluator evaluator = new POSEvaluator(this.posTagger,
         listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
-    evaluator.evaluate(testSamples);
+    evaluator.evaluate(this.testSamples);
     System.out.println(evaluator.getWordAccuracy());
   }
 

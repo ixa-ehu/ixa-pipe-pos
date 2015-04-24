@@ -15,24 +15,25 @@
  */
 package eus.ixa.ixa.pipe.pos.dict;
 
-
 /**
- * Interface of the pos tagger based on Dictionary lookup.
- * So far this is thought to work with monosemic words only.
+ * Interface of the pos tagger based on Dictionary lookup. So far this is
+ * thought to work with monosemic words only.
+ * 
  * @author ragerri
  * @version 2014-12-05
- *
+ * 
  */
 public interface DictionaryTagger {
 
   /**
    * Postag by dictionary lookup.
-   *
-   * @param word the surface form word
-   * @param posTag the posTag to be post-processed
+   * 
+   * @param word
+   *          the surface form word
+   * @param posTag
+   *          the posTag to be post-processed
    * @return the new postag
    */
   String tag(String word, String posTag);
 
 }
-

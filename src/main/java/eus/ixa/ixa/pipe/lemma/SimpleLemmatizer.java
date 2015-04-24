@@ -39,15 +39,15 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
   /**
    * The hashmap containing the dictionary.
    */
-  private HashMap<List<String>, String> dictMap;
+  private final HashMap<List<String>, String> dictMap;
   /**
    * The class dealing with loading the proper dictionary.
    */
-  private Resources tagRetriever = new Resources();
+  private final Resources tagRetriever = new Resources();
   /**
    * The language.
    */
-  private String lang;
+  private final String lang;
 
   /**
    * Construct a hashmap from the input tab separated dictionary.
@@ -56,45 +56,47 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
    * 
    * @param dictionary
    *          the input dictionary via inputstream
-   * @param aLang the language
+   * @param aLang
+   *          the language
    */
   public SimpleLemmatizer(final InputStream dictionary, final String aLang) {
-    dictMap = new HashMap<List<String>, String>();
-    BufferedReader breader = new BufferedReader(new InputStreamReader(
+    this.dictMap = new HashMap<List<String>, String>();
+    final BufferedReader breader = new BufferedReader(new InputStreamReader(
         dictionary));
     String line;
     try {
       while ((line = breader.readLine()) != null) {
-        String[] elems = line.split("\t");
-        dictMap.put(Arrays.asList(elems[0], elems[2]), elems[1]);
+        final String[] elems = line.split("\t");
+        this.dictMap.put(Arrays.asList(elems[0], elems[2]), elems[1]);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     }
     this.lang = aLang;
   }
-  
+
   /**
    * Get the Map containing the dictionary.
+   * 
    * @return dictMap the Map
    */
   public HashMap<List<String>, String> getDictMap() {
-    return dictMap;
+    return this.dictMap;
   }
 
   /**
    * Get the dictionary keys (word and postag).
-   *
+   * 
    * @param word
    *          the surface form word
    * @param postag
    *          the assigned postag
    * @return returns the dictionary keys
    */
-  private List<String> getDictKeys(final String word,
-      final String postag) {
-    String constantTag = tagRetriever.setTagConstant(lang, postag);
-    List<String> keys = new ArrayList<String>();
+  private List<String> getDictKeys(final String word, final String postag) {
+    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
+        postag);
+    final List<String> keys = new ArrayList<String>();
     if (postag.startsWith(String.valueOf(constantTag))) {
       keys.addAll(Arrays.asList(word, postag));
     } else {
@@ -103,15 +105,20 @@ public class SimpleLemmatizer implements DictionaryLemmatizer {
     return keys;
   }
 
-  /* (non-Javadoc)
-   * @see es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String, java.lang.String, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String
+   * , java.lang.String, java.lang.String)
    */
   public String lemmatize(final String word, final String postag) {
     String lemma = null;
-    String constantTag = tagRetriever.setTagConstant(lang, postag);
-    List<String> keys = this.getDictKeys(word, postag);
+    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
+        postag);
+    final List<String> keys = this.getDictKeys(word, postag);
     // lookup lemma as value of the map
-    String keyValue = dictMap.get(keys);
+    final String keyValue = this.dictMap.get(keys);
     if (keyValue != null) {
       lemma = keyValue;
     } else if (keyValue == null

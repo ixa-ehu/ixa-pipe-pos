@@ -18,17 +18,20 @@ package eus.ixa.ixa.pipe.lemma;
 
 /**
  * Interface of the lemmatizer based on Dictionary lookup.
+ * 
  * @author ragerri
  * @version 2014-07-08
- *
+ * 
  */
 public interface DictionaryLemmatizer {
 
   /**
    * Lemmatize by dictionary lookup.
-   *
-   * @param word the surface form word
-   * @param postag the postag assigned
+   * 
+   * @param word
+   *          the surface form word
+   * @param postag
+   *          the postag assigned
    * @return the lemma
    */
   String lemmatize(String word, String postag);

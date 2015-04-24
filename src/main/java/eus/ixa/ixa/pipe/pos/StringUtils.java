@@ -20,13 +20,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.io.Files;
-
 import opennlp.tools.util.Span;
+
+import com.google.common.io.Files;
 
 /**
  * Pattern matching and other utility string functions.
- *
+ * 
  * @author ragerri
  * @version 2013-03-19
  */
@@ -42,7 +42,7 @@ public final class StringUtils {
   /**
    * Finds a pattern (typically a named entity string) in a tokenized sentence.
    * It outputs the {@link Span} indexes of the named entity found, if any.
-   *
+   * 
    * @param pattern
    *          a string to find
    * @param tokens
@@ -51,13 +51,16 @@ public final class StringUtils {
    */
   public static List<Integer> exactTokenFinderIgnoreCase(final String pattern,
       final String[] tokens) {
-    String[] patternTokens = pattern.split(" ");
+    final String[] patternTokens = pattern.split(" ");
     int i, j;
-    int patternLength = patternTokens.length;
-    int sentenceLength = tokens.length;
-    List<Integer> neTokens = new ArrayList<Integer>();
+    final int patternLength = patternTokens.length;
+    final int sentenceLength = tokens.length;
+    final List<Integer> neTokens = new ArrayList<Integer>();
     for (j = 0; j <= sentenceLength - patternLength; ++j) {
-      for (i = 0; i < patternLength && patternTokens[i].equalsIgnoreCase(tokens[i + j]); ++i);
+      for (i = 0; i < patternLength
+          && patternTokens[i].equalsIgnoreCase(tokens[i + j]); ++i) {
+        ;
+      }
       if (i >= patternLength) {
         neTokens.add(j);
         neTokens.add(i + j);
@@ -69,7 +72,7 @@ public final class StringUtils {
   /**
    * Finds a pattern (typically a named entity string) in a tokenized sentence.
    * It outputs the {@link Span} indexes of the named entity found, if any
-   *
+   * 
    * @param pattern
    *          a string to find
    * @param tokens
@@ -78,13 +81,15 @@ public final class StringUtils {
    */
   public static List<Integer> exactTokenFinder(final String pattern,
       final String[] tokens) {
-    String[] patternTokens = pattern.split(" ");
+    final String[] patternTokens = pattern.split(" ");
     int i, j;
-    int patternLength = patternTokens.length;
-    int sentenceLength = tokens.length;
-    List<Integer> neTokens = new ArrayList<Integer>();
+    final int patternLength = patternTokens.length;
+    final int sentenceLength = tokens.length;
+    final List<Integer> neTokens = new ArrayList<Integer>();
     for (j = 0; j <= sentenceLength - patternLength; ++j) {
-      for (i = 0; i < patternLength && patternTokens[i].equals(tokens[i + j]); ++i);
+      for (i = 0; i < patternLength && patternTokens[i].equals(tokens[i + j]); ++i) {
+        ;
+      }
       if (i >= patternLength) {
         neTokens.add(j);
         neTokens.add(i + j);
@@ -97,7 +102,7 @@ public final class StringUtils {
    * Finds a pattern (typically a named entity string) in a sentence string. It
    * outputs the offsets for the start and end characters named entity found, if
    * any.
-   *
+   * 
    * @param pattern
    *          the pattern to be searched
    * @param sentence
@@ -107,14 +112,16 @@ public final class StringUtils {
    */
   public static List<Integer> exactStringFinder(final String pattern,
       final String sentence) {
-    char[] patternArray = pattern.toCharArray(), sentenceArray = sentence
+    final char[] patternArray = pattern.toCharArray(), sentenceArray = sentence
         .toCharArray();
     int i, j;
-    int patternLength = patternArray.length;
-    int sentenceLength = sentenceArray.length;
-    List<Integer> neChars = new ArrayList<Integer>();
+    final int patternLength = patternArray.length;
+    final int sentenceLength = sentenceArray.length;
+    final List<Integer> neChars = new ArrayList<Integer>();
     for (j = 0; j <= sentenceLength - patternLength; ++j) {
-      for (i = 0; i < patternLength && patternArray[i] == sentenceArray[i + j]; ++i);
+      for (i = 0; i < patternLength && patternArray[i] == sentenceArray[i + j]; ++i) {
+        ;
+      }
       if (i >= patternLength) {
         neChars.add(j);
         neChars.add(i + j);
@@ -124,11 +131,11 @@ public final class StringUtils {
   }
 
   /**
-   *
+   * 
    * It takes a NE span indexes and the tokens in a sentence and produces the
    * string to which the NE span corresponds to. This function is used to get
    * the Named Entity or Name textual representation from a {@link Span}
-   *
+   * 
    * @param reducedSpan
    *          a {@link Span}
    * @param tokens
@@ -137,7 +144,7 @@ public final class StringUtils {
    */
   public static String getStringFromSpan(final Span reducedSpan,
       final String[] tokens) {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     for (int si = reducedSpan.getStart(); si < reducedSpan.getEnd(); si++) {
       sb.append(tokens[si]).append(" ");
     }
@@ -146,19 +153,19 @@ public final class StringUtils {
 
   /**
    * Gets the String joined by a space of an array of tokens.
-   *
+   * 
    * @param tokens
    *          an array of tokens representing a tokenized sentence
    * @return sentence the sentence corresponding to the tokens
    */
   public static String getStringFromTokens(final String[] tokens) {
-    StringBuilder sb = new StringBuilder();
-    for (String tok : tokens) {
+    final StringBuilder sb = new StringBuilder();
+    for (final String tok : tokens) {
       sb.append(tok).append(" ");
     }
     return sb.toString().trim();
   }
-  
+
   /**
    * Recursively get every file in a directory and add them to a list.
    * 
@@ -166,9 +173,10 @@ public final class StringUtils {
    *          the input directory
    * @return the list containing all the files
    */
-  public static List<File> getFilesInDir(File inputPath) {
-    List<File> fileList = new ArrayList<File>();
-    for (File aFile : Files.fileTreeTraverser().preOrderTraversal(inputPath)) {
+  public static List<File> getFilesInDir(final File inputPath) {
+    final List<File> fileList = new ArrayList<File>();
+    for (final File aFile : Files.fileTreeTraverser().preOrderTraversal(
+        inputPath)) {
       if (aFile.isFile()) {
         fileList.add(aFile);
       }
@@ -177,4 +185,3 @@ public final class StringUtils {
   }
 
 }
-

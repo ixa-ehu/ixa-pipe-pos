@@ -45,15 +45,15 @@ public class Annotate {
   /**
    * The morpho tagger.
    */
-  private MorphoTagger posTagger;
+  private final MorphoTagger posTagger;
   /**
    * The language.
    */
-  private String lang;
+  private final String lang;
   /**
    * The factory to build morpheme objects.
    */
-  private MorphoFactory morphoFactory;
+  private final MorphoFactory morphoFactory;
   /**
    * The dictionary lemmatizer.
    */
@@ -61,7 +61,7 @@ public class Annotate {
   /**
    * If true detect multiwords.
    */
-  private Boolean multiwords;
+  private final Boolean multiwords;
   /**
    * The multiword matcher.
    */
@@ -69,7 +69,7 @@ public class Annotate {
   /**
    * If true detect postprocess tagger output with monosemic dictionary.
    */
-  private Boolean dictag;
+  private final Boolean dictag;
   /**
    * The monosemic dictionary postagger.
    */
@@ -87,37 +87,38 @@ public class Annotate {
     this.lang = properties.getProperty("language");
     this.multiwords = Boolean.valueOf(properties.getProperty("multiwords"));
     this.dictag = Boolean.valueOf(properties.getProperty("dictag"));
-    if (multiwords) {
-      multiWordMatcher = new MultiWordMatcher(properties);
+    if (this.multiwords) {
+      this.multiWordMatcher = new MultiWordMatcher(properties);
     }
-    if (dictag) {
+    if (this.dictag) {
       loadMorphoTaggerDicts(properties);
     }
     loadLemmatizerDicts(properties);
-    morphoFactory = new MorphoFactory();
-    posTagger = new MorphoTagger(properties, morphoFactory);
+    this.morphoFactory = new MorphoFactory();
+    this.posTagger = new MorphoTagger(properties, this.morphoFactory);
   }
 
   // TODO static loading of lemmatizer dictionaries
   /**
-   * Load the binary lemmatizer dictionaries by language. Exits if no
-   * lemmatizer dictionary (binary) is available for the input
-   * language.
+   * Load the binary lemmatizer dictionaries by language. Exits if no lemmatizer
+   * dictionary (binary) is available for the input language.
    * 
    * @param props
    *          the props object
    */
-  private void loadLemmatizerDicts(Properties props) {
-    Resources resources = new Resources();
-    URL binLemmatizerURL = resources.getBinaryDict(lang);
+  private void loadLemmatizerDicts(final Properties props) {
+    final Resources resources = new Resources();
+    final URL binLemmatizerURL = resources.getBinaryDict(this.lang);
     if (binLemmatizerURL == null) {
       System.err
-          .println("ERROR: No binary lemmatizer dictionary available for language " + lang + " in src/main/resources!!");
+          .println("ERROR: No binary lemmatizer dictionary available for language "
+              + this.lang + " in src/main/resources!!");
       System.exit(1);
     }
     try {
-      dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL, lang);
-    } catch (IOException e) {
+      this.dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL,
+          this.lang);
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
@@ -130,18 +131,19 @@ public class Annotate {
    * @param props
    *          the props object
    */
-  private void loadMorphoTaggerDicts(Properties props) {
-    Resources resources = new Resources();
-    URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(lang);
+  private void loadMorphoTaggerDicts(final Properties props) {
+    final Resources resources = new Resources();
+    final URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(this.lang);
     if (binDictMorphoTaggerURL == null) {
       System.err
-          .println("ERROR: No binary POS tagger dictionary available for language " +  lang + " in src/main/resources!!");
+          .println("ERROR: No binary POS tagger dictionary available for language "
+              + this.lang + " in src/main/resources!!");
       System.exit(1);
     }
     try {
-      dictMorphoTagger = new MorfologikMorphoTagger(binDictMorphoTaggerURL,
-          lang);
-    } catch (IOException e) {
+      this.dictMorphoTagger = new MorfologikMorphoTagger(
+          binDictMorphoTaggerURL, this.lang);
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
@@ -207,7 +209,7 @@ public class Annotate {
       return "O"; // other
     }
   }
-  
+
   /**
    * Mapping between CTAG tagset and NAF.
    * 
@@ -220,8 +222,10 @@ public class Annotate {
       return "A"; // adverb
     } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
       return "C"; // conjunction
-    } else if (postag.startsWith("D") || postag.startsWith("G") || postag.startsWith("X") || postag.startsWith("Q") || 
-        postag.startsWith("T") || postag.startsWith("I") | postag.startsWith("M")) {
+    } else if (postag.startsWith("D") || postag.startsWith("G")
+        || postag.startsWith("X") || postag.startsWith("Q")
+        || postag.startsWith("T") || postag.startsWith("I")
+        || postag.startsWith("M")) {
       return "D"; // det predeterminer
     } else if (postag.startsWith("A")) {
       return "G"; // adjective
@@ -240,7 +244,6 @@ public class Annotate {
     }
   }
 
-
   /**
    * Obtain the appropriate tagset according to language and postag.
    * 
@@ -250,13 +253,13 @@ public class Annotate {
    */
   private String getKafTagSet(final String postag) {
     String tag = null;
-    if (lang.equalsIgnoreCase("en")) {
+    if (this.lang.equalsIgnoreCase("en")) {
       tag = this.mapEnglishTagSetToKaf(postag);
     }
-    if (lang.equalsIgnoreCase("es")) {
+    if (this.lang.equalsIgnoreCase("es")) {
       tag = this.mapSpanishTagSetToKaf(postag);
     }
-    if (lang.equalsIgnoreCase("gl")) {
+    if (this.lang.equalsIgnoreCase("gl")) {
       tag = this.mapGalicianTagSetToKaf(postag);
     }
     return tag;
@@ -285,37 +288,37 @@ public class Annotate {
    *          the NAF document
    */
   public final void annotatePOSToKAF(final KAFDocument kaf) {
-    List<List<WF>> sentences = kaf.getSentences();
-    for (List<WF> wfs : sentences) {
+    final List<List<WF>> sentences = kaf.getSentences();
+    for (final List<WF> wfs : sentences) {
 
-      List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
+      final List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
       List<Morpheme> morphemes = null;
-      String[] tokens = new String[wfs.size()];
+      final String[] tokens = new String[wfs.size()];
       for (int i = 0; i < wfs.size(); i++) {
         tokens[i] = wfs.get(i).getForm();
-        List<WF> wfTarget = new ArrayList<WF>();
+        final List<WF> wfTarget = new ArrayList<WF>();
         wfTarget.add(wfs.get(i));
         tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
-      if (multiwords) {
-        String[] multiWordTokens = multiWordMatcher
+      if (this.multiwords) {
+        final String[] multiWordTokens = this.multiWordMatcher
             .getTokensWithMultiWords(tokens);
-        morphemes = posTagger.getMorphemes(multiWordTokens);
+        morphemes = this.posTagger.getMorphemes(multiWordTokens);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
-        morphemes = posTagger.getMorphemes(tokens);
+        morphemes = this.posTagger.getMorphemes(tokens);
       }
       for (int i = 0; i < morphemes.size(); i++) {
-        Term term = kaf.newTerm(tokenSpans.get(i));
-        if (dictag) {
-          String dictPosTag = dictMorphoTagger.tag(morphemes.get(i).getWord(),
-              morphemes.get(i).getTag());
+        final Term term = kaf.newTerm(tokenSpans.get(i));
+        if (this.dictag) {
+          final String dictPosTag = this.dictMorphoTagger.tag(morphemes.get(i)
+              .getWord(), morphemes.get(i).getTag());
           morphemes.get(i).setTag(dictPosTag);
         }
-        String posId = this.getKafTagSet(morphemes.get(i).getTag());
-        String type = this.setTermType(posId);
-        String lemma = dictLemmatizer.lemmatize(morphemes.get(i).getWord(),
-            morphemes.get(i).getTag());
+        final String posId = this.getKafTagSet(morphemes.get(i).getTag());
+        final String type = this.setTermType(posId);
+        final String lemma = this.dictLemmatizer.lemmatize(morphemes.get(i)
+            .getWord(), morphemes.get(i).getTag());
         morphemes.get(i).setLemma(lemma);
         term.setType(type);
         term.setLemma(morphemes.get(i).getLemma());
@@ -336,18 +339,21 @@ public class Annotate {
    * @param tokenSpans
    *          the list of initial token spans
    */
-  private void getMultiWordSpans(String[] tokens, List<WF> wfs,
-      List<ixa.kaflib.Span<WF>> tokenSpans) {
-    Span[] multiWordSpans = multiWordMatcher.multiWordsToSpans(tokens);
+  private void getMultiWordSpans(final String[] tokens, final List<WF> wfs,
+      final List<ixa.kaflib.Span<WF>> tokenSpans) {
+    final Span[] multiWordSpans = this.multiWordMatcher
+        .multiWordsToSpans(tokens);
     int counter = 0;
-    for (Span mwSpan : multiWordSpans) {
-      Integer fromIndex = mwSpan.getStart() - counter;
-      Integer toIndex = mwSpan.getEnd() - counter;
+    for (final Span mwSpan : multiWordSpans) {
+      final Integer fromIndex = mwSpan.getStart() - counter;
+      final Integer toIndex = mwSpan.getEnd() - counter;
       // add to the counter the length of the span removed
       counter = counter + tokenSpans.subList(fromIndex, toIndex).size() - 1;
       // create multiword targets and Span
-      List<WF> wfTargets = wfs.subList(mwSpan.getStart(), mwSpan.getEnd());
-      ixa.kaflib.Span<WF> multiWordSpan = KAFDocument.newWFSpan(wfTargets);
+      final List<WF> wfTargets = wfs
+          .subList(mwSpan.getStart(), mwSpan.getEnd());
+      final ixa.kaflib.Span<WF> multiWordSpan = KAFDocument
+          .newWFSpan(wfTargets);
       // remove the token Spans to be replaced by the multiword span
       tokenSpans.subList(fromIndex, toIndex).clear();
       // add the new Span containing several WFs (multiWordSpan)
@@ -368,38 +374,38 @@ public class Annotate {
    */
   public final String annotatePOSToCoNLL(final KAFDocument kaf)
       throws IOException {
-    StringBuilder sb = new StringBuilder();
-    List<List<WF>> sentences = kaf.getSentences();
-    for (List<WF> wfs : sentences) {
+    final StringBuilder sb = new StringBuilder();
+    final List<List<WF>> sentences = kaf.getSentences();
+    for (final List<WF> wfs : sentences) {
 
-      List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
+      final List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
       List<Morpheme> morphemes = null;
       // Get an array of token forms from a list of WF objects.
-      String[] tokens = new String[wfs.size()];
+      final String[] tokens = new String[wfs.size()];
       for (int i = 0; i < wfs.size(); i++) {
         tokens[i] = wfs.get(i).getForm();
-        List<WF> wfTarget = new ArrayList<WF>();
+        final List<WF> wfTarget = new ArrayList<WF>();
         wfTarget.add(wfs.get(i));
         tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
-      if (multiwords) {
-        String[] multiWordTokens = multiWordMatcher
+      if (this.multiwords) {
+        final String[] multiWordTokens = this.multiWordMatcher
             .getTokensWithMultiWords(tokens);
-        morphemes = posTagger.getMorphemes(multiWordTokens);
+        morphemes = this.posTagger.getMorphemes(multiWordTokens);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
-        morphemes = posTagger.getMorphemes(tokens);
+        morphemes = this.posTagger.getMorphemes(tokens);
       }
       for (int i = 0; i < morphemes.size(); i++) {
-        String posTag = morphemes.get(i).getTag();
-        String word = morphemes.get(i).getWord();
-        if (dictag) {
-          String dictPosTag = dictMorphoTagger.tag(word, posTag);
+        final String posTag = morphemes.get(i).getTag();
+        final String word = morphemes.get(i).getWord();
+        if (this.dictag) {
+          final String dictPosTag = this.dictMorphoTagger.tag(word, posTag);
           morphemes.get(i).setTag(dictPosTag);
         }
-        String lemma = dictLemmatizer.lemmatize(word, posTag);
-        sb.append(word).append("\t").append(lemma).append("\t").append(morphemes.get(i).getTag())
-            .append("\n");
+        final String lemma = this.dictLemmatizer.lemmatize(word, posTag);
+        sb.append(word).append("\t").append(lemma).append("\t")
+            .append(morphemes.get(i).getTag()).append("\n");
       }
       sb.append("\n");
     }

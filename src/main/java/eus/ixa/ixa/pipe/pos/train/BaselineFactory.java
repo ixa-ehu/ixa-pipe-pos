@@ -36,7 +36,7 @@ public class BaselineFactory extends POSTaggerFactory {
   /**
    * Creates a {@link POSTaggerFactory}. Use this constructor to
    * programmatically create a factory.
-   *
+   * 
    * @param ngramDictionary
    *          the ngrams dictionary
    * @param posDictionary
@@ -49,7 +49,7 @@ public class BaselineFactory extends POSTaggerFactory {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see opennlp.tools.postag.POSTaggerFactory#getPOSContextGenerator()
    */
   @Override
@@ -59,7 +59,7 @@ public class BaselineFactory extends POSTaggerFactory {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see opennlp.tools.postag.POSTaggerFactory#getPOSContextGenerator(int)
    */
   @Override

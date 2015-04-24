@@ -23,20 +23,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import eus.ixa.ixa.pipe.pos.Resources;
-
 import morfologik.stemming.Dictionary;
 import morfologik.stemming.DictionaryLookup;
 import morfologik.stemming.IStemmer;
 import morfologik.stemming.WordData;
+import eus.ixa.ixa.pipe.pos.Resources;
 
 /**
- * Lemmatizer based on Morfologik Stemming library. It requires a FSA
- * Morfologik dictionary as input.
- *
+ * Lemmatizer based on Morfologik Stemming library. It requires a FSA Morfologik
+ * dictionary as input.
+ * 
  * @author ragerri
  * @version 2014-07-08
- *
+ * 
  */
 public class MorfologikLemmatizer implements
     eus.ixa.ixa.pipe.lemma.DictionaryLemmatizer {
@@ -44,42 +43,47 @@ public class MorfologikLemmatizer implements
   /**
    * The Morfologik steamer to perform lemmatization with FSA dictionaries.
    */
-  private IStemmer dictLookup;
+  private final IStemmer dictLookup;
   /**
    * The class dealing with loading the default dictionaries.
    */
-  private Resources tagRetriever = new Resources();
+  private final Resources tagRetriever = new Resources();
   /**
    * The language.
    */
-  private String lang;
+  private final String lang;
+
   /**
    * Reads a dictionary in morfologik FSA format.
-   *
-   * @param dictURL the URL containing the dictionary
-   * @param aLang the language
-   * @throws IllegalArgumentException if an exception is illegal
-   * @throws IOException throws an exception if dictionary path is not correct
+   * 
+   * @param dictURL
+   *          the URL containing the dictionary
+   * @param aLang
+   *          the language
+   * @throws IllegalArgumentException
+   *           if an exception is illegal
+   * @throws IOException
+   *           throws an exception if dictionary path is not correct
    */
-  public MorfologikLemmatizer(final URL dictURL, String aLang)
+  public MorfologikLemmatizer(final URL dictURL, final String aLang)
       throws IOException {
-    dictLookup = new DictionaryLookup(Dictionary.read(dictURL));
+    this.dictLookup = new DictionaryLookup(Dictionary.read(dictURL));
     this.lang = aLang;
   }
 
   /**
    * Get the lemma for a surface form word and a postag from a FSA morfologik
    * generated dictionary.
-   *
+   * 
    * @param word
    *          the surface form
    * @return the hashmap with the word and tag as keys and the lemma as value
    */
   private HashMap<List<String>, String> getLemmaTagsDict(final String word) {
-    List<WordData> wdList = dictLookup.lookup(word);
-    HashMap<List<String>, String> dictMap = new HashMap<List<String>, String>();
-    for (WordData wd : wdList) {
-      List<String> wordLemmaTags = new ArrayList<String>();
+    final List<WordData> wdList = this.dictLookup.lookup(word);
+    final HashMap<List<String>, String> dictMap = new HashMap<List<String>, String>();
+    for (final WordData wd : wdList) {
+      final List<String> wordLemmaTags = new ArrayList<String>();
       wordLemmaTags.add(word);
       wordLemmaTags.add(wd.getTag().toString());
       dictMap.put(wordLemmaTags, wd.getStem().toString());
@@ -89,17 +93,17 @@ public class MorfologikLemmatizer implements
 
   /**
    * Generate the dictionary keys (word, postag).
-   *
+   * 
    * @param word
    *          the surface form
    * @param postag
    *          the assigned postag
    * @return a list of keys consisting of the word and its postag
    */
-  private List<String> getDictKeys(final String word,
-      final String postag) {
-    List<String> keys = new ArrayList<String>();
-    String constantTag = tagRetriever.setTagConstant(lang, postag);
+  private List<String> getDictKeys(final String word, final String postag) {
+    final List<String> keys = new ArrayList<String>();
+    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
+        postag);
     if (postag.startsWith(String.valueOf(constantTag))) {
       keys.addAll(Arrays.asList(word, postag));
     } else {
@@ -110,16 +114,18 @@ public class MorfologikLemmatizer implements
 
   /**
    * Generates the dictionary map.
-   *
+   * 
    * @param word
    *          the surface form word
    * @param postag
    *          the postag assigned by the pos tagger
    * @return the hash map dictionary
    */
-  private HashMap<List<String>, String> getDictMap(final String word, final String postag) {
+  private HashMap<List<String>, String> getDictMap(final String word,
+      final String postag) {
     HashMap<List<String>, String> dictMap = new HashMap<List<String>, String>();
-    String constantTag = tagRetriever.setTagConstant(lang, postag);
+    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
+        postag);
     if (postag.startsWith(String.valueOf(constantTag))) {
       dictMap = this.getLemmaTagsDict(word);
     } else {
@@ -130,19 +136,19 @@ public class MorfologikLemmatizer implements
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see
    * es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String
    * , java.lang.String, java.lang.String)
    */
-  public String lemmatize(final String word,
-      final String postag) {
+  public String lemmatize(final String word, final String postag) {
     String lemma = null;
-    List<String> keys = this.getDictKeys(word, postag);
-    HashMap<List<String>, String> dictMap = this.getDictMap(word, postag);
+    final List<String> keys = this.getDictKeys(word, postag);
+    final HashMap<List<String>, String> dictMap = this.getDictMap(word, postag);
     // lookup lemma as value of the map
-    String keyValue = dictMap.get(keys);
-    String constantTag = tagRetriever.setTagConstant(lang, postag);
+    final String keyValue = dictMap.get(keys);
+    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
+        postag);
     if (keyValue != null) {
       lemma = keyValue;
     } else if (keyValue == null

@@ -47,19 +47,19 @@ public class CrossValidator {
   /**
    * The language.
    */
-  private String lang;
+  private final String lang;
   /**
    * ObjectStream of the training data.
    */
-  private ObjectStream<POSSample> trainSamples;
+  private final ObjectStream<POSSample> trainSamples;
   /**
    * Cutoff value to create tag dictionary from training data.
    */
-  private int dictCutOff;
+  private final int dictCutOff;
   /**
    * The folds value for cross validation.
    */
-  private int folds;
+  private final int folds;
   /**
    * posTaggerFactory features need to be implemented by any class extending
    * this one.
@@ -68,7 +68,7 @@ public class CrossValidator {
   /**
    * The evaluation listeners.
    */
-  private List<EvaluationMonitor<POSSample>> listeners = new LinkedList<EvaluationMonitor<POSSample>>();
+  private final List<EvaluationMonitor<POSSample>> listeners = new LinkedList<EvaluationMonitor<POSSample>>();
   POSTaggerFineGrainedReportListener detailedListener;
 
   /**
@@ -81,99 +81,107 @@ public class CrossValidator {
    * @throws IOException
    *           the io exceptions
    */
-  public CrossValidator(TrainingParameters params) throws IOException {
+  public CrossValidator(final TrainingParameters params) throws IOException {
     this.lang = Flags.getLanguage(params);
-    String trainData = Flags.getDataSet("TrainSet", params);
-    ObjectStream<String> trainStream = InputOutputUtils
+    final String trainData = Flags.getDataSet("TrainSet", params);
+    final ObjectStream<String> trainStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(trainData);
-    trainSamples = new WordTagSampleStream(trainStream);
+    this.trainSamples = new WordTagSampleStream(trainStream);
     this.dictCutOff = Flags.getAutoDictFeatures(params);
     this.folds = Flags.getFolds(params);
     createPOSFactory(params);
     getEvalListeners(params);
   }
 
-  private void createPOSFactory(TrainingParameters params) {
-    String featureSet = Flags.getFeatureSet(params);
+  private void createPOSFactory(final TrainingParameters params) {
+    final String featureSet = Flags.getFeatureSet(params);
     if (featureSet.equalsIgnoreCase("Opennlp")) {
-      posTaggerFactory = new POSTaggerFactory();
+      this.posTaggerFactory = new POSTaggerFactory();
     } else {
-      posTaggerFactory = new BaselineFactory();
+      this.posTaggerFactory = new BaselineFactory();
     }
   }
 
-  private void getEvalListeners(TrainingParameters params) {
+  private void getEvalListeners(final TrainingParameters params) {
     if (params.getSettings().get("EvaluationType").equalsIgnoreCase("error")) {
-      listeners.add(new POSEvaluationErrorListener());
+      this.listeners.add(new POSEvaluationErrorListener());
     }
     if (params.getSettings().get("EvaluationType").equalsIgnoreCase("detailed")) {
-      detailedListener = new POSTaggerFineGrainedReportListener();
-      listeners.add(detailedListener);
+      this.detailedListener = new POSTaggerFineGrainedReportListener();
+      this.listeners.add(this.detailedListener);
     }
   }
 
   /**
    * Cross validate when no separate testset is available.
-   * @param params the training parameters
+   * 
+   * @param params
+   *          the training parameters
    */
   public final void crossValidate(final TrainingParameters params) {
 
     POSTaggerCrossValidator validator = null;
     try {
       validator = getPOSTaggerCrossValidator(params);
-      validator.evaluate(trainSamples, folds);
-    } catch (IOException e) {
+      validator.evaluate(this.trainSamples, this.folds);
+    } catch (final IOException e) {
       System.err.println("IO error while loading training set!");
       e.printStackTrace();
       System.exit(1);
     } finally {
       try {
-        trainSamples.close();
-      } catch (IOException e) {
+        this.trainSamples.close();
+      } catch (final IOException e) {
         System.err.println("IO error with the train samples!");
       }
     }
-    if (detailedListener == null) {
+    if (this.detailedListener == null) {
       System.out.println(validator.getWordAccuracy());
     } else {
-      //TODO add detailed evaluation here
+      // TODO add detailed evaluation here
       System.out.println(validator.getWordAccuracy());
     }
   }
 
   /**
    * Get the postagger cross validator.
-   * @param params the training parameters
+   * 
+   * @param params
+   *          the training parameters
    * @return the pos tagger cross validator
    */
   private POSTaggerCrossValidator getPOSTaggerCrossValidator(
-      TrainingParameters params) {
-    File dictPath = new File(Flags.getDictionaryFeatures(params));
+      final TrainingParameters params) {
+    final File dictPath = new File(Flags.getDictionaryFeatures(params));
     // features
-    if (posTaggerFactory == null) {
+    if (this.posTaggerFactory == null) {
       throw new IllegalStateException(
           "You must create the POSTaggerFactory features!");
     }
     POSTaggerCrossValidator validator = null;
     if (dictPath.getName().equals(Flags.DEFAULT_DICT_PATH)) {
       if (this.dictCutOff == Flags.DEFAULT_DICT_CUTOFF) {
-        validator = new POSTaggerCrossValidator(lang, params, null, null,
-            null, posTaggerFactory.getClass().getName(),
-            listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+        validator = new POSTaggerCrossValidator(this.lang, params, null, null,
+            null, this.posTaggerFactory.getClass().getName(),
+            this.listeners
+                .toArray(new POSTaggerEvaluationMonitor[this.listeners.size()]));
       } else {
-        validator = new POSTaggerCrossValidator(lang, params, null, null,
-            dictCutOff, posTaggerFactory.getClass().getName(),
-            listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
-      } 
+        validator = new POSTaggerCrossValidator(this.lang, params, null, null,
+            this.dictCutOff, this.posTaggerFactory.getClass().getName(),
+            this.listeners
+                .toArray(new POSTaggerEvaluationMonitor[this.listeners.size()]));
+      }
     } else {
       if (this.dictCutOff == Flags.DEFAULT_DICT_CUTOFF) {
-        validator = new POSTaggerCrossValidator(lang, params, dictPath, null,
-            null, posTaggerFactory.getClass().getName(),
-            listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+        validator = new POSTaggerCrossValidator(this.lang, params, dictPath,
+            null, null, this.posTaggerFactory.getClass().getName(),
+            this.listeners
+                .toArray(new POSTaggerEvaluationMonitor[this.listeners.size()]));
       } else {
-        validator = new POSTaggerCrossValidator(lang, params, dictPath, null,
-            dictCutOff, posTaggerFactory.getClass().getName(),
-            listeners.toArray(new POSTaggerEvaluationMonitor[listeners.size()]));
+        validator = new POSTaggerCrossValidator(this.lang, params, dictPath,
+            null, this.dictCutOff, this.posTaggerFactory.getClass().getName(),
+            this.listeners
+                .toArray(new POSTaggerEvaluationMonitor[this.listeners.size()]));
       }
     }
     return validator;

@@ -43,15 +43,15 @@ public abstract class AbstractTrainer implements Trainer {
   /**
    * The language.
    */
-  private String lang;
+  private final String lang;
   /**
    * ObjectStream of the training data.
    */
-  private ObjectStream<POSSample> trainSamples;
+  private final ObjectStream<POSSample> trainSamples;
   /**
    * ObjectStream of the test data.
    */
-  private ObjectStream<POSSample> testSamples;
+  private final ObjectStream<POSSample> testSamples;
   /**
    * ObjectStream of the automatically created dictionary data, taken from the
    * training data.
@@ -60,15 +60,15 @@ public abstract class AbstractTrainer implements Trainer {
   /**
    * beamsize value needs to be established in any class extending this one.
    */
-  private int beamSize;
+  private final int beamSize;
   /**
    * Cutoff value to create tag dictionary from training data.
    */
-  private int dictCutOff;
+  private final int dictCutOff;
   /**
    * Cutoff value to create tag dictionary from training data.
    */
-  private int ngramCutOff;
+  private final int ngramCutOff;
   /**
    * posTaggerFactory features need to be implemented by any class extending
    * this one.
@@ -85,17 +85,17 @@ public abstract class AbstractTrainer implements Trainer {
    * @throws IOException
    *           the io exceptions
    */
-  public AbstractTrainer(TrainingParameters params) throws IOException {
+  public AbstractTrainer(final TrainingParameters params) throws IOException {
     this.lang = Flags.getLanguage(params);
-    String trainData = Flags.getDataSet("TrainSet", params);
-    String testData = Flags.getDataSet("TestSet", params);
-    ObjectStream<String> trainStream = InputOutputUtils
+    final String trainData = Flags.getDataSet("TrainSet", params);
+    final String testData = Flags.getDataSet("TestSet", params);
+    final ObjectStream<String> trainStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(trainData);
-    trainSamples = new WordTagSampleStream(trainStream);
-    ObjectStream<String> testStream = InputOutputUtils
+    this.trainSamples = new WordTagSampleStream(trainStream);
+    final ObjectStream<String> testStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(testData);
-    testSamples = new WordTagSampleStream(testStream);
-    ObjectStream<String> dictStream = InputOutputUtils
+    this.testSamples = new WordTagSampleStream(testStream);
+    final ObjectStream<String> dictStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(trainData);
     setDictSamples(new WordTagSampleStream(dictStream));
     this.beamSize = Flags.getBeamsize(params);
@@ -121,12 +121,13 @@ public abstract class AbstractTrainer implements Trainer {
     POSModel trainedModel = null;
     POSEvaluator posEvaluator = null;
     try {
-      trainedModel = POSTaggerME.train(lang, trainSamples, params,
+      trainedModel = POSTaggerME.train(this.lang, this.trainSamples, params,
           getPosTaggerFactory());
-      POSTaggerME posTagger = new POSTaggerME(trainedModel, beamSize, beamSize);
+      final POSTaggerME posTagger = new POSTaggerME(trainedModel,
+          this.beamSize, this.beamSize);
       posEvaluator = new POSEvaluator(posTagger);
-      posEvaluator.evaluate(testSamples);
-    } catch (IOException e) {
+      posEvaluator.evaluate(this.testSamples);
+    } catch (final IOException e) {
       System.err.println("IO error while loading traing and test sets!");
       e.printStackTrace();
       System.exit(1);
@@ -146,7 +147,7 @@ public abstract class AbstractTrainer implements Trainer {
       try {
         getPosTaggerFactory().setTagDictionary(
             getPosTaggerFactory().createTagDictionary(new File(dictPath)));
-      } catch (IOException e) {
+      } catch (final IOException e) {
         throw new TerminateToolException(-1,
             "IO error while loading POS Dictionary: " + e.getMessage(), e);
       }
@@ -177,8 +178,8 @@ public abstract class AbstractTrainer implements Trainer {
           throw new IllegalArgumentException("Can't extend a POSDictionary"
               + " that does not implement MutableTagDictionary.");
         }
-        dictSamples.reset();
-      } catch (IOException e) {
+        this.dictSamples.reset();
+      } catch (final IOException e) {
         throw new TerminateToolException(-1,
             "IO error while creating/extending POS Dictionary: "
                 + e.getMessage(), e);
@@ -188,8 +189,11 @@ public abstract class AbstractTrainer implements Trainer {
 
   /**
    * Create ngram dictionary from training data.
-   * @param aDictSamples the training data
-   * @param aNgramCutoff the cutoff
+   * 
+   * @param aDictSamples
+   *          the training data
+   * @param aNgramCutoff
+   *          the cutoff
    * @return ngram dictionary
    */
   protected final Dictionary createNgramDictionary(
@@ -198,9 +202,10 @@ public abstract class AbstractTrainer implements Trainer {
     if (aNgramCutoff != Flags.DEFAULT_DICT_CUTOFF) {
       System.err.print("Building ngram dictionary ... ");
       try {
-        ngramDict = POSTaggerME.buildNGramDictionary(aDictSamples, aNgramCutoff);
-        dictSamples.reset();
-      } catch (IOException e) {
+        ngramDict = POSTaggerME
+            .buildNGramDictionary(aDictSamples, aNgramCutoff);
+        this.dictSamples.reset();
+      } catch (final IOException e) {
         throw new TerminateToolException(-1,
             "IO error while building NGram Dictionary: " + e.getMessage(), e);
       }
@@ -215,7 +220,7 @@ public abstract class AbstractTrainer implements Trainer {
    * @return the WordTagSampleStream dictSamples
    */
   protected final WordTagSampleStream getDictSamples() {
-    return dictSamples;
+    return this.dictSamples;
   }
 
   /**
@@ -235,7 +240,7 @@ public abstract class AbstractTrainer implements Trainer {
    * @return the posTaggerFactory
    */
   protected final POSTaggerFactory getPosTaggerFactory() {
-    return posTaggerFactory;
+    return this.posTaggerFactory;
   }
 
   /**
@@ -255,7 +260,7 @@ public abstract class AbstractTrainer implements Trainer {
    * @return the cutoff
    */
   protected final Integer getDictCutOff() {
-    return dictCutOff;
+    return this.dictCutOff;
   }
 
   /**
@@ -264,7 +269,7 @@ public abstract class AbstractTrainer implements Trainer {
    * @return the cutoff
    */
   protected final Integer getNgramDictCutOff() {
-    return ngramCutOff;
+    return this.ngramCutOff;
   }
 
 }

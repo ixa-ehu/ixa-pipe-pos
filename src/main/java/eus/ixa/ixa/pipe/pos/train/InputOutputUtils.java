@@ -15,6 +15,7 @@
  */
 
 package eus.ixa.ixa.pipe.pos.train;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,9 +33,10 @@ import opennlp.tools.util.TrainingParameters;
 
 /**
  * Utility functions to read and save ObjectStreams.
+ * 
  * @author ragerri
  * @version 2014-07-08
- *
+ * 
  */
 public final class InputOutputUtils {
 
@@ -47,6 +49,7 @@ public final class InputOutputUtils {
 
   /**
    * Check input file integrity.
+   * 
    * @param name
    *          the name of the file
    * @param inFile
@@ -72,7 +75,7 @@ public final class InputOutputUtils {
 
   /**
    * Load the parameters in the {@code TrainingParameters} file.
-   *
+   * 
    * @param paramFile
    *          the training parameters file
    * @return default loading of the parameters
@@ -83,7 +86,7 @@ public final class InputOutputUtils {
 
   /**
    * Load the parameters in the {@code TrainingParameters} file.
-   *
+   * 
    * @param paramFile
    *          the parameter file
    * @param supportSequenceTraining
@@ -104,7 +107,7 @@ public final class InputOutputUtils {
         paramsIn = new FileInputStream(new File(paramFile));
 
         params = new opennlp.tools.util.TrainingParameters(paramsIn);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         throw new TerminateToolException(-1,
             "Error during parameters loading: " + e.getMessage(), e);
       } finally {
@@ -112,7 +115,7 @@ public final class InputOutputUtils {
           if (paramsIn != null) {
             paramsIn.close();
           }
-        } catch (IOException e) {
+        } catch (final IOException e) {
           System.err.println("Error closing the input stream");
         }
       }
@@ -125,7 +128,7 @@ public final class InputOutputUtils {
 
     return params;
   }
-  
+
   /**
    * Read the file into an {@code ObjectStream}.
    * 
@@ -133,24 +136,22 @@ public final class InputOutputUtils {
    *          the string pointing to the file
    * @return the object stream
    */
-  public static ObjectStream<String> readFileIntoMarkableStreamFactory(final String infile) {
+  public static ObjectStream<String> readFileIntoMarkableStreamFactory(
+      final String infile) {
 
     InputStreamFactory inputStreamFactory = null;
     try {
-      inputStreamFactory = new MarkableFileInputStreamFactory(
-          new File(infile));
-    } catch (FileNotFoundException e) {
+      inputStreamFactory = new MarkableFileInputStreamFactory(new File(infile));
+    } catch (final FileNotFoundException e) {
       e.printStackTrace();
     }
     ObjectStream<String> lineStream = null;
     try {
-      lineStream = new PlainTextByLineStream(
-          (inputStreamFactory), "UTF-8");
-    } catch (IOException e) {
+      lineStream = new PlainTextByLineStream(inputStreamFactory, "UTF-8");
+    } catch (final IOException e) {
       CmdLineUtil.handleCreateObjectStreamError(e);
     }
     return lineStream;
   }
-
 
 }

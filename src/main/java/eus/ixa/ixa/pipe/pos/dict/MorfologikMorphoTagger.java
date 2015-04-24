@@ -26,45 +26,48 @@ import morfologik.stemming.IStemmer;
 import morfologik.stemming.WordData;
 
 /**
- * POS tagger based on Morfologik Stemming library. It requires a FSA
- * Morfologik dictionary as input. Right now this is only thought to work
- * with monosemic dictionaries.
- *
+ * POS tagger based on Morfologik Stemming library. It requires a FSA Morfologik
+ * dictionary as input. Right now this is only thought to work with monosemic
+ * dictionaries.
+ * 
  * @author ragerri
  * @version 2014-12-05
- *
+ * 
  */
 public class MorfologikMorphoTagger implements DictionaryTagger {
 
   /**
    * The Morfologik steamer to perform pos tagging with FSA dictionaries.
    */
-  private IStemmer dictLookup;
-  
+  private final IStemmer dictLookup;
+
   /**
    * Reads a dictionary in morfologik FSA format.
-   *
-   * @param dictURL the URL containing the dictionary
-   * @param aLang the language
-   * @throws IOException throws an exception if dictionary path is not correct
+   * 
+   * @param dictURL
+   *          the URL containing the dictionary
+   * @param aLang
+   *          the language
+   * @throws IOException
+   *           throws an exception if dictionary path is not correct
    */
-  public MorfologikMorphoTagger(final URL dictURL, String aLang)
+  public MorfologikMorphoTagger(final URL dictURL, final String aLang)
       throws IOException {
-    dictLookup = new DictionaryLookup(Dictionary.read(dictURL));
+    this.dictLookup = new DictionaryLookup(Dictionary.read(dictURL));
   }
 
   /**
-   * Get the postag for a surface form from a FSA morfologik
-   * generated dictionary.
-   *
+   * Get the postag for a surface form from a FSA morfologik generated
+   * dictionary.
+   * 
    * @param word
    *          the surface form
    * @return the hashmap with the word as key and the postag as value
    */
-  public String tag(final String word, String posTag) {
-    List<WordData> wdList = dictLookup.lookup(word.toLowerCase());
+  public String tag(final String word, final String posTag) {
+    final List<WordData> wdList = this.dictLookup.lookup(word.toLowerCase());
     String newPosTag = null;
-    for (WordData wd : wdList) {
+    for (final WordData wd : wdList) {
       newPosTag = wd.getTag().toString();
     }
     if (newPosTag == null) {
@@ -73,4 +76,3 @@ public class MorfologikMorphoTagger implements DictionaryTagger {
     return newPosTag;
   }
 }
-
