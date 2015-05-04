@@ -403,7 +403,7 @@ public class Annotate {
           final String dictPosTag = this.dictMorphoTagger.tag(word, posTag);
           morphemes.get(i).setTag(dictPosTag);
         }
-        final String lemma = this.dictLemmatizer.lemmatize(word, posTag);
+        final String lemma = this.dictLemmatizer.lemmatize(word, morphemes.get(i).getTag());
         sb.append(word).append("\t").append(lemma).append("\t")
             .append(morphemes.get(i).getTag()).append("\n");
       }
