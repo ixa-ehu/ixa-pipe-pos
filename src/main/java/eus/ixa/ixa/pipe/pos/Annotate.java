@@ -329,7 +329,7 @@ public class Annotate {
   }
 
   /**
-   * Creates the multiword spans. It get an initial list of spans (one per
+   * Creates the multiword spans. It gets an initial list of spans (one per
    * token) and creates a multiword span when a multiword is detected.
    * 
    * @param tokens
