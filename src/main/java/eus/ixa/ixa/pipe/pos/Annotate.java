@@ -329,7 +329,7 @@ public class Annotate {
   }
 
   /**
-   * Creates the multiword spans. It get an initial list of spans (one per
+   * Creates the multiword spans. It gets an initial list of spans (one per
    * token) and creates a multiword span when a multiword is detected.
    * 
    * @param tokens
@@ -403,7 +403,7 @@ public class Annotate {
           final String dictPosTag = this.dictMorphoTagger.tag(word, posTag);
           morphemes.get(i).setTag(dictPosTag);
         }
-        final String lemma = this.dictLemmatizer.lemmatize(word, posTag);
+        final String lemma = this.dictLemmatizer.lemmatize(word, morphemes.get(i).getTag());
         sb.append(word).append("\t").append(lemma).append("\t")
             .append(morphemes.get(i).getTag()).append("\n");
       }

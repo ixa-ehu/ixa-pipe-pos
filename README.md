@@ -3,7 +3,7 @@ ixa-pipe-pos
 ============
 
 ixa-pipe-pos is a multilingual Part of Speech tagger, currently offering pre-trained models for English, Galician and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed
-by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.4.0**.
+by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.4.1**.
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
 pipes tools but also for **official releases, including source code and binary
@@ -64,7 +64,8 @@ package. Note that the dictionaries come with their own licences, please do comp
 
 ### Models
 
-The following pre-trained models are provided in the [pos-models-$version.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz) package:
++ Latest models: [pos-models-1.4.x](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.4.0.tar.gz).
++ 1.3.x models: [pos-models-1.3.x](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz).
 
 + **English POS Models**:
   + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.81
