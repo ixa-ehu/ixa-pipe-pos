@@ -4,7 +4,7 @@
 	<groupId>eus.ixa</groupId>
 	<artifactId>ixa-pipe-pos</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4.1</version>
+	<version>1.4.2</version>
 	<name>ixa-pipe-pos</name>
 	<description>POS tagger and lemmatizer of ixa pipes (ixa2.si.ehu.es/ixa-pipes)</description>
 	<licenses>
@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>com.github.ixa-ehu</groupId>
 			<artifactId>kaflib-naf</artifactId>
-			<version>1.1.5</version>
+			<version>1.1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
