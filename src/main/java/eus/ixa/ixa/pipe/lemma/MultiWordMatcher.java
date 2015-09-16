@@ -107,6 +107,9 @@ public class MultiWordMatcher {
   private final InputStream getMultiWordDict(final String lang) {
     InputStream dict = null;
     // TODO complete locutions dictionary and binarize
+    if (lang.equalsIgnoreCase("en")) {
+      dict = getClass().getResourceAsStream("/lemmatizer-dicts/freeling/en-locutions-extended.txt");
+    }
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-locutions.txt");
