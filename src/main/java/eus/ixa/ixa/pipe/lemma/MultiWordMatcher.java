@@ -108,7 +108,8 @@ public class MultiWordMatcher {
     InputStream dict = null;
     // TODO complete locutions dictionary and binarize
     if (lang.equalsIgnoreCase("en")) {
-      dict = getClass().getResourceAsStream("/lemmatizer-dicts/freeling/en-locutions-extended.txt");
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/freeling/en-locutions-extended.txt");
     }
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(

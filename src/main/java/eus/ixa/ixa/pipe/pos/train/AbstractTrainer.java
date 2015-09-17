@@ -58,10 +58,6 @@ public abstract class AbstractTrainer implements Trainer {
    */
   private WordTagSampleStream dictSamples;
   /**
-   * beamsize value needs to be established in any class extending this one.
-   */
-  private final int beamSize;
-  /**
    * Cutoff value to create tag dictionary from training data.
    */
   private final int dictCutOff;
@@ -98,7 +94,6 @@ public abstract class AbstractTrainer implements Trainer {
     final ObjectStream<String> dictStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(trainData);
     setDictSamples(new WordTagSampleStream(dictStream));
-    this.beamSize = Flags.getBeamsize(params);
     this.dictCutOff = Flags.getAutoDictFeatures(params);
     this.ngramCutOff = Flags.getNgramDictFeatures(params);
 
@@ -123,8 +118,7 @@ public abstract class AbstractTrainer implements Trainer {
     try {
       trainedModel = POSTaggerME.train(this.lang, this.trainSamples, params,
           getPosTaggerFactory());
-      final POSTaggerME posTagger = new POSTaggerME(trainedModel,
-          this.beamSize, this.beamSize);
+      final POSTaggerME posTagger = new POSTaggerME(trainedModel);
       posEvaluator = new POSEvaluator(posTagger);
       posEvaluator.evaluate(this.testSamples);
     } catch (final IOException e) {

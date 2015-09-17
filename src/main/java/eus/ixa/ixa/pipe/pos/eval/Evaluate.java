@@ -91,8 +91,7 @@ public class Evaluate {
         }
       }
     }
-    this.posTagger = new POSTaggerME(posModel, Integer.parseInt(beamsize),
-        Integer.parseInt(beamsize));
+    this.posTagger = new POSTaggerME(posModel);
   }
 
   /**

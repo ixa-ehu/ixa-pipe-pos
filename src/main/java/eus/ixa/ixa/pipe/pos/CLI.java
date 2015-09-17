@@ -53,7 +53,6 @@ import eus.ixa.ixa.pipe.pos.train.Trainer;
 /**
  * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes
  * (ixa2.si.ehu.es/ixa-pipes). The annotate method is the main entry point.
- * 
  * @author ragerri
  * @version 2014-11-30
  */
@@ -125,6 +124,12 @@ public class CLI {
     loadCrossValidateParameters();
   }
 
+  /**
+   * The main method to process the CLI.
+   * @param args the command line arguments
+   * @throws JDOMException if xml mal-formed NAF
+   * @throws IOException if io problems
+   */
   public static void main(final String[] args) throws JDOMException,
       IOException {
 
@@ -134,7 +139,6 @@ public class CLI {
 
   /**
    * Parse the command line options.
-   * 
    * @param args
    *          the arguments
    * @throws IOException
@@ -167,7 +171,6 @@ public class CLI {
   /**
    * Main entry point for annotation. Takes system.in as input and outputs
    * annotated text via system.out.
-   * 
    * @param inputStream
    *          the input stream
    * @param outputStream
@@ -181,7 +184,6 @@ public class CLI {
       final OutputStream outputStream) throws IOException, JDOMException {
 
     final String model = this.parsedArguments.getString("model");
-    final String beamSize = this.parsedArguments.getString("beamSize");
     final String multiwords = Boolean.toString(this.parsedArguments
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
@@ -203,7 +205,7 @@ public class CLI {
     } else {
       lang = kaf.getLang();
     }
-    final Properties properties = setAnnotateProperties(model, lang, beamSize,
+    final Properties properties = setAnnotateProperties(model, lang,
         multiwords, dictag);
     final Annotate annotator = new Annotate(properties);
     if (this.parsedArguments.getBoolean("nokaf")) {
@@ -249,7 +251,6 @@ public class CLI {
 
   /**
    * Main entry point for training.
-   * 
    * @throws IOException
    *           throws an exception if errors in the various file inputs.
    */
@@ -274,14 +275,13 @@ public class CLI {
   /**
    * Loads the parameters for the training CLI.
    */
-  private final void loadTrainingParameters() {
+  private void loadTrainingParameters() {
     this.trainParser.addArgument("-p", "--params").required(true)
         .help("Load the training parameters file\n");
   }
 
   /**
    * Main entry point for evaluation.
-   * 
    * @throws IOException
    *           the io exception thrown if errors with paths are present
    */
@@ -310,7 +310,7 @@ public class CLI {
   /**
    * Load the evaluation parameters of the CLI.
    */
-  private final void loadEvalParameters() {
+  private void loadEvalParameters() {
     this.evalParser.addArgument("-m", "--model").required(true)
         .help("Choose model");
     this.evalParser.addArgument("-t", "--testSet").required(true)
@@ -325,7 +325,6 @@ public class CLI {
 
   /**
    * Main access to the cross validation.
-   * 
    * @throws IOException
    *           input output exception if problems with corpora
    */
@@ -347,25 +346,19 @@ public class CLI {
   }
 
   /**
-   * Set a Properties object with the CLI parameters for annotation.
-   * 
-   * @param model
-   *          the model parameter
-   * @param language
-   *          language parameter
-   * @param beamSize
-   *          the beamsize decoding
-   * @param lemmatize
-   *          the lemmatization method
-   * @return the properties object
+   * Generate Properties objects for CLI usage.
+   * @param model the model to perform the annotation
+   * @param language the language
+   * @param multiwords whether multiwords are to be detected
+   * @param dictag whether tagging from a dictionary is activated
+   * @return a properties object
    */
   private Properties setAnnotateProperties(final String model,
-      final String language, final String beamSize, final String multiwords,
+      final String language, final String multiwords,
       final String dictag) {
     final Properties annotateProperties = new Properties();
     annotateProperties.setProperty("model", model);
     annotateProperties.setProperty("language", language);
-    annotateProperties.setProperty("beamSize", beamSize);
     annotateProperties.setProperty("multiwords", multiwords);
     annotateProperties.setProperty("dictag", dictag);
     return annotateProperties;

@@ -59,9 +59,8 @@ public class MorphoTagger {
   public MorphoTagger(final Properties props) {
     final String lang = props.getProperty("language");
     final String model = props.getProperty("model");
-    final int beamSize = Integer.parseInt(props.getProperty("beamSize"));
     final POSModel posModel = loadModel(lang, model);
-    this.posTagger = new POSTaggerME(posModel, beamSize, beamSize);
+    this.posTagger = new POSTaggerME(posModel);
   }
 
   /**
@@ -75,9 +74,8 @@ public class MorphoTagger {
   public MorphoTagger(final Properties props, final MorphoFactory aMorphoFactory) {
     final String lang = props.getProperty("language");
     final String model = props.getProperty("model");
-    final int beamSize = Integer.parseInt(props.getProperty("beamSize"));
     final POSModel posModel = loadModel(lang, model);
-    this.posTagger = new POSTaggerME(posModel, beamSize, beamSize);
+    this.posTagger = new POSTaggerME(posModel);
     this.morphoFactory = aMorphoFactory;
   }
 
@@ -140,10 +138,14 @@ public class MorphoTagger {
    *          the model to be loaded
    * @return the model as a {@link POSModel} object
    */
-  private final POSModel loadModel(final String lang, final String model) {
+  private POSModel loadModel(final String lang, final String model) {
     final long lStartTime = new Date().getTime();
     try {
-      posModels.putIfAbsent(lang, new POSModel(new FileInputStream(model)));
+      synchronized (posModels) {
+        if (!posModels.containsKey(lang)) {
+          posModels.put(lang, new POSModel(new FileInputStream(model)));
+        }
+      }
     } catch (final IOException e) {
       e.printStackTrace();
     }
