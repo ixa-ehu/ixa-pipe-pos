@@ -288,9 +288,8 @@ public class CLI {
   public final void eval() throws IOException {
     final String testFile = this.parsedArguments.getString("testSet");
     final String model = this.parsedArguments.getString("model");
-    final String beamSize = this.parsedArguments.getString("beamSize");
 
-    final Evaluate evaluator = new Evaluate(testFile, model, beamSize);
+    final Evaluate evaluator = new Evaluate(testFile, model);
     if (this.parsedArguments.getString("evalReport") != null) {
       if (this.parsedArguments.getString("evalReport").equalsIgnoreCase(
           "detailed")) {
@@ -318,9 +317,6 @@ public class CLI {
     this.evalParser.addArgument("--evalReport").required(false)
         .choices("brief", "detailed", "error")
         .help("Choose type of evaluation report; defaults to brief");
-    this.evalParser.addArgument("--beamSize").setDefault(DEFAULT_BEAM_SIZE)
-        .type(Integer.class)
-        .help("Choose beam size for evaluation: 1 is faster.");
   }
 
   /**

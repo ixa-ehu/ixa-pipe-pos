@@ -63,13 +63,10 @@ public class Evaluate {
    *          the reference data to evaluate against
    * @param model
    *          the model to be evaluated
-   * @param beamsize
-   *          the beam size for decoding
    * @throws IOException
    *           if input data not available
    */
-  public Evaluate(final String testData, final String model,
-      final String beamsize) throws IOException {
+  public Evaluate(final String testData, final String model) throws IOException {
 
     final ObjectStream<String> testStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(testData);
