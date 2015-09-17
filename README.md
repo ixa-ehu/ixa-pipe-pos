@@ -3,7 +3,7 @@ ixa-pipe-pos
 ============
 
 ixa-pipe-pos is a multilingual Part of Speech tagger, currently offering pre-trained models for English, Galician and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed
-by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.4.1**.
+by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.4.5**.
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
 pipes tools but also for **official releases, including source code and binary
@@ -120,9 +120,6 @@ There are several options to tag with ixa-pipe-pos:
 + **model**: it is **required** to provide the model to do the tagging.
 + **lang**: choose between en and es. If no language is chosen, the one specified
   in the NAF header will be used.
-+ **beamSize**: choose beam size for decoding. There is no definitive evidence
-  that using larger or smaller beamsize actually improves accuracy. It is known
-  to slow things down considerably if beamsize is set to 100, for example.
 + **multiwords**: activates the multiword detection option.
 + **dictag**: post-process the Statistical POS tagger output via a monosemic
   postag dictionary.
@@ -155,7 +152,6 @@ options:
   + **brief**: it just prints the word accuracy.
   + **detailed**: detailed report with confusion matrixes and so on.
   + **error**: print to stderr all the false positives.
-+ **beamsize**: choose beamsize for decoding.
 
 **Example**:
 
@@ -172,7 +168,7 @@ this dependency to your pom.xml:
 <dependency>
     <groupId>eus.ixa</groupId>
     <artifactId>ixa-pipe-pos</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.5</version>
 </dependency>
 ````
 
