@@ -18,14 +18,19 @@ package eus.ixa.ixa.pipe.pos;
 
 import ixa.kaflib.KAFDocument;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.util.Properties;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
@@ -104,6 +109,14 @@ public class CLI {
    */
   private final Subparser crossValidateParser;
   /**
+   * Parser to start TCP socket for server-client functionality.
+   */
+  private Subparser serverParser;
+  /**
+   * Sends queries to the serverParser for annotation.
+   */
+  private Subparser clientParser;
+  /**
    * Default beam size for decoding.
    */
   public static final String DEFAULT_BEAM_SIZE = "3";
@@ -122,6 +135,10 @@ public class CLI {
     this.crossValidateParser = this.subParsers.addParser("cross").help(
         "Cross validation CLI");
     loadCrossValidateParameters();
+    serverParser = subParsers.addParser("server").help("Start TCP socket server");
+    loadServerParameters();
+    clientParser = subParsers.addParser("client").help("Send queries to the TCP socket server");
+    loadClientParameters();
   }
 
   /**
@@ -159,11 +176,15 @@ public class CLI {
         train();
       } else if (args[0].equals("cross")) {
         crossValidate();
+      } else if (args[0].equals("server")) {
+        server();
+      } else if (args[0].equals("client")) {
+        client(System.in, System.out);
       }
     } catch (final ArgumentParserException e) {
       this.argParser.handleError(e);
       System.out.println("Run java -jar target/ixa-pipe-pos-" + this.version
-          + ".jar (tag|train|eval|cross) -help for details");
+          + ".jar (tag|train|eval|cross|server|client) -help for details");
       System.exit(1);
     }
   }
@@ -188,6 +209,7 @@ public class CLI {
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
         .getBoolean("dictag"));
+    String outputFormat = parsedArguments.getString("outputFormat");
     BufferedReader breader = null;
     BufferedWriter bwriter = null;
     breader = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
@@ -208,7 +230,8 @@ public class CLI {
     final Properties properties = setAnnotateProperties(model, lang,
         multiwords, dictag);
     final Annotate annotator = new Annotate(properties);
-    if (this.parsedArguments.getBoolean("nokaf")) {
+    
+    if (outputFormat.equalsIgnoreCase("tabulated")) {
       bwriter.write(annotator.annotatePOSToCoNLL(kaf));
     } else {
       final KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
@@ -227,20 +250,22 @@ public class CLI {
    * Generate the annotation parameter of the CLI.
    */
   private void loadAnnotateParameters() {
-    this.annotateParser.addArgument("-m", "--model").required(true)
+    this.annotateParser.addArgument("-m", "--model")
+        .required(true)
         .help("It is required to provide a model to perform POS tagging.");
     this.annotateParser.addArgument("-l", "--lang")
         .choices("en", "es", "gl", "it").required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
 
-    this.annotateParser.addArgument("--beamSize").required(false)
+    this.annotateParser.addArgument("--beamSize")
+        .required(false)
         .setDefault(DEFAULT_BEAM_SIZE)
         .help("Choose beam size for decoding, it defaults to 3.");
-    this.annotateParser
-        .addArgument("--nokaf")
-        .action(Arguments.storeTrue())
-        .help(
-            "Do not print tokens in NAF format, but conll tabulated format.\n");
+    annotateParser.addArgument("-o", "--outputFormat")
+        .required(false)
+        .choices("naf", "tabulated")
+        .setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
+        .help("Choose output format; it defaults to NAF.\n");
     this.annotateParser.addArgument("-mw", "--multiwords")
         .action(Arguments.storeTrue())
         .help("Use to detect and process multiwords.\n");
@@ -305,6 +330,69 @@ public class CLI {
       evaluator.evaluate();
     }
   }
+  
+  /**
+   * Set up the TCP socket for annotation.
+   */
+  public final void server() {
+
+    // load parameters into a properties
+    String port = parsedArguments.getString("port");
+    String model = parsedArguments.getString("model");
+    String multiwords = parsedArguments.getString("multiwords");
+    String dictag = parsedArguments.getString("dictag");
+    String outputFormat = parsedArguments.getString("outputFormat");
+    // language parameter
+    String lang = parsedArguments.getString("language");
+    Properties serverproperties = setServerProperties(port, model, lang, multiwords, dictag, outputFormat);
+    new MorphoTaggerServer(serverproperties);
+  }
+  
+  /**
+   * The client to query the TCP server for annotation.
+   * 
+   * @param inputStream
+   *          the stdin
+   * @param outputStream
+   *          stdout
+   */
+  public final void client(final InputStream inputStream,
+      final OutputStream outputStream) {
+
+    String host = parsedArguments.getString("host");
+    String port = parsedArguments.getString("port");
+    try (Socket socketClient = new Socket(host, Integer.parseInt(port));
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
+            System.in, "UTF-8"));
+        BufferedWriter outToUser = new BufferedWriter(new OutputStreamWriter(
+            System.out, "UTF-8"));
+        DataOutputStream outToServer = new DataOutputStream(
+            socketClient.getOutputStream());
+        DataInputStream inFromServer = new DataInputStream(new BufferedInputStream(
+            socketClient.getInputStream()));) {
+      
+      // send data to server socket
+      String line;
+      while ((line = inFromUser.readLine()) != null) {
+        outToServer.writeBoolean(false);
+        outToServer.writeUTF(line);
+      }
+      outToServer.writeBoolean(true);
+      //get data from server
+      byte[] kafArray = new byte[1024];
+      ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+      int count;
+      while ((count = inFromServer.read(kafArray)) > 0) {
+        byteArrayStream.write(kafArray, 0, count);
+      }
+      String kafString = byteArrayStream.toString();
+      outToUser.write(kafString);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
   /**
    * Load the evaluation parameters of the CLI.
@@ -340,6 +428,43 @@ public class CLI {
     this.crossValidateParser.addArgument("-p", "--params").required(true)
         .help("Load the Cross validation parameters file\n");
   }
+  
+  /**
+   * Create the available parameters for POS tagging.
+   */
+  private void loadServerParameters() {
+    serverParser.addArgument("-p", "--port").required(true)
+        .help("Port to be assigned to the server.\n");
+    this.annotateParser.addArgument("-m", "--model").required(true)
+        .help("It is required to provide a model to perform POS tagging.");
+    this.annotateParser.addArgument("-l", "--lang")
+        .choices("en", "es", "gl", "it").required(false)
+        .help("Choose a language to perform annotation with ixa-pipe-pos.");
+
+    this.annotateParser.addArgument("--beamSize").required(false)
+        .setDefault(DEFAULT_BEAM_SIZE)
+        .help("Choose beam size for decoding, it defaults to 3.");
+    annotateParser.addArgument("-o", "--outputFormat").required(false)
+        .choices("naf", "tabulated").setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
+        .help("Choose output format; it defaults to NAF.\n");
+    this.annotateParser.addArgument("-mw", "--multiwords")
+        .action(Arguments.storeTrue())
+        .help("Use to detect and process multiwords.\n");
+    this.annotateParser.addArgument("-d", "--dictag")
+        .action(Arguments.storeTrue())
+        .help("Post process POS tagger output with a monosemic dictionary.\n");
+  }
+  
+  private void loadClientParameters() {
+    
+    clientParser.addArgument("-p", "--port")
+        .required(true)
+        .help("Port of the TCP server.\n");
+    clientParser.addArgument("--host")
+        .required(false)
+        .setDefault(Flags.DEFAULT_HOSTNAME)
+        .help("Hostname or IP where the TCP server is running.\n");
+  }
 
   /**
    * Generate Properties objects for CLI usage.
@@ -358,6 +483,17 @@ public class CLI {
     annotateProperties.setProperty("multiwords", multiwords);
     annotateProperties.setProperty("dictag", dictag);
     return annotateProperties;
+  }
+  
+  private Properties setServerProperties(String port, String model, String language, String multiwords, String dictag, String outputFormat) {
+    Properties serverProperties = new Properties();
+    serverProperties.setProperty("port", port);
+    serverProperties.setProperty("model", model);
+    serverProperties.setProperty("language", language);
+    serverProperties.setProperty("ruleBasedOption", multiwords);
+    serverProperties.setProperty("dictTag", dictag);
+    serverProperties.setProperty("outputFormat", outputFormat);
+    return serverProperties;
   }
 
 }

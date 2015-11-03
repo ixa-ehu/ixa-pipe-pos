@@ -28,6 +28,8 @@ public class Flags {
   public static final String DEFAULT_DICT_PATH = "off";
   public static final int DEFAULT_DICT_CUTOFF = -1;
   public static final String DEFAULT_EVAL_FORMAT = "opennlp";
+  public static final String DEFAULT_OUTPUT_FORMAT = "naf";
+  public static final String DEFAULT_HOSTNAME = "localhost";
 
   private Flags() {
 
