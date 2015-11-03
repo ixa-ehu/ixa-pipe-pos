@@ -253,7 +253,7 @@ public class CLI {
     this.annotateParser.addArgument("-m", "--model")
         .required(true)
         .help("It is required to provide a model to perform POS tagging.");
-    this.annotateParser.addArgument("-l", "--lang")
+    this.annotateParser.addArgument("-l", "--language")
         .choices("en", "es", "gl", "it").required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
 
@@ -339,8 +339,10 @@ public class CLI {
     // load parameters into a properties
     String port = parsedArguments.getString("port");
     String model = parsedArguments.getString("model");
-    String multiwords = parsedArguments.getString("multiwords");
-    String dictag = parsedArguments.getString("dictag");
+    final String multiwords = Boolean.toString(this.parsedArguments
+        .getBoolean("multiwords"));
+    final String dictag = Boolean.toString(this.parsedArguments
+        .getBoolean("dictag"));
     String outputFormat = parsedArguments.getString("outputFormat");
     // language parameter
     String lang = parsedArguments.getString("language");
@@ -435,22 +437,22 @@ public class CLI {
   private void loadServerParameters() {
     serverParser.addArgument("-p", "--port").required(true)
         .help("Port to be assigned to the server.\n");
-    this.annotateParser.addArgument("-m", "--model").required(true)
+    serverParser.addArgument("-m", "--model").required(true)
         .help("It is required to provide a model to perform POS tagging.");
-    this.annotateParser.addArgument("-l", "--lang")
-        .choices("en", "es", "gl", "it").required(false)
+    serverParser.addArgument("-l", "--language")
+        .choices("en", "es", "gl", "it").required(true)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
 
-    this.annotateParser.addArgument("--beamSize").required(false)
+    serverParser.addArgument("--beamSize").required(false)
         .setDefault(DEFAULT_BEAM_SIZE)
         .help("Choose beam size for decoding, it defaults to 3.");
-    annotateParser.addArgument("-o", "--outputFormat").required(false)
+    serverParser.addArgument("-o", "--outputFormat").required(false)
         .choices("naf", "tabulated").setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
         .help("Choose output format; it defaults to NAF.\n");
-    this.annotateParser.addArgument("-mw", "--multiwords")
+    serverParser.addArgument("-mw", "--multiwords")
         .action(Arguments.storeTrue())
         .help("Use to detect and process multiwords.\n");
-    this.annotateParser.addArgument("-d", "--dictag")
+    serverParser.addArgument("-d", "--dictag")
         .action(Arguments.storeTrue())
         .help("Post process POS tagger output with a monosemic dictionary.\n");
   }
