@@ -18,11 +18,11 @@ package eus.ixa.ixa.pipe.pos;
 
 import ixa.kaflib.KAFDocument;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -74,10 +74,8 @@ public class MorphoTaggerServer {
       while (true) {
         
         try (Socket activeSocket = socketServer.accept();
-            DataInputStream inFromClient = new DataInputStream(
-                activeSocket.getInputStream());
-            DataOutputStream outToClient = new DataOutputStream(new BufferedOutputStream(
-                activeSocket.getOutputStream()));) {
+            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(activeSocket.getInputStream(), "UTF-8"));
+            BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(activeSocket.getOutputStream(), "UTF-8"));) {
           //System.err.println("-> Received a  connection from: " + activeSocket);
           //get data from client
           String stringFromClient = getClientData(inFromClient);
@@ -104,17 +102,16 @@ public class MorphoTaggerServer {
    * @param inFromClient the client inputstream
    * @return the string from the client
    */
-  private String getClientData(DataInputStream inFromClient) {
-    //get data from client and build a string with it
+  private String getClientData(BufferedReader inFromClient) {
     StringBuilder stringFromClient = new StringBuilder();
     try {
-      boolean endOfClientFile = inFromClient.readBoolean();
       String line;
-      while (!endOfClientFile) {
-        line = inFromClient.readUTF();
+      while ((line = inFromClient.readLine()) != null) {
         stringFromClient.append(line).append("\n");
-        endOfClientFile = inFromClient.readBoolean();
-    }
+        if (line.matches("</NAF>")) {
+          break;
+        }
+      }
     }catch (IOException e) {
       e.printStackTrace();
     }
@@ -127,10 +124,8 @@ public class MorphoTaggerServer {
    * @param kafToString the string to be processed
    * @throws IOException if io error
    */
-  private void sendDataToServer(DataOutputStream outToClient, String kafToString) throws IOException {
-    
-    byte[] kafByteArray = kafToString.getBytes("UTF-8");
-    outToClient.write(kafByteArray);
+  private void sendDataToServer(BufferedWriter outToClient, String kafToString) throws IOException {
+    outToClient.write(kafToString);
   }
   
   /**
