@@ -4,7 +4,7 @@
   <groupId>eus.ixa</groupId>
   <artifactId>ixa-pipe-pos</artifactId>
   <name>ixa-pipe-pos</name>
-  <version>1.4.5</version>
+  <version>1.4.6</version>
   <description>POS tagger and lemmatizer of ixa pipes (ixa2.si.ehu.es/ixa-pipes)</description>
   <url>http://ixa2.si.ehu.es/ixa-pipes</url>
   <prerequisites>
