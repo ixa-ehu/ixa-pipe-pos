@@ -73,6 +73,9 @@ public class Resources {
     if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/ctag/galician.dict");
     }
+    if (lang.equalsIgnoreCase("fr")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/fr/french.dict");
+    }
     return dictURL;
   }
 
@@ -120,6 +123,11 @@ public class Resources {
     if (lang.equalsIgnoreCase("gl")) {
       if (postag.startsWith("NP")) {
         constantTag = "NP000";
+      }
+    }
+    if (lang.equalsIgnoreCase("fr")) {
+      if (postag.equalsIgnoreCase("NPP")) {
+        constantTag = "NPP";
       }
     }
     return constantTag;

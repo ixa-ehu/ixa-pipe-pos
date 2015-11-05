@@ -252,7 +252,7 @@ public class CLI {
         .required(true)
         .help("It is required to provide a model to perform POS tagging.");
     this.annotateParser.addArgument("-l", "--language")
-        .choices("en", "es", "gl", "it").required(false)
+        .choices("fr", "en", "es", "gl", "it").required(false)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
 
     this.annotateParser.addArgument("--beamSize")
@@ -446,7 +446,7 @@ public class CLI {
     serverParser.addArgument("-m", "--model").required(true)
         .help("It is required to provide a model to perform POS tagging.");
     serverParser.addArgument("-l", "--language")
-        .choices("en", "es", "gl", "it").required(true)
+        .choices("fr", "en", "es", "gl", "it").required(true)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
 
     serverParser.addArgument("--beamSize").required(false)

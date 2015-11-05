@@ -243,6 +243,37 @@ public class Annotate {
       return "O"; // other
     }
   }
+  
+  /**
+   * Mapping between CC tagset and NAF.
+   * 
+   * @param postag
+   *          the postag
+   * @return the mapping to NAF pos tagset
+   */
+  private String mapFrenchTagSetToKaf(final String postag) {
+    if (postag.startsWith("ADV")) {
+      return "A"; // adverb
+    } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
+      return "C"; // conjunction
+    } else if (postag.startsWith("D") || postag.startsWith("I")) {
+      return "D"; // det predeterminer
+    } else if (postag.startsWith("ADJ")) {
+      return "G"; // adjective
+    } else if (postag.startsWith("NC")) {
+      return "N"; // common noun
+    } else if (postag.startsWith("NPP")) {
+      return "R"; // proper noun
+    } else if (postag.startsWith("PRO") || postag.startsWith("CL")) {
+      return "Q"; // pronoun
+    } else if (postag.equalsIgnoreCase("P") || postag.equalsIgnoreCase("P+D") || postag.equalsIgnoreCase("P+PRO")) {
+      return "P"; // preposition
+    } else if (postag.startsWith("V")) {
+      return "V"; // verb
+    } else {
+      return "O"; // other
+    }
+  }
 
   /**
    * Obtain the appropriate tagset according to language and postag.
@@ -261,6 +292,9 @@ public class Annotate {
     }
     if (this.lang.equalsIgnoreCase("gl")) {
       tag = this.mapGalicianTagSetToKaf(postag);
+    }
+    if  (this.lang.equalsIgnoreCase("fr")) {
+      tag = this.mapFrenchTagSetToKaf(postag);
     }
     return tag;
   }
