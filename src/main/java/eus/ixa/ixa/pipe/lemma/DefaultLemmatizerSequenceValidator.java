@@ -21,33 +21,9 @@ import opennlp.tools.util.SequenceValidator;
 
 public class DefaultLemmatizerSequenceValidator implements SequenceValidator<String>{
 
-  private boolean validOutcome(String outcome, String prevOutcome) {
-    if (outcome.startsWith("I-")) {
-      if (prevOutcome == null) {
-        return (false);
-      }
-      else {
-        if (prevOutcome.equals("O")) {
-          return (false);
-        }
-        if (!prevOutcome.substring(2).equals(outcome.substring(2))) {
-          return (false);
-        }
-      }
-    }
-    return true;
-  }
-
-  protected boolean validOutcome(String outcome, String[] sequence) {
-    String prevOutcome = null;
-    if (sequence.length > 0) {
-      prevOutcome = sequence[sequence.length-1];
-    }
-    return validOutcome(outcome,prevOutcome);
-  }
-
+  //TODO complete this
   public boolean validSequence(int i, String[] sequence, String[] s, String outcome) {
-    return validOutcome(outcome, s);
+    return true;
   }
 
 }
