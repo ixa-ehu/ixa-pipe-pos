@@ -209,7 +209,7 @@ public final class StringUtils {
    * Based on pseudo-code provided here:
    * https://en.wikipedia.org/wiki/Levenshtein_distance#Computing_Levenshtein_distance
    * which in turn is based on the paper Wagner, Robert A.; Fischer, Michael J. (1974),
-   * "The String-to-String Correction Problem", Journal of the ACM 21 (1): 168–173
+   * "The String-to-String Correction Problem", Journal of the ACM 21 (1): 168-173
    * @param wordForm the form
    * @param lemma the lemma
    * @return the distance

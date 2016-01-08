@@ -55,7 +55,7 @@ public class StatisticalLemmatizer {
    * Initializes the current instance with the provided model
    * and the default beam size of 3.
    *
-   * @param model
+   * @param model the model
    */
   public StatisticalLemmatizer(LemmatizerModel model) {
     

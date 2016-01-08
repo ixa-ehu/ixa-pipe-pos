@@ -52,17 +52,14 @@ public class LemmaSample {
     this.preds = Collections.unmodifiableList(new ArrayList<String>((preds)));
   }
 
-  /** Gets the tokens */
   public String[] getTokens() {
     return tokens.toArray(new String[tokens.size()]);
   }
 
-  /** Gets the POS Tags for the sentence */
   public String[] getTags() {
     return tags.toArray(new String[tags.size()]);
   }
-
-  /** Gets the Lemmas for the sentence */
+  
   public String[] getPreds() {
     return preds.toArray(new String[preds.size()]);
   }

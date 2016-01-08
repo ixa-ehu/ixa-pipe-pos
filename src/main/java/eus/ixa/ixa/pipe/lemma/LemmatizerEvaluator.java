@@ -35,7 +35,7 @@ public class LemmatizerEvaluator extends Evaluator<LemmaSample> {
   /**
    * Initializes the current instance.
    *
-   * @param lemmatizer
+   * @param aLemmatizer a lemmatizer
    * @param listeners an array of evaluation listeners
    */
   public LemmatizerEvaluator(Lemmatizer aLemmatizer, LemmatizerEvaluationMonitor ... listeners) {
@@ -44,15 +44,15 @@ public class LemmatizerEvaluator extends Evaluator<LemmaSample> {
   }
 
   /**
-   * Evaluates the given reference {@link POSSample} object.
+   * Evaluates the given reference {@link LemmaSample} object.
    *
    * This is done by tagging the sentence from the reference
-   * {@link POSSample} with the {@link POSTagger}. The
+   * {@link LemmaSample} with the {@link Lemmatizer}. The
    * tags are then used to update the word accuracy score.
    *
-   * @param reference the reference {@link POSSample}.
+   * @param reference the reference {@link LemmaSample}.
    *
-   * @return the predicted {@link POSSample}.
+   * @return the predicted {@link LemmaSample}.
    */
   @Override
   protected LemmaSample processSample(LemmaSample reference) {
