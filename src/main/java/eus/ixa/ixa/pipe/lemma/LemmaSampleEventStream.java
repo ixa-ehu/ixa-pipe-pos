@@ -29,7 +29,7 @@ import opennlp.tools.util.ObjectStream;
 /**
  * Class for creating an event stream out of data files for training a probabilistic lemmatizer.
  */
-public class LemmatizerEventStream extends AbstractEventStream<LemmaSample> {
+public class LemmaSampleEventStream extends AbstractEventStream<LemmaSample> {
 
   private LemmatizerContextGenerator cg;
 
@@ -38,7 +38,7 @@ public class LemmatizerEventStream extends AbstractEventStream<LemmaSample> {
    * @param d The data stream for this event stream.
    * @param cg The context generator which should be used in the creation of events for this event stream.
    */
-  public LemmatizerEventStream(ObjectStream<LemmaSample> d, LemmatizerContextGenerator cg) {
+  public LemmaSampleEventStream(ObjectStream<LemmaSample> d, LemmatizerContextGenerator cg) {
     super(d);
     this.cg = cg;
   }
