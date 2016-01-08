@@ -19,9 +19,6 @@
 package eus.ixa.ixa.pipe.lemma;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -30,8 +27,6 @@ import java.util.Properties;
 
 import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.model.AbstractModel;
-import opennlp.tools.ml.model.BinaryFileDataReader;
-import opennlp.tools.ml.model.GenericModelReader;
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.ml.model.SequenceClassificationModel;
 import opennlp.tools.util.BaseToolFactory;

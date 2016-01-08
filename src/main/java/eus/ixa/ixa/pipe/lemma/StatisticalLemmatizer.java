@@ -31,13 +31,6 @@ import opennlp.tools.ml.TrainerFactory.TrainerType;
 import opennlp.tools.ml.model.Event;
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.ml.model.SequenceClassificationModel;
-import opennlp.tools.postag.POSContextGenerator;
-import opennlp.tools.postag.POSModel;
-import opennlp.tools.postag.POSSample;
-import opennlp.tools.postag.POSSampleEventStream;
-import opennlp.tools.postag.POSSampleSequenceStream;
-import opennlp.tools.postag.POSTaggerFactory;
-import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.Sequence;
 import opennlp.tools.util.SequenceValidator;
@@ -53,7 +46,6 @@ public class StatisticalLemmatizer {
   protected int beamSize;
   private Sequence bestSequence;
   
-  private LemmatizerModel modelPackage;
   private SequenceClassificationModel<String> model;
   
   private LemmatizerContextGenerator contextGenerator;
@@ -74,7 +66,6 @@ public class StatisticalLemmatizer {
       defaultBeamSize = Integer.parseInt(beamSizeString);
     }
     
-    modelPackage = model;
     contextGenerator = factory.getContextGenerator();
     beamSize = defaultBeamSize;
 
@@ -153,7 +144,7 @@ public class StatisticalLemmatizer {
       lemmatizerModel = trainer.train(es);
     }
     else if (TrainerType.EVENT_MODEL_SEQUENCE_TRAINER.equals(trainerType)) {
-      LemmatizerSequenceStream ss = new LemmatizerSequenceStream(samples, contextGenerator);
+      LemmaSampleSequenceStream ss = new LemmaSampleSequenceStream(samples, contextGenerator);
       EventModelSequenceTrainer trainer = TrainerFactory.getEventModelSequenceTrainer(trainParams.getSettings(),
           manifestInfoEntries);
       lemmatizerModel = trainer.train(ss);
@@ -164,7 +155,7 @@ public class StatisticalLemmatizer {
 
       // TODO: This will probably cause issue, since the feature generator uses the outcomes array
 
-      LemmatizerSequenceStream ss = new LemmatizerSequenceStream(samples, contextGenerator);
+      LemmaSampleSequenceStream ss = new LemmaSampleSequenceStream(samples, contextGenerator);
       seqLemmatizerModel = trainer.train(ss);
     }
     else {

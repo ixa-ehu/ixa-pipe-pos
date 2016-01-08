@@ -18,7 +18,6 @@
 package eus.ixa.ixa.pipe.lemma;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,7 +30,7 @@ import opennlp.tools.util.ObjectStream;
  */
 public class LemmaSampleEventStream extends AbstractEventStream<LemmaSample> {
 
-  private LemmatizerContextGenerator cg;
+  private LemmatizerContextGenerator contextGenerator;
 
   /**
    * Creates a new event stream based on the specified data stream using the specified context generator.
@@ -40,24 +39,29 @@ public class LemmaSampleEventStream extends AbstractEventStream<LemmaSample> {
    */
   public LemmaSampleEventStream(ObjectStream<LemmaSample> d, LemmatizerContextGenerator cg) {
     super(d);
-    this.cg = cg;
+    this.contextGenerator = cg;
   }
 
   @Override
   protected Iterator<Event> createEvents(LemmaSample sample) {
 
-    if (sample != null) {
-      List<Event> events = new ArrayList<Event>();
-      String[] toksArray = sample.getTokens();
-      String[] tagsArray = sample.getTags();
-      String[] predsArray = sample.getPreds();
-      for (int ei = 0, el = sample.getTokens().length; ei < el; ei++) {
-        events.add(new Event(predsArray[ei], cg.getContext(ei,toksArray,tagsArray,predsArray)));
-      }
-      return events.iterator();
+    String[] toksArray = sample.getTokens();
+    String[] tagsArray = sample.getTags();
+    String[] predsArray = sample.getPreds();
+    List<Event> events = generateEvents(toksArray, tagsArray, predsArray, contextGenerator);
+    return events.iterator();
+  }
+  
+  public static List<Event> generateEvents(String[] sentence, String[] tags,
+      String[] preds, LemmatizerContextGenerator cg) {
+    
+    List<Event> events = new ArrayList<Event>(sentence.length);
+    for (int i=0; i < sentence.length; i++) {
+      // it is safe to pass the tags as previous tags because
+      // the context generator does not look for non predicted tags
+      String[] context = cg.getContext(i, sentence, tags, preds);
+      events.add(new Event(tags[i], context));
     }
-    else {
-      return Collections.emptyListIterator();
-    }
+    return events;
   }
 }
