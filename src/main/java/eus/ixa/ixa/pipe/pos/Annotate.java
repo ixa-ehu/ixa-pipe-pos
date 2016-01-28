@@ -31,7 +31,7 @@ import eus.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
 import eus.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.lemma.MultiWordMatcher;
 import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
-import eus.ixa.ixa.pipe.pos.dict.MorfologikMorphoTagger;
+import eus.ixa.ixa.pipe.pos.dict.MorfologikTagger;
 
 /**
  * Main annotation class of ixa-pipe-pos. Check this class for examples using
@@ -45,7 +45,7 @@ public class Annotate {
   /**
    * The morpho tagger.
    */
-  private final MorphoTagger posTagger;
+  private final StatisticalTagger posTagger;
   /**
    * The language.
    */
@@ -95,7 +95,7 @@ public class Annotate {
     }
     loadLemmatizerDicts(properties);
     this.morphoFactory = new MorphoFactory();
-    this.posTagger = new MorphoTagger(properties, this.morphoFactory);
+    this.posTagger = new StatisticalTagger(properties, this.morphoFactory);
   }
 
   // TODO static loading of lemmatizer dictionaries
@@ -141,7 +141,7 @@ public class Annotate {
       System.exit(1);
     }
     try {
-      this.dictMorphoTagger = new MorfologikMorphoTagger(
+      this.dictMorphoTagger = new MorfologikTagger(
           binDictMorphoTaggerURL, this.lang);
     } catch (final IOException e) {
       e.printStackTrace();

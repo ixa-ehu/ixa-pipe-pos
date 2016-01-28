@@ -34,7 +34,7 @@ import opennlp.tools.postag.POSTaggerME;
  * @version 2014-04-24
  */
 
-public class MorphoTagger {
+public class StatisticalTagger {
 
   /**
    * The morpho tagger.
@@ -56,7 +56,7 @@ public class MorphoTagger {
    * @param props
    *          the properties object
    */
-  public MorphoTagger(final Properties props) {
+  public StatisticalTagger(final Properties props) {
     final String lang = props.getProperty("language");
     final String model = props.getProperty("model");
     final POSModel posModel = loadModel(lang, model);
@@ -71,7 +71,7 @@ public class MorphoTagger {
    * @param aMorphoFactory
    *          the morpho factory
    */
-  public MorphoTagger(final Properties props, final MorphoFactory aMorphoFactory) {
+  public StatisticalTagger(final Properties props, final MorphoFactory aMorphoFactory) {
     final String lang = props.getProperty("language");
     final String model = props.getProperty("model");
     final POSModel posModel = loadModel(lang, model);

@@ -345,7 +345,7 @@ public class CLI {
     // language parameter
     String lang = parsedArguments.getString("language");
     Properties serverproperties = setServerProperties(port, model, lang, multiwords, dictag, outputFormat);
-    new MorphoTaggerServer(serverproperties);
+    new StatisticalTaggerServer(serverproperties);
   }
   
   /**

@@ -37,7 +37,7 @@ import opennlp.tools.util.model.BaseModel;
  * The {@link LemmatizerModel} is the model used
  * by a learnable {@link Lemmatizer}.
  *
- * @see StatisticalLemmatizer
+ * @see LemmatizerME
  */
 public class LemmatizerModel extends BaseModel {
 
@@ -53,7 +53,7 @@ public class LemmatizerModel extends BaseModel {
 
   public LemmatizerModel(String languageCode, MaxentModel lemmatizerModel,
       Map<String, String> manifestInfoEntries, LemmatizerFactory factory) {
-    this(languageCode, lemmatizerModel, StatisticalLemmatizer.DEFAULT_BEAM_SIZE, manifestInfoEntries, factory);
+    this(languageCode, lemmatizerModel, LemmatizerME.DEFAULT_BEAM_SIZE, manifestInfoEntries, factory);
   }
 
   public LemmatizerModel(String languageCode, MaxentModel lemmatizerModel, int beamSize,
@@ -98,7 +98,7 @@ public class LemmatizerModel extends BaseModel {
     if (artifactMap.get(LEMMATIZER_MODEL_ENTRY_NAME) instanceof MaxentModel) {
       String beamSizeString = manifest.getProperty(BeamSearch.BEAM_SIZE_PARAMETER);
 
-      int beamSize = StatisticalLemmatizer.DEFAULT_BEAM_SIZE;
+      int beamSize = LemmatizerME.DEFAULT_BEAM_SIZE;
       if (beamSizeString != null) {
         beamSize = Integer.parseInt(beamSizeString);
       }

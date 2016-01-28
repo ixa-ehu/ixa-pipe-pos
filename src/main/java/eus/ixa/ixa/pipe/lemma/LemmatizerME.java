@@ -40,7 +40,7 @@ import opennlp.tools.util.TrainingParameters;
  * A probabilistic lemmatizer.  Tries to predict the induced permutation class
  * for each word depending on its surrounding context.
  */
-public class StatisticalLemmatizer {
+public class LemmatizerME {
   
   public static final int DEFAULT_BEAM_SIZE = 3;
   protected int beamSize;
@@ -57,10 +57,10 @@ public class StatisticalLemmatizer {
    *
    * @param model the model
    */
-  public StatisticalLemmatizer(LemmatizerModel model) {
+  public LemmatizerME(LemmatizerModel model) {
     
     LemmatizerFactory factory = model.getFactory();
-    int defaultBeamSize = StatisticalLemmatizer.DEFAULT_BEAM_SIZE;
+    int defaultBeamSize = LemmatizerME.DEFAULT_BEAM_SIZE;
     String beamSizeString = model.getManifestProperty(BeamSearch.BEAM_SIZE_PARAMETER);
     if (beamSizeString != null) {
       defaultBeamSize = Integer.parseInt(beamSizeString);
@@ -123,7 +123,7 @@ public class StatisticalLemmatizer {
 
     String beamSizeString = trainParams.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 
-    int beamSize = StatisticalLemmatizer.DEFAULT_BEAM_SIZE;
+    int beamSize = LemmatizerME.DEFAULT_BEAM_SIZE;
     if (beamSizeString != null) {
       beamSize = Integer.parseInt(beamSizeString);
     }

@@ -63,7 +63,7 @@ public class LemmaSampleSequenceStream implements SequenceStream {
   public Event[] updateContext(Sequence sequence, AbstractModel model) {
     // TODO: Should be implemented for Perceptron sequence learning ...
     Sequence<LemmaSample> pss = sequence;
-    StatisticalLemmatizer tagger = new StatisticalLemmatizer(new LemmatizerModel("x-unspecified", model, null, new LemmatizerFactory()));
+    LemmatizerME tagger = new LemmatizerME(new LemmatizerModel("x-unspecified", model, null, new LemmatizerFactory()));
     String[] sentence = pss.getSource().getTokens();
     String[] preds = pss.getSource().getPreds();
     String[] tags = tagger.lemmatize(pss.getSource().getTokens(), pss.getSource().getTags());

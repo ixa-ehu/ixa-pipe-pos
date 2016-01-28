@@ -34,7 +34,7 @@ import morfologik.stemming.WordData;
  * @version 2014-12-05
  * 
  */
-public class MorfologikMorphoTagger implements DictionaryTagger {
+public class MorfologikTagger implements DictionaryTagger {
 
   /**
    * The Morfologik steamer to perform pos tagging with FSA dictionaries.
@@ -51,7 +51,7 @@ public class MorfologikMorphoTagger implements DictionaryTagger {
    * @throws IOException
    *           throws an exception if dictionary path is not correct
    */
-  public MorfologikMorphoTagger(final URL dictURL, final String aLang)
+  public MorfologikTagger(final URL dictURL, final String aLang)
       throws IOException {
     this.dictLookup = new DictionaryLookup(Dictionary.read(dictURL));
   }

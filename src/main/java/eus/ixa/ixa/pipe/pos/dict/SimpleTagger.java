@@ -30,7 +30,7 @@ import java.util.HashMap;
  * @author ragerri
  * @version 2014-12-05
  */
-public class SimpleMorphoTagger implements DictionaryTagger {
+public class SimpleTagger implements DictionaryTagger {
 
   /**
    * The hashmap containing the dictionary.
@@ -47,7 +47,7 @@ public class SimpleMorphoTagger implements DictionaryTagger {
    * @param aLang
    *          the language
    */
-  public SimpleMorphoTagger(final InputStream dictionary, final String aLang) {
+  public SimpleTagger(final InputStream dictionary, final String aLang) {
     this.dictMap = new HashMap<String, String>();
     final BufferedReader breader = new BufferedReader(new InputStreamReader(
         dictionary));

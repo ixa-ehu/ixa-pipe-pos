@@ -33,7 +33,7 @@ import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
 
-public class MorphoTaggerServer {
+public class StatisticalTaggerServer {
   
   /**
    * Get dynamically the version of ixa-pipe-pos by looking at the MANIFEST
@@ -60,7 +60,7 @@ public class MorphoTaggerServer {
    * @param properties
    *          the properties
    */
-  public MorphoTaggerServer(Properties properties) {
+  public StatisticalTaggerServer(Properties properties) {
 
     Integer port = Integer.parseInt(properties.getProperty("port"));
     model = properties.getProperty("model");
