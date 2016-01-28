@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import eus.ixa.ixa.pipe.lemma.train.DefaultInputStreamFactory;
+
 import opennlp.tools.cmdline.CmdLineUtil;
 import opennlp.tools.cmdline.TerminateToolException;
 import opennlp.tools.ml.TrainerFactory;
@@ -152,6 +154,27 @@ public final class InputOutputUtils {
       CmdLineUtil.handleCreateObjectStreamError(e);
     }
     return lineStream;
+  }
+  
+
+  /**
+   * Read the file into an {@code ObjectStream}.
+   *
+   * @param infile
+   *          the string pointing to the file
+   * @return the object stream
+   * @throws IOException
+   *           throw exception if error occurs
+   */
+  public static ObjectStream<String> readInputData(final String infile)
+      throws IOException {
+
+    InputStreamFactory inputStreamFactory = new DefaultInputStreamFactory(
+        new FileInputStream(infile));
+    ObjectStream<String> lineStream = new PlainTextByLineStream(
+        inputStreamFactory, "UTF-8");
+    return lineStream;
+
   }
 
 }

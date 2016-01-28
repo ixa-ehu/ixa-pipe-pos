@@ -70,11 +70,9 @@ public abstract class AbstractLemmatizerTrainer implements LemmatizerTrainer {
     this.lang = Flags.getLanguage(params);
     final String trainData = Flags.getDataSet("TrainSet", params);
     final String testData = Flags.getDataSet("TestSet", params);
-    final ObjectStream<String> trainStream = InputOutputUtils
-        .readFileIntoMarkableStreamFactory(trainData);
+    final ObjectStream<String> trainStream = InputOutputUtils.readInputData(trainData);
     this.trainSamples = new LemmaSampleStream(trainStream);
-    final ObjectStream<String> testStream = InputOutputUtils
-        .readFileIntoMarkableStreamFactory(testData);
+    final ObjectStream<String> testStream = InputOutputUtils.readInputData(testData);
     this.testSamples = new LemmaSampleStream(testStream);
   }
 
@@ -107,7 +105,7 @@ public abstract class AbstractLemmatizerTrainer implements LemmatizerTrainer {
    * Get the posTaggerFactory. Every extension of this class must provide an
    * implementation of the posTaggerFactory.
    * 
-   * @return the posTaggerFactory
+   * @return the lemmatizerFactory
    */
   protected final LemmatizerFactory getLemmatizerFactory() {
     return this.lemmatizerFactory;
@@ -116,8 +114,8 @@ public abstract class AbstractLemmatizerTrainer implements LemmatizerTrainer {
   /**
    * Set/implement the posTaggerFactory to be used in the pos tagger training.
    * 
-   * @param aPosTaggerFactory
-   *          the pos tagger factory implemented
+   * @param aLemmatizerFactory
+   *          the Lemmatizer factory implemented
    */
   protected final void setLemmatizerFactory(
       final LemmatizerFactory aLemmatizerFactory) {
