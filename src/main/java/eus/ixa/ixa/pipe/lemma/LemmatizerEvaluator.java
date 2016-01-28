@@ -58,7 +58,7 @@ public class LemmatizerEvaluator extends Evaluator<LemmaSample> {
   protected LemmaSample processSample(LemmaSample reference) {
 
     String[] predictedLemmas = lemmatizer.lemmatize(reference.getTokens(), reference.getTags());
-    String[] referenceLemmas = reference.getPreds();
+    String[] referenceLemmas = reference.getLemmas();
 
     for (int i = 0; i < referenceLemmas.length; i++) {
       if (referenceLemmas[i].equals(predictedLemmas[i])) {

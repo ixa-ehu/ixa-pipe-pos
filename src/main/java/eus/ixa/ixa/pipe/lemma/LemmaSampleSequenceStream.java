@@ -43,7 +43,7 @@ public class LemmaSampleSequenceStream implements SequenceStream {
     if (sample != null) {
       String sentence[] = sample.getTokens();
       String tags[] = sample.getTags();
-      String preds[] = sample.getPreds();
+      String preds[] = sample.getLemmas();
       Event[] events = new Event[sentence.length];
 
       for (int i=0; i < sentence.length; i++) {
@@ -65,7 +65,7 @@ public class LemmaSampleSequenceStream implements SequenceStream {
     Sequence<LemmaSample> pss = sequence;
     LemmatizerME tagger = new LemmatizerME(new LemmatizerModel("x-unspecified", model, null, new LemmatizerFactory()));
     String[] sentence = pss.getSource().getTokens();
-    String[] preds = pss.getSource().getPreds();
+    String[] preds = pss.getSource().getLemmas();
     String[] tags = tagger.lemmatize(pss.getSource().getTokens(), pss.getSource().getTags());
     Event[] events = new Event[sentence.length];
     LemmaSampleEventStream.generateEvents(sentence, tags, preds, contextGenerator)

@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import eus.ixa.ixa.pipe.pos.StringUtils;
+
 import opennlp.tools.util.FilterObjectStream;
 import opennlp.tools.util.ObjectStream;
 
@@ -37,7 +39,7 @@ public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
     List<String> tags = new ArrayList<String>();
     List<String> preds = new ArrayList<String>();
 
-    for (String line = samples.read(); line !=null && !line.equals(""); line = samples.read()) {
+    for (String line = samples.read(); line != null && !line.equals(""); line = samples.read()) {
       String[] parts = line.split("\t");
       if (parts.length != 3) {
         System.err.println("Skipping corrupt line: " + line);
@@ -45,7 +47,8 @@ public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
       else {
         toks.add(parts[0]);
         tags.add(parts[1]);
-        preds.add(parts[2]);
+        String ses = StringUtils.getShortestEditScript(parts[0], parts[2]);
+        preds.add(ses);
       }
     }
 

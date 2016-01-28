@@ -41,7 +41,7 @@ public class StatisticalTagger {
    */
   private final POSTaggerME posTagger;
   /**
-   * The models to use for every language. The keys of the hash are the language
+   * The models to use for every language. The keys of the hashmap are the language
    * codes, the values the models.
    */
   private static ConcurrentHashMap<String, POSModel> posModels = new ConcurrentHashMap<String, POSModel>();

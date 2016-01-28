@@ -32,24 +32,24 @@ public class LemmaSample {
 
   private List<String> tags;
   
-  private final List<String> preds;
+  private final List<String> lemmas;
 
-  public LemmaSample(String[] tokens, String[] tags, String[] preds) {
+  public LemmaSample(String[] tokens, String[] tags, String[] lemmas) {
 
-    validateArguments(tokens.length, tags.length, preds.length);
+    validateArguments(tokens.length, tags.length, lemmas.length);
 
     this.tokens = Collections.unmodifiableList(new ArrayList<String>(Arrays.asList(tokens)));
     this.tags = Collections.unmodifiableList(new ArrayList<String>(Arrays.asList(tags)));
-    this.preds = Collections.unmodifiableList(new ArrayList<String>(Arrays.asList(preds)));
+    this.lemmas = Collections.unmodifiableList(new ArrayList<String>(Arrays.asList(lemmas)));
   }
   
-  public LemmaSample(List<String> tokens, List<String> tags, List<String> preds) {
+  public LemmaSample(List<String> tokens, List<String> tags, List<String> lemmas) {
 
-    validateArguments(tokens.size(), tags.size(), preds.size());
+    validateArguments(tokens.size(), tags.size(), lemmas.size());
 
     this.tokens = Collections.unmodifiableList(new ArrayList<String>((tokens)));
     this.tags = Collections.unmodifiableList(new ArrayList<String>((tags)));
-    this.preds = Collections.unmodifiableList(new ArrayList<String>((preds)));
+    this.lemmas = Collections.unmodifiableList(new ArrayList<String>((lemmas)));
   }
 
   public String[] getTokens() {
@@ -60,17 +60,17 @@ public class LemmaSample {
     return tags.toArray(new String[tags.size()]);
   }
   
-  public String[] getPreds() {
-    return preds.toArray(new String[preds.size()]);
+  public String[] getLemmas() {
+    return lemmas.toArray(new String[lemmas.size()]);
   }
 
-  private void validateArguments(int tokensSize, int tagsSize, int predsSize) throws IllegalArgumentException {
-    if (tokensSize != tagsSize || tagsSize != predsSize) {
+  private void validateArguments(int tokensSize, int tagsSize, int lemmasSize) throws IllegalArgumentException {
+    if (tokensSize != tagsSize || tagsSize != lemmasSize) {
       throw new IllegalArgumentException(
           "All arrays must have the same length: " +
               "sentenceSize: " + tokensSize +
               ", tagsSize: " + tagsSize +
-              ", predsSize: " + predsSize + "!");
+              ", predsSize: " + lemmasSize + "!");
     }
     if (tokens.contains(null)) {
       throw new IllegalArgumentException("null elements are not allowed in sentence tokens!");
@@ -85,8 +85,8 @@ public class LemmaSample {
 
         StringBuilder lemmaString = new StringBuilder();
 
-        for (int ci = 0; ci < preds.size(); ci++) {
-        lemmaString.append(tokens.get(ci)).append(" ").append(tags.get(ci)).append(" ").append(preds.get(ci)).append("\n");
+        for (int ci = 0; ci < lemmas.size(); ci++) {
+        lemmaString.append(tokens.get(ci)).append(" ").append(tags.get(ci)).append(" ").append(lemmas.get(ci)).append("\n");
         }
         return lemmaString.toString();
       }
@@ -99,7 +99,7 @@ public class LemmaSample {
       LemmaSample a = (LemmaSample) obj;
       return Arrays.equals(getTokens(), a.getTokens())
           && Arrays.equals(getTags(), a.getTags())
-          && Arrays.equals(getPreds(), a.getPreds());
+          && Arrays.equals(getLemmas(), a.getLemmas());
     } else {
       return false;
     }

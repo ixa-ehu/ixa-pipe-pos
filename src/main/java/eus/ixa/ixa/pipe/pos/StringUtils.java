@@ -251,7 +251,7 @@ public final class StringUtils {
     return distance;
   }
   
-  public static void getShortestEditScript(String wordForm, String lemma, int[][] distance, StringBuffer permutations) {
+  public static void computeShortestEditScript(String wordForm, String lemma, int[][] distance, StringBuffer permutations) {
     
     int n = distance.length;
     int m = distance[0].length;
@@ -358,6 +358,21 @@ public final class StringUtils {
     }
     return lemma.reverse().toString();
 }
+  
+  public static String getShortestEditScript(String wordForm, String lemma) {
+    String reversedWF = new StringBuffer(wordForm.toLowerCase()).reverse().toString();
+    String reversedLemma = new StringBuffer(lemma.toLowerCase()).reverse().toString();
+    StringBuffer permutations = new StringBuffer();
+    String ses;
+    if (!reversedWF.equals(reversedLemma)) {
+      int[][]levenDistance = StringUtils.levenshteinDistance(reversedWF, reversedLemma);
+      StringUtils.computeShortestEditScript(reversedWF, reversedLemma, levenDistance, permutations);
+      ses = permutations.toString();
+    } else {
+      ses = "O";
+    }
+    return ses;
+  }
 
 
 }
