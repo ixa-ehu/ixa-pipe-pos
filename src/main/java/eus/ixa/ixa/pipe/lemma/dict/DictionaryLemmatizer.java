@@ -13,26 +13,27 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package eus.ixa.ixa.pipe.pos.train;
 
-import opennlp.tools.postag.POSModel;
-import opennlp.tools.util.TrainingParameters;
+package eus.ixa.ixa.pipe.lemma.dict;
 
 /**
- * Interface for pos tagger trainers.
+ * Interface of the lemmatizer based on Dictionary lookup.
  * 
  * @author ragerri
  * @version 2014-07-08
+ * 
  */
-public interface Trainer {
+public interface DictionaryLemmatizer {
 
   /**
-   * Train a pos model with a parameters file.
+   * Lemmatize by dictionary lookup.
    * 
-   * @param params
-   *          the parameters file
-   * @return the {@code POSModel} trained
+   * @param word
+   *          the surface form word
+   * @param postag
+   *          the postag assigned
+   * @return the lemma
    */
-  POSModel train(TrainingParameters params);
+  String lemmatize(String word, String postag);
 
 }

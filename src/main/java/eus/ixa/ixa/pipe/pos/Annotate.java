@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.Properties;
 
 import opennlp.tools.util.Span;
-import eus.ixa.ixa.pipe.lemma.DictionaryLemmatizer;
-import eus.ixa.ixa.pipe.lemma.MorfologikLemmatizer;
-import eus.ixa.ixa.pipe.lemma.MultiWordMatcher;
+import eus.ixa.ixa.pipe.lemma.dict.DictionaryLemmatizer;
+import eus.ixa.ixa.pipe.lemma.dict.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
 import eus.ixa.ixa.pipe.pos.dict.MorfologikTagger;
+import eus.ixa.ixa.pipe.pos.dict.MultiWordMatcher;
 
 /**
  * Main annotation class of ixa-pipe-pos. Check this class for examples using

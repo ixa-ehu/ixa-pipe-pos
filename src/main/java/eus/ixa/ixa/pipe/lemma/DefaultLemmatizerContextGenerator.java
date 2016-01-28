@@ -31,7 +31,7 @@ public class DefaultLemmatizerContextGenerator implements LemmatizerContextGener
   }
 
   public String[] getContext(int index, String[] sequence, String[] priorDecisions, Object[] additionalContext) {
-    return getContext(index,sequence,(String[]) additionalContext[0],priorDecisions);
+    return getContext(index,sequence,(String[]) additionalContext[0], priorDecisions);
   }
 
   public String[] getContext(int i, String[] toks, String[] tags, String[] preds) {

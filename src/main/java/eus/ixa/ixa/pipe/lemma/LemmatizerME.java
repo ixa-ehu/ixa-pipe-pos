@@ -40,7 +40,7 @@ import opennlp.tools.util.TrainingParameters;
  * A probabilistic lemmatizer.  Tries to predict the induced permutation class
  * for each word depending on its surrounding context.
  */
-public class LemmatizerME {
+public class LemmatizerME implements Lemmatizer {
   
   public static final int DEFAULT_BEAM_SIZE = 3;
   protected int beamSize;
@@ -168,6 +168,16 @@ public class LemmatizerME {
     else {
       return new LemmatizerModel(languageCode, seqLemmatizerModel, manifestInfoEntries, posFactory);
     }
+  }
+  
+  public Sequence[] topKLemmaClasses(String[] sentence, String[] tags) {
+    return model.bestSequences(DEFAULT_BEAM_SIZE, sentence,
+        new Object[] { tags }, contextGenerator, sequenceValidator);
+  }
+
+  public Sequence[] topKLemmaClasses(String[] sentence, String[] tags, double minSequenceScore) {
+    return model.bestSequences(DEFAULT_BEAM_SIZE, sentence, new Object[] { tags }, minSequenceScore,
+        contextGenerator, sequenceValidator);
   }
   
 }

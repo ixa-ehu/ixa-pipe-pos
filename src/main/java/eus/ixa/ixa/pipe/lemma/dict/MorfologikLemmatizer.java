@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package eus.ixa.ixa.pipe.lemma;
+package eus.ixa.ixa.pipe.lemma.dict;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,7 +38,7 @@ import eus.ixa.ixa.pipe.pos.Resources;
  * 
  */
 public class MorfologikLemmatizer implements
-    eus.ixa.ixa.pipe.lemma.DictionaryLemmatizer {
+    eus.ixa.ixa.pipe.lemma.dict.DictionaryLemmatizer {
 
   /**
    * The Morfologik steamer to perform lemmatization with FSA dictionaries.

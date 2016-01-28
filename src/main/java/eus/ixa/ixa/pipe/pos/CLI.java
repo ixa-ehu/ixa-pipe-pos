@@ -46,12 +46,15 @@ import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
 
+import eus.ixa.ixa.pipe.lemma.LemmatizerModel;
+import eus.ixa.ixa.pipe.lemma.train.LemmatizerFixedTrainer;
+import eus.ixa.ixa.pipe.lemma.train.LemmatizerTrainer;
 import eus.ixa.ixa.pipe.pos.eval.CrossValidator;
 import eus.ixa.ixa.pipe.pos.eval.Evaluate;
 import eus.ixa.ixa.pipe.pos.train.FixedTrainer;
 import eus.ixa.ixa.pipe.pos.train.Flags;
 import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
-import eus.ixa.ixa.pipe.pos.train.Trainer;
+import eus.ixa.ixa.pipe.pos.train.TaggerTrainer;
 
 /**
  * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes
@@ -290,9 +293,16 @@ public class CLI {
     } else {
       outModel = Flags.getModel(params);
     }
-    final Trainer posTaggerTrainer = new FixedTrainer(params);
-    final POSModel trainedModel = posTaggerTrainer.train(params);
-    CmdLineUtil.writeModel("ixa-pipe-pos", new File(outModel), trainedModel);
+    String component = Flags.getComponent(params);
+    if (component.equalsIgnoreCase("POS")) {
+      final TaggerTrainer posTaggerTrainer = new FixedTrainer(params);
+      final POSModel trainedModel = posTaggerTrainer.train(params);
+      CmdLineUtil.writeModel("ixa-pipe-pos", new File(outModel), trainedModel);
+    } else if (component.equalsIgnoreCase("Lemma")) {
+      final LemmatizerTrainer lemmatizerTrainer = new LemmatizerFixedTrainer(params);
+      final LemmatizerModel trainedModel = lemmatizerTrainer.train(params);
+      CmdLineUtil.writeModel("ixa-pipe-lemma", new File(outModel), trainedModel);
+    }
   }
 
   /**

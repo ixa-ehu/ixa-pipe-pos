@@ -28,7 +28,7 @@ import opennlp.tools.util.TrainingParameters;
  * @author ragerri
  * @version 2014-11-26
  */
-public class FixedTrainer extends AbstractTrainer {
+public class FixedTrainer extends AbstractTaggerTrainer {
 
   /**
    * Extends the {@code AbstractTrainer} providing some {@code POSTaggerFactory}

@@ -38,7 +38,7 @@ import opennlp.tools.util.TrainingParameters;
  * @version 2014-07-07
  */
 
-public abstract class AbstractTrainer implements Trainer {
+public abstract class AbstractTaggerTrainer implements TaggerTrainer {
 
   /**
    * The language.
@@ -81,7 +81,7 @@ public abstract class AbstractTrainer implements Trainer {
    * @throws IOException
    *           the io exceptions
    */
-  public AbstractTrainer(final TrainingParameters params) throws IOException {
+  public AbstractTaggerTrainer(final TrainingParameters params) throws IOException {
     this.lang = Flags.getLanguage(params);
     final String trainData = Flags.getDataSet("TrainSet", params);
     final String testData = Flags.getDataSet("TestSet", params);
@@ -122,7 +122,7 @@ public abstract class AbstractTrainer implements Trainer {
       posEvaluator = new POSEvaluator(posTagger);
       posEvaluator.evaluate(this.testSamples);
     } catch (final IOException e) {
-      System.err.println("IO error while loading traing and test sets!");
+      System.err.println("IO error while loading training and test sets!");
       e.printStackTrace();
       System.exit(1);
     }

@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package eus.ixa.ixa.pipe.lemma;
+package eus.ixa.ixa.pipe.lemma.dict;
 
 import java.io.BufferedReader;
 import java.io.IOException;

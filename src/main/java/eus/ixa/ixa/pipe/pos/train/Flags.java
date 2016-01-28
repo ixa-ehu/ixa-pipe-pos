@@ -34,6 +34,16 @@ public class Flags {
   private Flags() {
 
   }
+  
+  public static String getComponent(final TrainingParameters params) {
+    String component = null;
+    if (params.getSettings().get("Component") == null) {
+      componentException();
+    } else {
+      component = params.getSettings().get("Component");
+    }
+    return component;
+  }
 
   public static String getLanguage(final TrainingParameters params) {
     String lang = null;
@@ -139,6 +149,11 @@ public class Flags {
     return folds;
   }
 
+  public static void componentException() {
+    System.err
+        .println("Please provide a component name in the Component field in the parameters file!");
+    System.exit(1);
+  }
   public static void modelException() {
     System.err
         .println("Please provide a model in the OutputModel field in the parameters file!");
