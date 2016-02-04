@@ -41,7 +41,6 @@ public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
 
     for (String line = samples.read(); line != null && !line.equals(""); line = samples.read()) {
       String[] parts = line.split("\t");
-      System.err.println(parts[0] + " " + parts[1] + " " + parts[2]);
       if (parts.length != 3) {
         System.err.println("Skipping corrupt line: " + line);
       }
@@ -52,9 +51,10 @@ public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
         preds.add(ses);
       }
     }
-
     if (toks.size() > 0) {
-      return new LemmaSample(toks.toArray(new String[toks.size()]), tags.toArray(new String[tags.size()]), preds.toArray(new String[preds.size()]));
+      LemmaSample lemmaSample = new LemmaSample(toks.toArray(new String[toks.size()]), tags.toArray(new String[tags.size()]), preds.toArray(new String[preds.size()])); 
+      //System.err.println(lemmaSample.toString());
+      return lemmaSample;
     }
     else {
       return null;

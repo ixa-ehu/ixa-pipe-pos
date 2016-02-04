@@ -72,12 +72,6 @@ public class LemmaSample {
               ", tagsSize: " + tagsSize +
               ", predsSize: " + lemmasSize + "!");
     }
-    if (tokens.contains(null)) {
-      throw new IllegalArgumentException("null elements are not allowed in sentence tokens!");
-    }
-    if (tags.contains(null)) {
-      throw new IllegalArgumentException("null elements are not allowed in tags!");
-    }   
   }
 
   @Override

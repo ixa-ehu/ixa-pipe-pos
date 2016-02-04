@@ -70,9 +70,9 @@ public abstract class AbstractLemmatizerTrainer implements LemmatizerTrainer {
     this.lang = Flags.getLanguage(params);
     final String trainData = Flags.getDataSet("TrainSet", params);
     final String testData = Flags.getDataSet("TestSet", params);
-    final ObjectStream<String> trainStream = InputOutputUtils.readInputData(trainData);
+    final ObjectStream<String> trainStream = InputOutputUtils.readFileIntoMarkableStreamFactory(trainData);
     this.trainSamples = new LemmaSampleStream(trainStream);
-    final ObjectStream<String> testStream = InputOutputUtils.readInputData(testData);
+    final ObjectStream<String> testStream = InputOutputUtils.readFileIntoMarkableStreamFactory(testData);
     this.testSamples = new LemmaSampleStream(testStream);
   }
 

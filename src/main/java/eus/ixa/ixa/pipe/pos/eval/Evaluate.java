@@ -92,8 +92,7 @@ public class Evaluate {
   }
 
   /**
-   * Evaluate and print precision, recall and F measure.
-   * 
+   * Evaluate and print word accuracy.
    * @throws IOException
    *           if test corpus not loaded
    */
