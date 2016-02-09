@@ -18,53 +18,91 @@
 
 package eus.ixa.ixa.pipe.lemma;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 public class DefaultLemmatizerContextGenerator implements LemmatizerContextGenerator {
+  
+  private static final int PREFIX_LENGTH = 4;
+  private static final int SUFFIX_LENGTH = 4;
+
+  private static Pattern hasCap = Pattern.compile("[A-Z]");
+  private static Pattern hasNum = Pattern.compile("[0-9]");
 
   public DefaultLemmatizerContextGenerator() {
   }
 
+  protected static String[] getPrefixes(String lex) {
+    String[] prefs = new String[PREFIX_LENGTH];
+    for (int li = 0, ll = PREFIX_LENGTH; li < ll; li++) {
+      prefs[li] = lex.substring(0, Math.min(li + 1, lex.length()));
+    }
+    return prefs;
+  }
+
+  protected static String[] getSuffixes(String lex) {
+    String[] suffs = new String[SUFFIX_LENGTH];
+    for (int li = 0, ll = SUFFIX_LENGTH; li < ll; li++) {
+      suffs[li] = lex.substring(Math.max(lex.length() - li - 1, 0));
+    }
+    return suffs;
+  }
+  
   public String[] getContext(int index, String[] sequence, String[] priorDecisions, Object[] additionalContext) {
     return getContext(index,sequence,(String[]) additionalContext[0], priorDecisions);
   }
 
-  public String[] getContext(int i, String[] toks, String[] tags, String[] preds) {
-    // Words in a 5-word window
+  public String[] getContext(int index, String[] toks, String[] tags, String[] preds) {
+    // Word
     String w0;
-
-    // Tags in a 5-word window
+    // Tag
     String t0;
-
-    // Previous predictions
+    // Previous prediction
     String p_1;
 
-    if (i < 1) {
+    String lex = toks[index].toString();
+    if (index < 1) {
       p_1 = "p_1=bos";
     }
     else {
-      p_1 = "p_1=" + preds[i - 1];
+      p_1 = "p_1=" + preds[index - 1];
     }
 
-    w0 = "w0=" + toks[i];
-    t0 = "t0=" + tags[i];
+    w0 = "w0=" + toks[index];
+    t0 = "t0=" + tags[index];
 
+    List<String> features = new ArrayList<String>();
+    
+    features.add(w0);
+    features.add(t0);
+    features.add(p_1);
+    features.add(p_1 + t0);
+    features.add(p_1 + w0);
+    
+    // do some basic suffix analysis
+    String[] suffs = getSuffixes(lex);
+    for (int i = 0; i < suffs.length; i++) {
+      features.add("suf=" + suffs[i]);
+    }
 
-    String[] features = new String[] {
-        //add word features
-        w0,
+    String[] prefs = getPrefixes(lex);
+    for (int i = 0; i < prefs.length; i++) {
+      features.add("pre=" + prefs[i]);
+    }
+    // see if the word has any special characters
+    if (lex.indexOf('-') != -1) {
+      features.add("h");
+    }
 
-        //add tag features
-        t0,
+    if (hasCap.matcher(lex).find()) {
+      features.add("c");
+    }
 
-        //add pred tags
-        p_1,
-
-        //add pred and tag
-        p_1 + t0,
-
-        //add pred and word
-        p_1 + w0,
-    };
-
-    return features;
+    if (hasNum.matcher(lex).find()) {
+      features.add("d");
+    }
+    
+    return features.toArray(new String[features.size()]);
   }
 }
