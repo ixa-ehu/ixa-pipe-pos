@@ -62,15 +62,7 @@ public class LemmaSampleSequenceStream implements SequenceStream {
   @Override
   public Event[] updateContext(Sequence sequence, AbstractModel model) {
     // TODO: Should be implemented for Perceptron sequence learning ...
-    Sequence<LemmaSample> pss = sequence;
-    LemmatizerME tagger = new LemmatizerME(new LemmatizerModel("x-unspecified", model, null, new LemmatizerFactory()));
-    String[] sentence = pss.getSource().getTokens();
-    String[] preds = pss.getSource().getLemmas();
-    String[] tags = tagger.lemmatize(pss.getSource().getTokens(), pss.getSource().getTags());
-    Event[] events = new Event[sentence.length];
-    LemmaSampleEventStream.generateEvents(sentence, tags, preds, contextGenerator)
-        .toArray(events);
-    return events;
+    return null;
   }
 
   @Override

@@ -18,6 +18,7 @@
 package eus.ixa.ixa.pipe.lemma;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +43,8 @@ public class LemmaSampleEventStream extends AbstractEventStream<LemmaSample> {
     this.contextGenerator = cg;
   }
 
-  @Override
+ 
+  /*@Override
   protected Iterator<Event> createEvents(LemmaSample sample) {
 
     String[] toksArray = sample.getTokens();
@@ -63,5 +65,22 @@ public class LemmaSampleEventStream extends AbstractEventStream<LemmaSample> {
       events.add(new Event(tags[i], context));
     }
     return events;
+  }*/
+  
+  protected Iterator<Event> createEvents(LemmaSample sample) {
+
+    if (sample != null) {
+      List<Event> events = new ArrayList<Event>();
+      String[] toksArray = sample.getTokens();
+      String[] tagsArray = sample.getTags();
+      String[] predsArray = sample.getLemmas();
+      for (int ei = 0, el = sample.getTokens().length; ei < el; ei++) {
+        events.add(new Event(predsArray[ei], contextGenerator.getContext(ei,toksArray,tagsArray,predsArray)));
+      }
+      return events.iterator();
+    }
+    else {
+      return Collections.emptyListIterator();
+    }
   }
 }

@@ -59,7 +59,7 @@ public class LemmatizerEvaluator extends Evaluator<LemmaSample> {
 
     String[] predictedLemmas = lemmatizer.lemmatize(reference.getTokens(), reference.getTags());
     String[] referenceLemmas = reference.getLemmas();
-
+    
     for (int i = 0; i < referenceLemmas.length; i++) {
       System.err.println("-> Reference: " + referenceLemmas[i]);
       System.err.println("-> Predicted: " + predictedLemmas[i]);

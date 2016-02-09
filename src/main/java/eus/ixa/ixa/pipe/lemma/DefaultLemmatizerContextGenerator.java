@@ -23,18 +23,27 @@ public class DefaultLemmatizerContextGenerator implements LemmatizerContextGener
   public DefaultLemmatizerContextGenerator() {
   }
 
-  @Override
-  public String[] getContext(int index, String[] sequence,
-      String[] priorDecisions, Object[] additionalContext) {
-    return getContext(index, sequence, (String[]) additionalContext[0], priorDecisions);
+  public String[] getContext(int index, String[] sequence, String[] priorDecisions, Object[] additionalContext) {
+    return getContext(index,sequence,(String[]) additionalContext[0], priorDecisions);
   }
-  
+
   public String[] getContext(int i, String[] toks, String[] tags, String[] preds) {
     // Words in a 5-word window
     String w0;
 
     // Tags in a 5-word window
     String t0;
+
+    // Previous predictions
+    String p_1;
+
+    if (i < 1) {
+      p_1 = "p_1=bos";
+    }
+    else {
+      p_1 = "p_1=" + preds[i - 1];
+    }
+
     w0 = "w0=" + toks[i];
     t0 = "t0=" + tags[i];
 
@@ -42,7 +51,18 @@ public class DefaultLemmatizerContextGenerator implements LemmatizerContextGener
     String[] features = new String[] {
         //add word features
         w0,
+
+        //add tag features
         t0,
+
+        //add pred tags
+        p_1,
+
+        //add pred and tag
+        p_1 + t0,
+
+        //add pred and word
+        p_1 + w0,
     };
 
     return features;
