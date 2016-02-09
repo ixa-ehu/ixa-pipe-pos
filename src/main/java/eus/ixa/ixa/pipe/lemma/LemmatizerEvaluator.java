@@ -70,7 +70,6 @@ public class LemmatizerEvaluator extends Evaluator<LemmaSample> {
         wordAccuracy.add(0);
       }
     }
-
     return new LemmaSample(reference.getTokens(), reference.getTags(), predictedLemmas);
   }
 

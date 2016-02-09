@@ -87,7 +87,7 @@ public class LemmatizerModel extends BaseModel {
     super.validateArtifactMap();
 
     if (!(artifactMap.get(LEMMATIZER_MODEL_ENTRY_NAME) instanceof AbstractModel)) {
-      throw new InvalidFormatException("Chunker model is incomplete!");
+      throw new InvalidFormatException("Lemmatizer model is incomplete!");
     }
   }
 

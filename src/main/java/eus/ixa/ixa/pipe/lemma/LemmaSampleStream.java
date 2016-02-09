@@ -52,8 +52,7 @@ public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
       }
     }
     if (toks.size() > 0) {
-      LemmaSample lemmaSample = new LemmaSample(toks.toArray(new String[toks.size()]), tags.toArray(new String[tags.size()]), preds.toArray(new String[preds.size()])); 
-      //System.err.println(lemmaSample.toString());
+      LemmaSample lemmaSample = new LemmaSample(toks.toArray(new String[toks.size()]), tags.toArray(new String[tags.size()]), preds.toArray(new String[preds.size()]));
       return lemmaSample;
     }
     else {
