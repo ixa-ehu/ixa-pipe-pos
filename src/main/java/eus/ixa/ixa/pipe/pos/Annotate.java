@@ -360,9 +360,13 @@ public class Annotate {
         }
         final String posId = this.getKafTagSet(morphemes.get(i).getTag());
         final String type = this.setTermType(posId);
-        //final String lemma = this.dictLemmatizer.lemmatize(morphemes.get(i)
-        //    .getWord(), morphemes.get(i).getTag());
-        //morphemes.get(i).setLemma(lemma);
+        //dictionary lemmatizer overwrites probabilistic predictions if
+        //lemma is not equal to word
+        final String lemma = this.dictLemmatizer.lemmatize(morphemes.get(i)
+            .getWord(), morphemes.get(i).getTag());
+        if (!lemma.equalsIgnoreCase(morphemes.get(i).getWord())) {
+          morphemes.get(i).setLemma(lemma);
+        }
         term.setType(type);
         term.setLemma(morphemes.get(i).getLemma());
         term.setPos(posId);
@@ -441,7 +445,7 @@ public class Annotate {
         String[] posTagsArray = new String[posTags.size()];
         posTagsArray = posTags.toArray(posTagsArray);
         morphemes = this.lemmatizer.getMorphemes(tokens, posTagsArray);
-      }
+      }        
       for (int i = 0; i < morphemes.size(); i++) {
         final String posTag = morphemes.get(i).getTag();
         final String word = morphemes.get(i).getWord();
@@ -449,8 +453,13 @@ public class Annotate {
           final String dictPosTag = this.dictMorphoTagger.tag(word, posTag);
           morphemes.get(i).setTag(dictPosTag);
         }
-        //final String lemma = this.dictLemmatizer.lemmatize(word,
-        //    morphemes.get(i).getTag());
+        //dictionary lemmatizer overwrites probabilistic predictions
+        //if lemma is not equal to word
+        final String lemma = this.dictLemmatizer.lemmatize(word,
+            morphemes.get(i).getTag());
+        if (!lemma.equalsIgnoreCase(word)) {
+          morphemes.get(i).setLemma(lemma);
+        }
         sb.append(word).append("\t").append(morphemes.get(i).getLemma()).append("\t")
             .append(morphemes.get(i).getTag()).append("\n");
       }
