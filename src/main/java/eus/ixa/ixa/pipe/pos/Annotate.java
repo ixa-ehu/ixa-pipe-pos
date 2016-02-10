@@ -360,9 +360,9 @@ public class Annotate {
         }
         final String posId = this.getKafTagSet(morphemes.get(i).getTag());
         final String type = this.setTermType(posId);
-        final String lemma = this.dictLemmatizer.lemmatize(morphemes.get(i)
-            .getWord(), morphemes.get(i).getTag());
-        morphemes.get(i).setLemma(lemma);
+        //final String lemma = this.dictLemmatizer.lemmatize(morphemes.get(i)
+        //    .getWord(), morphemes.get(i).getTag());
+        //morphemes.get(i).setLemma(lemma);
         term.setType(type);
         term.setLemma(morphemes.get(i).getLemma());
         term.setPos(posId);

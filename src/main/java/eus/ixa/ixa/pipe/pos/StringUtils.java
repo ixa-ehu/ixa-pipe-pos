@@ -303,7 +303,6 @@ public final class StringUtils {
   public static String decodeShortestEditScript(String wordForm, String permutations) {
     
     StringBuffer lemma = new StringBuffer(wordForm).reverse();
-    System.err.println("-> WF: " + lemma);
     
     int permIndex = 0;
     while(true) {
@@ -312,7 +311,7 @@ public final class StringUtils {
         }
         //read first letter of permutation string
         char nextOperation = permutations.charAt(permIndex);
-        System.err.println("-> NextOP: " + nextOperation);
+        //System.err.println("-> NextOP: " + nextOperation);
         //go to the next permutation letter
         permIndex++;
         if (nextOperation == 'R') {
@@ -333,7 +332,7 @@ public final class StringUtils {
             if (lemma.charAt(charIndex) == replace) {
               lemma.setCharAt(charIndex, with);
             }
-            System.err.println("-> ROP: " + lemma.toString());
+            //System.err.println("-> ROP: " + lemma.toString());
             //go to next permutation
             permIndex++;
             
@@ -348,7 +347,7 @@ public final class StringUtils {
               return wordForm; 
             }
             lemma.insert(charIndex, in);
-            System.err.println("-> IOP " + lemma.toString());
+            //System.err.println("-> IOP " + lemma.toString());
             //go to next permutation
             permIndex++;
         } else if (nextOperation == 'D') {
