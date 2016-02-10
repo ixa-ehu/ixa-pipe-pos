@@ -206,6 +206,7 @@ public class CLI {
       final OutputStream outputStream) throws IOException, JDOMException {
 
     final String model = this.parsedArguments.getString("model");
+    final String lemmatizerModel = this.parsedArguments.getString("lemma");
     final String multiwords = Boolean.toString(this.parsedArguments
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
@@ -228,7 +229,7 @@ public class CLI {
     } else {
       lang = kaf.getLang();
     }
-    final Properties properties = setAnnotateProperties(model, lang,
+    final Properties properties = setAnnotateProperties(model, lemmatizerModel, lang,
         multiwords, dictag);
     final Annotate annotator = new Annotate(properties);
     
@@ -253,10 +254,14 @@ public class CLI {
   private void loadAnnotateParameters() {
     this.annotateParser.addArgument("-m", "--model")
         .required(true)
-        .help("It is required to provide a model to perform POS tagging.");
+        .help("It is required to provide a POS tagging model.");
+    this.annotateParser.addArgument("-lm", "--lemma")
+         .required(true)
+         .help("It is required to provide a lemmatizer model.");
     this.annotateParser.addArgument("-l", "--language")
-        .choices("fr", "en", "es", "gl", "it").required(false)
-        .help("Choose a language to perform annotation with ixa-pipe-pos.");
+        .choices("fr", "en", "es", "eu", "gl", "it")
+        .required(false)
+        .help("Choose a language.");
 
     this.annotateParser.addArgument("--beamSize")
         .required(false)
@@ -492,11 +497,12 @@ public class CLI {
    * @param dictag whether tagging from a dictionary is activated
    * @return a properties object
    */
-  private Properties setAnnotateProperties(final String model,
+  private Properties setAnnotateProperties(final String model, final String lemmatizerModel,
       final String language, final String multiwords,
       final String dictag) {
     final Properties annotateProperties = new Properties();
     annotateProperties.setProperty("model", model);
+    annotateProperties.setProperty("lemmatizerModel", lemmatizerModel);
     annotateProperties.setProperty("language", language);
     annotateProperties.setProperty("multiwords", multiwords);
     annotateProperties.setProperty("dictag", dictag);

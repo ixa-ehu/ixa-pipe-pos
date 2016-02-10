@@ -18,9 +18,12 @@
 package eus.ixa.ixa.pipe.lemma;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import eus.ixa.ixa.pipe.pos.StringUtils;
 
 import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.EventModelSequenceTrainer;
@@ -84,6 +87,24 @@ public class LemmatizerME implements Lemmatizer {
     bestSequence = model.bestSequence(toks, new Object[] {tags}, contextGenerator, sequenceValidator);
     List<String> c = bestSequence.getOutcomes();
     return c.toArray(new String[c.size()]);
+  }
+  
+  /**
+   * Decodes the lemma from the word and the induced lemma class.
+   * @param toks the array of tokens
+   * @param preds the predicted lemma classes
+   * @return the array of decoded lemmas
+   */
+  public String[] decodeLemmas(String[] toks, String[] preds) {
+    List<String> lemmas = new ArrayList<String>();
+    for (int i = 0; i < toks.length; i++) {
+      String lemma = StringUtils.decodeShortestEditScript(toks[i].toLowerCase(), preds[i]);
+      if (lemma.length() == 0) {
+        lemma = "_";
+      }
+      lemmas.add(lemma);
+    }
+    return lemmas.toArray(new String[lemmas.size()]);
   }
   
   public Sequence[] topKSequences(String[] sentence, String[] tags) {

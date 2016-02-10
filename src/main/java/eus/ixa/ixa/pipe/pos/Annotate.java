@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Properties;
 
 import opennlp.tools.util.Span;
+import eus.ixa.ixa.pipe.lemma.StatisticalLemmatizer;
 import eus.ixa.ixa.pipe.lemma.dict.DictionaryLemmatizer;
 import eus.ixa.ixa.pipe.lemma.dict.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
@@ -46,6 +47,7 @@ public class Annotate {
    * The morpho tagger.
    */
   private final StatisticalTagger posTagger;
+  private final StatisticalLemmatizer lemmatizer;
   /**
    * The language.
    */
@@ -96,6 +98,7 @@ public class Annotate {
     loadLemmatizerDicts(properties);
     this.morphoFactory = new MorphoFactory();
     this.posTagger = new StatisticalTagger(properties, this.morphoFactory);
+    this.lemmatizer = new StatisticalLemmatizer(properties, this.morphoFactory);
   }
 
   // TODO static loading of lemmatizer dictionaries
@@ -340,7 +343,10 @@ public class Annotate {
         morphemes = this.posTagger.getMorphemes(multiWordTokens);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
-        morphemes = this.posTagger.getMorphemes(tokens);
+        List<String> posTags = this.posTagger.posAnnotate(tokens);
+        String[] posTagsArray = new String[posTags.size()];
+        posTagsArray = posTags.toArray(posTagsArray);
+        morphemes = this.lemmatizer.getMorphemes(tokens, posTagsArray);
       }
       for (int i = 0; i < morphemes.size(); i++) {
         final Term term = kaf.newTerm(tokenSpans.get(i));

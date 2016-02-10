@@ -70,6 +70,9 @@ public class Resources {
       dictURL = getClass().getResource(
           "/lemmatizer-dicts/freeling/spanish.dict");
     }
+    if (lang.equalsIgnoreCase("eu")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/eu/basque.dict");
+    }
     if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/ctag/galician.dict");
     }

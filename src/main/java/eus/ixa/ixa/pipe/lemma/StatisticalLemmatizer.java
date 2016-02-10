@@ -101,7 +101,8 @@ public class StatisticalLemmatizer {
    */
   public List<String> lemmatize(String[] tokens, String[] posTags) { 
     String[] annotatedLemmas = lemmatizer.lemmatize(tokens, posTags);
-    final List<String> lemmas = new ArrayList<String>(Arrays.asList(annotatedLemmas));
+    String[] decodedLemmas = lemmatizer.decodeLemmas(tokens, annotatedLemmas);
+    final List<String> lemmas = new ArrayList<String>(Arrays.asList(decodedLemmas));
     return lemmas;
   }
 
