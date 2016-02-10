@@ -303,6 +303,7 @@ public final class StringUtils {
   public static String decodeShortestEditScript(String wordForm, String permutations) {
     
     StringBuffer lemma = new StringBuffer(wordForm).reverse();
+    System.err.println("-> WF: " + lemma);
     
     int permIndex = 0;
     while(true) {
@@ -311,10 +312,12 @@ public final class StringUtils {
         }
         //read first letter of permutation string
         char nextOperation = permutations.charAt(permIndex);
+        System.err.println("-> NextOP: " + nextOperation);
         //go to the next permutation letter
         permIndex++;
         if (nextOperation == 'R') {
-            int charIndex = permutations.charAt(permIndex);
+            String charAtPerm = Character.toString(permutations.charAt(permIndex));
+            int charIndex = Integer.parseInt(charAtPerm);
             // go to the next character in the permutation buffer
             // which is the replacement character
             permIndex++;
@@ -330,11 +333,13 @@ public final class StringUtils {
             if (lemma.charAt(charIndex) == replace) {
               lemma.setCharAt(charIndex, with);
             }
+            System.err.println("-> ROP: " + lemma.toString());
             //go to next permutation
             permIndex++;
             
         } else if (nextOperation == 'I') {
-            int charIndex = permutations.charAt(permIndex);
+            String charAtPerm = Character.toString(permutations.charAt(permIndex));
+            int charIndex = Integer.parseInt(charAtPerm);
             permIndex++;
             //character to be inserted
             char in = permutations.charAt(permIndex);
@@ -343,10 +348,12 @@ public final class StringUtils {
               return wordForm; 
             }
             lemma.insert(charIndex, in);
+            System.err.println("-> IOP " + lemma.toString());
             //go to next permutation
             permIndex++;
-        } else if (nextOperation == 'D' ) {
-            int charIndex = permutations.charAt(permIndex);
+        } else if (nextOperation == 'D') {
+            String charAtPerm = Character.toString(permutations.charAt(permIndex));
+            int charIndex = Integer.parseInt(charAtPerm);
             if (lemma.length() <= charIndex) {
               return wordForm;
             }

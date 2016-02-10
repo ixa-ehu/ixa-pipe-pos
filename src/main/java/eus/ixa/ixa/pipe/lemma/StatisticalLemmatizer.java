@@ -58,7 +58,7 @@ public class StatisticalLemmatizer {
    */
   public StatisticalLemmatizer(final Properties props) {
     final String lang = props.getProperty("language");
-    final String model = props.getProperty("model");
+    final String model = props.getProperty("lemmatizerModel");
     final LemmatizerModel lemmatizerModel = loadModel(lang, model);
     this.lemmatizer = new LemmatizerME(lemmatizerModel);
   }
@@ -73,7 +73,7 @@ public class StatisticalLemmatizer {
    */
   public StatisticalLemmatizer(final Properties props, final MorphoFactory aMorphoFactory) {
     final String lang = props.getProperty("language");
-    final String model = props.getProperty("model");
+    final String model = props.getProperty("lemmatizerModel");
     final LemmatizerModel posModel = loadModel(lang, model);
     this.lemmatizer = new LemmatizerME(posModel);
     this.morphoFactory = aMorphoFactory;
@@ -99,7 +99,7 @@ public class StatisticalLemmatizer {
    * @param posTags the pos tags
    * @return the lemmas
    */
-  public List<String> lemmatize(String[] tokens, String[] posTags) { 
+  public List<String> lemmatize(String[] tokens, String[] posTags) {
     String[] annotatedLemmas = lemmatizer.lemmatize(tokens, posTags);
     String[] decodedLemmas = lemmatizer.decodeLemmas(tokens, annotatedLemmas);
     final List<String> lemmas = new ArrayList<String>(Arrays.asList(decodedLemmas));

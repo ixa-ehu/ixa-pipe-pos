@@ -152,7 +152,7 @@ public class Annotate {
   }
 
   /**
-   * Mapping between Penn Treebank tagset and KAF tagset.
+   * Mapping between Penn Treebank tagset and KAF ta9434233199310741gset.
    * 
    * @param postag
    *          treebank postag
@@ -205,7 +205,7 @@ public class Annotate {
     } else if (postag.startsWith("SP")) {
       return "P"; // preposition
     } else if (postag.startsWith("P")) {
-      return "Q"; // pronoun
+      return "Q"; // pronoun9434233199310741
     } else if (postag.startsWith("V")) {
       return "V"; // verb
     } else {
@@ -237,7 +237,7 @@ public class Annotate {
     } else if (postag.startsWith("NP")) {
       return "R"; // proper noun
     } else if (postag.startsWith("S")) {
-      return "P"; // preposition
+      return "P"; // preposition9434233199310741
     } else if (postag.startsWith("P")) {
       return "Q"; // pronoun
     } else if (postag.startsWith("V")) {
@@ -292,6 +292,9 @@ public class Annotate {
     }
     if (this.lang.equalsIgnoreCase("es")) {
       tag = this.mapSpanishTagSetToKaf(postag);
+    }
+    if (this.lang.equalsIgnoreCase("eu")) {
+      tag = this.mapEnglishTagSetToKaf(postag);
     }
     if (this.lang.equalsIgnoreCase("gl")) {
       tag = this.mapGalicianTagSetToKaf(postag);
@@ -434,7 +437,10 @@ public class Annotate {
         morphemes = this.posTagger.getMorphemes(multiWordTokens);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
-        morphemes = this.posTagger.getMorphemes(tokens);
+        List<String> posTags = this.posTagger.posAnnotate(tokens);
+        String[] posTagsArray = new String[posTags.size()];
+        posTagsArray = posTags.toArray(posTagsArray);
+        morphemes = this.lemmatizer.getMorphemes(tokens, posTagsArray);
       }
       for (int i = 0; i < morphemes.size(); i++) {
         final String posTag = morphemes.get(i).getTag();
@@ -443,9 +449,9 @@ public class Annotate {
           final String dictPosTag = this.dictMorphoTagger.tag(word, posTag);
           morphemes.get(i).setTag(dictPosTag);
         }
-        final String lemma = this.dictLemmatizer.lemmatize(word,
-            morphemes.get(i).getTag());
-        sb.append(word).append("\t").append(lemma).append("\t")
+        //final String lemma = this.dictLemmatizer.lemmatize(word,
+        //    morphemes.get(i).getTag());
+        sb.append(word).append("\t").append(morphemes.get(i).getLemma()).append("\t")
             .append(morphemes.get(i).getTag()).append("\n");
       }
       sb.append("\n");

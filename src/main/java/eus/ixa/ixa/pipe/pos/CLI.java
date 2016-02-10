@@ -233,7 +233,7 @@ public class CLI {
         multiwords, dictag);
     final Annotate annotator = new Annotate(properties);
     
-    if (outputFormat.equalsIgnoreCase("tabulated")) {
+    if (outputFormat.equalsIgnoreCase("conll")) {
       bwriter.write(annotator.annotatePOSToCoNLL(kaf));
     } else {
       final KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
@@ -269,7 +269,7 @@ public class CLI {
         .help("Choose beam size for decoding, it defaults to 3.");
     annotateParser.addArgument("-o", "--outputFormat")
         .required(false)
-        .choices("naf", "tabulated")
+        .choices("naf", "conll")
         .setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
         .help("Choose output format; it defaults to NAF.\n");
     this.annotateParser.addArgument("-mw", "--multiwords")
