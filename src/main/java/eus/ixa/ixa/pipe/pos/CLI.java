@@ -47,10 +47,12 @@ import org.jdom2.JDOMException;
 import com.google.common.io.Files;
 
 import eus.ixa.ixa.pipe.lemma.LemmatizerModel;
+import eus.ixa.ixa.pipe.lemma.eval.LemmaEvaluate;
 import eus.ixa.ixa.pipe.lemma.train.LemmatizerFixedTrainer;
 import eus.ixa.ixa.pipe.lemma.train.LemmatizerTrainer;
-import eus.ixa.ixa.pipe.pos.eval.CrossValidator;
+import eus.ixa.ixa.pipe.pos.eval.POSCrossValidator;
 import eus.ixa.ixa.pipe.pos.eval.Evaluate;
+import eus.ixa.ixa.pipe.pos.eval.POSEvaluate;
 import eus.ixa.ixa.pipe.pos.train.FixedTrainer;
 import eus.ixa.ixa.pipe.pos.train.Flags;
 import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
@@ -324,10 +326,16 @@ public class CLI {
    *           the io exception thrown if errors with paths are present
    */
   public final void eval() throws IOException {
+    final String component = this.parsedArguments.getString("component");
     final String testFile = this.parsedArguments.getString("testSet");
     final String model = this.parsedArguments.getString("model");
+    Evaluate evaluator = null;
 
-    final Evaluate evaluator = new Evaluate(testFile, model);
+    if (component.equalsIgnoreCase("pos")) {
+      evaluator = new POSEvaluate(testFile, model);
+    } else {
+      evaluator = new LemmaEvaluate(testFile, model);
+    }
     if (this.parsedArguments.getString("evalReport") != null) {
       if (this.parsedArguments.getString("evalReport").equalsIgnoreCase(
           "detailed")) {
@@ -342,6 +350,7 @@ public class CLI {
     } else {
       evaluator.evaluate();
     }
+   
   }
   
   /**
@@ -421,11 +430,18 @@ public class CLI {
    * Load the evaluation parameters of the CLI.
    */
   private void loadEvalParameters() {
-    this.evalParser.addArgument("-m", "--model").required(true)
+    this.evalParser.addArgument("-c","--component")
+         .required(true)
+         .choices("pos","lemma")
+         .help("Choose component for evaluation");
+    this.evalParser.addArgument("-m", "--model")
+        .required(true)
         .help("Choose model");
-    this.evalParser.addArgument("-t", "--testSet").required(true)
+    this.evalParser.addArgument("-t", "--testSet")
+        .required(true)
         .help("Input testset for evaluation");
-    this.evalParser.addArgument("--evalReport").required(false)
+    this.evalParser.addArgument("--evalReport")
+        .required(false)
         .choices("brief", "detailed", "error")
         .help("Choose type of evaluation report; defaults to brief");
   }
@@ -440,7 +456,7 @@ public class CLI {
     final String paramFile = this.parsedArguments.getString("params");
     final TrainingParameters params = InputOutputUtils
         .loadTrainingParameters(paramFile);
-    final CrossValidator crossValidator = new CrossValidator(params);
+    final POSCrossValidator crossValidator = new POSCrossValidator(params);
     crossValidator.crossValidate(params);
   }
 

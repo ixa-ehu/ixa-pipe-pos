@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 
 public class DefaultLemmatizerContextGenerator implements LemmatizerContextGenerator {
   
-  private static final int PREFIX_LENGTH = 4;
-  private static final int SUFFIX_LENGTH = 4;
+  private static final int PREFIX_LENGTH = 5;
+  private static final int SUFFIX_LENGTH = 7;
 
   private static Pattern hasCap = Pattern.compile("[A-Z]");
   private static Pattern hasNum = Pattern.compile("[0-9]");
@@ -32,7 +32,7 @@ public class DefaultLemmatizerContextGenerator implements LemmatizerContextGener
 
   protected static String[] getPrefixes(String lex) {
     String[] prefs = new String[PREFIX_LENGTH];
-    for (int li = 0, ll = PREFIX_LENGTH; li < ll; li++) {
+    for (int li = 1, ll = PREFIX_LENGTH; li < ll; li++) {
       prefs[li] = lex.substring(0, Math.min(li + 1, lex.length()));
     }
     return prefs;
@@ -40,7 +40,7 @@ public class DefaultLemmatizerContextGenerator implements LemmatizerContextGener
 
   protected static String[] getSuffixes(String lex) {
     String[] suffs = new String[SUFFIX_LENGTH];
-    for (int li = 0, ll = SUFFIX_LENGTH; li < ll; li++) {
+    for (int li = 1, ll = SUFFIX_LENGTH; li < ll; li++) {
       suffs[li] = lex.substring(Math.max(lex.length() - li - 1, 0));
     }
     return suffs;

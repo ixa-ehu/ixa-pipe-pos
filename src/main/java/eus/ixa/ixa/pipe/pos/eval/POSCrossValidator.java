@@ -42,7 +42,7 @@ import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
  * @version 2014-11-25
  */
 
-public class CrossValidator {
+public class POSCrossValidator {
 
   /**
    * The language.
@@ -81,7 +81,7 @@ public class CrossValidator {
    * @throws IOException
    *           the io exceptions
    */
-  public CrossValidator(final TrainingParameters params) throws IOException {
+  public POSCrossValidator(final TrainingParameters params) throws IOException {
     this.lang = Flags.getLanguage(params);
     final String trainData = Flags.getDataSet("TrainSet", params);
     final ObjectStream<String> trainStream = InputOutputUtils
