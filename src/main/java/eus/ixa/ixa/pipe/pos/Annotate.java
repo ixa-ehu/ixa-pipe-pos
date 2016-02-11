@@ -28,14 +28,13 @@ import java.util.Properties;
 
 import opennlp.tools.util.Span;
 import eus.ixa.ixa.pipe.lemma.StatisticalLemmatizer;
-import eus.ixa.ixa.pipe.lemma.dict.DictionaryLemmatizer;
 import eus.ixa.ixa.pipe.lemma.dict.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
 import eus.ixa.ixa.pipe.pos.dict.MorfologikTagger;
 import eus.ixa.ixa.pipe.pos.dict.MultiWordMatcher;
 
 /**
- * Main annotation class of ixa-pipe-pos. Check this class for examples using
+ * Example annotation class of ixa-pipe-pos. Check this class for examples using
  * the ixa-pipe-pos API.
  * 
  * @author ragerri
@@ -47,6 +46,9 @@ public class Annotate {
    * The morpho tagger.
    */
   private final StatisticalTagger posTagger;
+  /**
+   * The statistical lemmatizer.
+   */
   private final StatisticalLemmatizer lemmatizer;
   /**
    * The language.
@@ -59,7 +61,7 @@ public class Annotate {
   /**
    * The dictionary lemmatizer.
    */
-  private DictionaryLemmatizer dictLemmatizer;
+  private MorfologikLemmatizer dictLemmatizer;
   /**
    * If true detect multiwords.
    */
@@ -152,7 +154,7 @@ public class Annotate {
   }
 
   /**
-   * Mapping between Penn Treebank tagset and KAF ta9434233199310741gset.
+   * Mapping between Penn Treebank tagset and KAF tagset.
    * 
    * @param postag
    *          treebank postag
@@ -205,7 +207,7 @@ public class Annotate {
     } else if (postag.startsWith("SP")) {
       return "P"; // preposition
     } else if (postag.startsWith("P")) {
-      return "Q"; // pronoun9434233199310741
+      return "Q"; // pronoun
     } else if (postag.startsWith("V")) {
       return "V"; // verb
     } else {
@@ -362,7 +364,7 @@ public class Annotate {
         final String type = this.setTermType(posId);
         //dictionary lemmatizer overwrites probabilistic predictions if
         //lemma is not equal to word
-        final String lemma = this.dictLemmatizer.lemmatize(morphemes.get(i)
+        final String lemma = this.dictLemmatizer.apply(morphemes.get(i)
             .getWord(), morphemes.get(i).getTag());
         if (!lemma.equalsIgnoreCase(morphemes.get(i).getWord())) {
           morphemes.get(i).setLemma(lemma);
@@ -455,7 +457,7 @@ public class Annotate {
         }
         //dictionary lemmatizer overwrites probabilistic predictions
         //if lemma is not equal to word
-        final String lemma = this.dictLemmatizer.lemmatize(word,
+        final String lemma = this.dictLemmatizer.apply(word,
             morphemes.get(i).getTag());
         if (!lemma.equalsIgnoreCase(word)) {
           morphemes.get(i).setLemma(lemma);

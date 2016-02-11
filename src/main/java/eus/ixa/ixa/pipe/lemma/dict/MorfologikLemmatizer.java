@@ -27,6 +27,7 @@ import morfologik.stemming.Dictionary;
 import morfologik.stemming.DictionaryLookup;
 import morfologik.stemming.IStemmer;
 import morfologik.stemming.WordData;
+import eus.ixa.ixa.pipe.lemma.Lemmatizer;
 import eus.ixa.ixa.pipe.pos.Resources;
 
 /**
@@ -37,8 +38,7 @@ import eus.ixa.ixa.pipe.pos.Resources;
  * @version 2014-07-08
  * 
  */
-public class MorfologikLemmatizer implements
-    eus.ixa.ixa.pipe.lemma.dict.DictionaryLemmatizer {
+public class MorfologikLemmatizer implements Lemmatizer {
 
   /**
    * The Morfologik steamer to perform lemmatization with FSA dictionaries.
@@ -133,15 +133,19 @@ public class MorfologikLemmatizer implements
     }
     return dictMap;
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * es.ehu.si.ixa.pipe.lemmatize.DictionaryLemmatizer#lemmatize(java.lang.String
-   * , java.lang.String, java.lang.String)
+  
+  /* (non-Javadoc)
+   * @see eus.ixa.ixa.pipe.lemma.Lemmatizer#lemmatize(java.lang.String[], java.lang.String[])
    */
-  public String lemmatize(final String word, final String postag) {
+  public String[] lemmatize(final String[] tokens, final String[] postags) {
+    List<String> lemmas = new ArrayList<String>();
+    for (int i = 0; i < tokens.length; i++) {
+      lemmas.add(this.apply(tokens[i], postags[i])); 
+    }
+    return lemmas.toArray(new String[lemmas.size()]);
+  }
+
+  public String apply(final String word, final String postag) {
     String lemma = null;
     final List<String> keys = this.getDictKeys(word, postag);
     final HashMap<List<String>, String> dictMap = this.getDictMap(word, postag);

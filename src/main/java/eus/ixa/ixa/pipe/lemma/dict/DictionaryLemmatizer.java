@@ -16,24 +16,130 @@
 
 package eus.ixa.ixa.pipe.lemma.dict;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import eus.ixa.ixa.pipe.lemma.Lemmatizer;
+import eus.ixa.ixa.pipe.pos.Resources;
+
 /**
- * Interface of the lemmatizer based on Dictionary lookup.
+ * Lemmatize by simple dictionary lookup into a hashmap built from a file
+ * containing, for each line, word\tablemma\tabpostag.
  * 
  * @author ragerri
  * @version 2014-07-08
- * 
  */
-public interface DictionaryLemmatizer {
+public class DictionaryLemmatizer implements Lemmatizer {
 
   /**
-   * Lemmatize by dictionary lookup.
+   * The hashmap containing the dictionary.
+   */
+  private final HashMap<List<String>, String> dictMap;
+  /**
+   * The class dealing with loading the proper dictionary.
+   */
+  private final Resources tagRetriever = new Resources();
+  /**
+   * The language.
+   */
+  private final String lang;
+
+  /**
+   * Construct a hashmap from the input tab separated dictionary.
+   * 
+   * The input file should have, for each line, word\tablemma\tabpostag
+   * 
+   * @param dictionary
+   *          the input dictionary via inputstream
+   * @param aLang
+   *          the language
+   */
+  public DictionaryLemmatizer(final InputStream dictionary, final String aLang) {
+    this.dictMap = new HashMap<List<String>, String>();
+    final BufferedReader breader = new BufferedReader(new InputStreamReader(
+        dictionary));
+    String line;
+    try {
+      while ((line = breader.readLine()) != null) {
+        final String[] elems = line.split("\t");
+        this.dictMap.put(Arrays.asList(elems[0], elems[2]), elems[1]);
+      }
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+    this.lang = aLang;
+  }
+
+  /**
+   * Get the Map containing the dictionary.
+   * 
+   * @return dictMap the Map
+   */
+  public HashMap<List<String>, String> getDictMap() {
+    return this.dictMap;
+  }
+
+  /**
+   * Get the dictionary keys (word and postag).
    * 
    * @param word
    *          the surface form word
    * @param postag
-   *          the postag assigned
+   *          the assigned postag
+   * @return returns the dictionary keys
+   */
+  private List<String> getDictKeys(final String word, final String postag) {
+    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
+        postag);
+    final List<String> keys = new ArrayList<String>();
+    if (postag.startsWith(String.valueOf(constantTag))) {
+      keys.addAll(Arrays.asList(word, postag));
+    } else {
+      keys.addAll(Arrays.asList(word.toLowerCase(), postag));
+    }
+    return keys;
+  }
+  
+  /* (non-Javadoc)
+   * @see eus.ixa.ixa.pipe.lemma.Lemmatizer#lemmatize(java.lang.String[], java.lang.String[])
+   */
+  public String[] lemmatize(final String[] tokens, final String[] postags) {
+    List<String> lemmas = new ArrayList<String>();
+    for (int i = 0; i < tokens.length; i++) {
+      lemmas.add(this.apply(tokens[i], postags[i])); 
+    }
+    return lemmas.toArray(new String[lemmas.size()]);
+  }
+
+  /**
+   * Lookup lemma in a dictionary.
+   * @param word the token
+   * @param postag the postag
    * @return the lemma
    */
-  String lemmatize(String word, String postag);
-
+  public String apply(final String word, final String postag) {
+    String lemma = null;
+    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
+        postag);
+    final List<String> keys = this.getDictKeys(word, postag);
+    // lookup lemma as value of the map
+    final String keyValue = this.dictMap.get(keys);
+    if (keyValue != null) {
+      lemma = keyValue;
+    } else if (keyValue == null
+        && postag.startsWith(String.valueOf(constantTag))) {
+      lemma = word;
+    } else if (keyValue == null && word.toUpperCase().equals(word)) {
+      lemma = word;
+    } else {
+      lemma = word.toLowerCase();
+    }
+    return lemma;
+  }
 }

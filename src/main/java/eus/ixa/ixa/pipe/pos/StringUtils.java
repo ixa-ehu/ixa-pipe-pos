@@ -244,7 +244,7 @@ public final class StringUtils {
         } else {
           cost = 1;
         }
-        //obtain minimun distance from calculating deletion, insertion, substitution
+        //obtain minimum distance from calculating deletion, insertion, substitution
         distance[i][j] = minimum(distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + cost);
       }
     }
@@ -365,6 +365,12 @@ public final class StringUtils {
     return lemma.reverse().toString();
 }
   
+  /**
+   * Get the SES required to go from a word to a lemma.
+   * @param wordForm the word
+   * @param lemma the lemma
+   * @return the shortest edit script
+   */
   public static String getShortestEditScript(String wordForm, String lemma) {
     String reversedWF = new StringBuffer(wordForm.toLowerCase()).reverse().toString();
     String reversedLemma = new StringBuffer(lemma.toLowerCase()).reverse().toString();
