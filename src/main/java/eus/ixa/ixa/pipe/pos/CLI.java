@@ -208,7 +208,7 @@ public class CLI {
       final OutputStream outputStream) throws IOException, JDOMException {
 
     final String model = this.parsedArguments.getString("model");
-    final String lemmatizerModel = this.parsedArguments.getString("lemma");
+    final String lemmatizerModel = this.parsedArguments.getString("lemmatizerModel");
     final String multiwords = Boolean.toString(this.parsedArguments
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
@@ -257,11 +257,11 @@ public class CLI {
     this.annotateParser.addArgument("-m", "--model")
         .required(true)
         .help("It is required to provide a POS tagging model.");
-    this.annotateParser.addArgument("-lm", "--lemma")
+    this.annotateParser.addArgument("-lm", "--lemmatizerModel")
          .required(true)
          .help("It is required to provide a lemmatizer model.");
     this.annotateParser.addArgument("-l", "--language")
-        .choices("fr", "en", "es", "eu", "gl", "it")
+        .choices("de", "en", "es", "eu", "fr", "gl", "it", "nl")
         .required(false)
         .help("Choose a language.");
 
@@ -361,6 +361,7 @@ public class CLI {
     // load parameters into a properties
     String port = parsedArguments.getString("port");
     String model = parsedArguments.getString("model");
+    String lemmatizerModel = parsedArguments.getString("lemmatizerModel");
     final String multiwords = Boolean.toString(this.parsedArguments
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
@@ -368,7 +369,7 @@ public class CLI {
     String outputFormat = parsedArguments.getString("outputFormat");
     // language parameter
     String lang = parsedArguments.getString("language");
-    Properties serverproperties = setServerProperties(port, model, lang, multiwords, dictag, outputFormat);
+    Properties serverproperties = setServerProperties(port, model, lemmatizerModel, lang, multiwords, dictag, outputFormat);
     new StatisticalTaggerServer(serverproperties);
   }
   
@@ -476,8 +477,12 @@ public class CLI {
         .help("Port to be assigned to the server.\n");
     serverParser.addArgument("-m", "--model").required(true)
         .help("It is required to provide a model to perform POS tagging.");
+    this.serverParser.addArgument("-lm", "--lemmatizerModel")
+        .required(true)
+        .help("It is required to provide a lemmatizer model.");
     serverParser.addArgument("-l", "--language")
-        .choices("fr", "en", "es", "gl", "it").required(true)
+        .choices("de", "en", "es", "eu", "fr", "gl", "it", "nl")
+        .required(true)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
 
     serverParser.addArgument("--beamSize").required(false)
@@ -525,10 +530,11 @@ public class CLI {
     return annotateProperties;
   }
   
-  private Properties setServerProperties(String port, String model, String language, String multiwords, String dictag, String outputFormat) {
+  private Properties setServerProperties(String port, String model, String lemmatizerModel, String language, String multiwords, String dictag, String outputFormat) {
     Properties serverProperties = new Properties();
     serverProperties.setProperty("port", port);
     serverProperties.setProperty("model", model);
+    serverProperties.setProperty("lemmatizerModel", lemmatizerModel);
     serverProperties.setProperty("language", language);
     serverProperties.setProperty("ruleBasedOption", multiwords);
     serverProperties.setProperty("dictTag", dictag);

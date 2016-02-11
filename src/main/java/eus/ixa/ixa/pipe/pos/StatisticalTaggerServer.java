@@ -166,7 +166,7 @@ public class StatisticalTaggerServer {
     BufferedReader clientReader = new BufferedReader(new StringReader(stringFromClient));
     KAFDocument kaf = KAFDocument.createFromStream(clientReader);
     String kafToString = null;
-    if (outputFormat.equalsIgnoreCase("tabulated")) {
+    if (outputFormat.equalsIgnoreCase("conll")) {
       kafToString = annotator.annotatePOSToCoNLL(kaf);
     } else {
       final KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
