@@ -18,6 +18,8 @@ package eus.ixa.ixa.pipe.pos.train;
 import java.io.File;
 import java.io.IOException;
 
+import eus.ixa.ixa.pipe.pos.MorphoSampleStream;
+
 import opennlp.tools.cmdline.TerminateToolException;
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.postag.MutableTagDictionary;
@@ -27,7 +29,6 @@ import opennlp.tools.postag.POSSample;
 import opennlp.tools.postag.POSTaggerFactory;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.postag.TagDictionary;
-import opennlp.tools.postag.WordTagSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 
@@ -56,7 +57,7 @@ public abstract class AbstractTaggerTrainer implements TaggerTrainer {
    * ObjectStream of the automatically created dictionary data, taken from the
    * training data.
    */
-  private WordTagSampleStream dictSamples;
+  private MorphoSampleStream dictSamples;
   /**
    * Cutoff value to create tag dictionary from training data.
    */
@@ -87,13 +88,13 @@ public abstract class AbstractTaggerTrainer implements TaggerTrainer {
     final String testData = Flags.getDataSet("TestSet", params);
     final ObjectStream<String> trainStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(trainData);
-    this.trainSamples = new WordTagSampleStream(trainStream);
+    this.trainSamples = new MorphoSampleStream(trainStream);
     final ObjectStream<String> testStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(testData);
-    this.testSamples = new WordTagSampleStream(testStream);
+    this.testSamples = new MorphoSampleStream(testStream);
     final ObjectStream<String> dictStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(trainData);
-    setDictSamples(new WordTagSampleStream(dictStream));
+    setDictSamples(new MorphoSampleStream(dictStream));
     this.dictCutOff = Flags.getAutoDictFeatures(params);
     this.ngramCutOff = Flags.getNgramDictFeatures(params);
 
@@ -211,9 +212,9 @@ public abstract class AbstractTaggerTrainer implements TaggerTrainer {
   /**
    * Get the dictSamples to automatically create tag dictionary.
    * 
-   * @return the WordTagSampleStream dictSamples
+   * @return the MorphoSampleStream dictSamples
    */
-  protected final WordTagSampleStream getDictSamples() {
+  protected final MorphoSampleStream getDictSamples() {
     return this.dictSamples;
   }
 
@@ -221,9 +222,9 @@ public abstract class AbstractTaggerTrainer implements TaggerTrainer {
    * Set the dictSamples to automatically create tag dictionary.
    * 
    * @param aDictSamples
-   *          the dict samples as a {@code WordTagSampleStream}
+   *          the dict samples as a {@code MorphoSampleStream}
    */
-  protected final void setDictSamples(final WordTagSampleStream aDictSamples) {
+  protected final void setDictSamples(final MorphoSampleStream aDictSamples) {
     this.dictSamples = aDictSamples;
   }
 
