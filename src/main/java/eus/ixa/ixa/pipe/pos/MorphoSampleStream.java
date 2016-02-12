@@ -60,6 +60,7 @@ public class MorphoSampleStream extends FilterObjectStream<String, POSSample> {
     }
     if (toks.size() > 0) {
       POSSample posSample = new POSSample(toks.toArray(new String[toks.size()]), tags.toArray(new String[tags.size()]));
+      //System.err.println(posSample.toString());
       return posSample;
     }
     else {
