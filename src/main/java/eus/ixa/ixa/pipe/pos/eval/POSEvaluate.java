@@ -29,7 +29,7 @@ import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSSample;
 import opennlp.tools.postag.POSTaggerEvaluationMonitor;
 import opennlp.tools.postag.POSTaggerME;
-import opennlp.tools.postag.WordTagSampleStream;
+import eus.ixa.ixa.pipe.pos.MorphoSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.eval.EvaluationMonitor;
 import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
@@ -69,7 +69,7 @@ public class POSEvaluate implements Evaluate {
 
     final ObjectStream<String> testStream = InputOutputUtils
         .readFileIntoMarkableStreamFactory(testData);
-    this.testSamples = new WordTagSampleStream(testStream);
+    this.testSamples = new MorphoSampleStream(testStream);
     InputStream trainedModelInputStream = null;
     try {
       if (posModel == null) {
