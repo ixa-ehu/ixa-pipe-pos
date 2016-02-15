@@ -2,8 +2,7 @@
 ixa-pipe-pos
 ============
 
-ixa-pipe-pos is a multilingual Part of Speech tagger, currently offering pre-trained models for English, Galician and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed
-by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.4.6**.
+ixa-pipe-pos is a multilingual Part of Speech tagger and Lemmatizer, currently offering pre-trained models for eight languages: Basque, Dutch, English, French, Galician, German, Italian, and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.5.0**.
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
 pipes tools but also for **official releases, including source code and binary
@@ -29,14 +28,18 @@ the [installation instructions](#installation).
 
 ## OVERVIEW
 
-ixa-pipe-pos provides POS tagging and lemmatization several languages. We
-provide Perceptron (Collins 2002) and Maximum Entropy (Ratnapharki 1999) POS tagging models:
+ixa-pipe-pos provides statistical POS tagging and lemmatization several languages. We
+provide Perceptron (Collins 2002) and Maximum Entropy (Ratnapharki 1999) POS tagging and Lemmatization models.
 
-+ **POS tagging models for English** trained and evaluated using the WSJ treebank with the usual
-partitions (Ratnapharki 1999).
-+ **POS tagging models for Spanish** trained and evaluated using the [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 10-fold cross-validation.
-+ **POS tagging models for Galician** trained and evaluated using the [CTAG corpus](http://sli.uvigo.es/CTAG/) via 10-fold cross-validation.
-+ **Dictionary-based lemmatization** for English, Galician and Spanish.
++ **POS tagging and Lemmatization models**:
+  + Basque: Universal Dependencies corpus.
+  + Dutch: Alpino corpus.
+  + English: CoNLL 2009 corpus.
+  + French: Sequoia corpus.
+  + Galician: [CTAG corpus](http://sli.uvigo.es/CTAG/) via 10-fold cross-validation.
+  + German: CoNLL 2009 corpus.
+  + Italian: Universal Dependencies.
+  + Spanish: [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 10-fold cross-validation.
 + **Multiword detection** for Spanish and Galician.
 + **Post-processing** of probabilistic model pos tags using monosemic dictionaries (Spanish and Galician).
 
@@ -48,7 +51,7 @@ To avoid duplication of efforts, we use and contribute to the machine learning A
 
 **The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos before compilation.
 
-The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz)
+The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz)
 package. Note that the dictionaries come with their own licences, please do comply with them:
 
 + **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming):
@@ -64,19 +67,7 @@ package. Note that the dictionaries come with their own licences, please do comp
 
 ### Models
 
-+ Latest models: [pos-models-1.4.6](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.4.6.tar.gz).
-+ 1.4.5 models: [pos-models-1.4.5](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.4.0.tar.gz).
-+ 1.3.x models: [pos-models-1.3.x](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.3.0.tgz).
-
-+ **English POS Models**:
-  + Penn Treebank: **en-maxent-100-c5-baseline-penn.bin**: 96.81
-
-+ **Spanish POS Models**: We provide two Perceptron models:
-  + Ancora with automatic dictionary created from training data **es-perceptron-baseline-autodict01-ancora.bin**: 97.56 word accuracy in 10-fold cross validation.
-  + Ancora: **es-perceptron-baseline-ancora.bin**: With Baseline features, this is slightly faster and obtains 97.35 word accuracy in 10-fold cross validation.
-
-+ **Galician POS Model**:
-  + CTAG corpus with an automatic dictionary created from training data **gl-perceptron-baseline-autodict05-ctag.bin**: 98.55 word accuracy in 10-fold cross validation.
++ Latest models: [pos-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.5.0.tar.gz).
 
 Remember that for Galician and Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag** CLI option.
 
@@ -92,10 +83,10 @@ ixa-pipe-pos provides 4 basic functionalities:
 
 Each of these functionalities are accessible by adding (tag|train|eval|cross) as a
 subcommand to ixa-pipe-pos-$version.jar. Please read below and check the -help
-parameter:
+parameter ($version refers to the current ixa-pipe-pos version).
 
 ````shell
-java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval|cross) -help
+java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval|cross|server|client) -help
 ````
 
 ### Tagging
@@ -103,7 +94,7 @@ java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval|cross) -help
 If you are in hurry, just execute:
 
 ````shell
-cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag -m model.bin
+cat file.txt | java -jar $PATH/ixa-pipe-tok/ixa-pipe-tok-1.8.4.jar tok -l eu | java -jar $PATH/target/ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
 ````
 
 If you want to know more, please follow reading.
@@ -119,6 +110,7 @@ You can get the necessary input for ixa-pipe-pos by piping it with
 There are several options to tag with ixa-pipe-pos:
 
 + **model**: it is **required** to provide the model to do the tagging.
++ **lemmatizerModel**: it is **required to provide the lemmatizer model.
 + **lang**: choose between en and es. If no language is chosen, the one specified
   in the NAF header will be used.
 + **multiwords**: activates the multiword detection option.
@@ -128,9 +120,8 @@ There are several options to tag with ixa-pipe-pos:
 **Tagging Example**:
 
 ````shell
-cat file.txt | ixa-pipe-tok | java -jar $PATH/target/ixa-pipe-pos-$version.jar tag -m model.bin
+cat file.txt | java -jar $PATH/ixa-pipe-tok/ixa-pipe-tok-1.8.4.jar tok -l eu | java -jar $PATH/target/ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
 ````
-
 ### Training
 
 To train a new model, you just need to pass a training parameters file as an
@@ -147,6 +138,7 @@ java -jar target/ixa.pipe.pos-$version.jar train -p trainParams.properties
 To evaluate a trained model, the eval subcommand provides the following
 options:
 
++ **component**: choose between POS or Lemma
 + **model**: input the name of the model to evaluate.
 + **testSet**: testset to evaluate the model.
 + **evalReport**: choose the detail in displaying the results:
@@ -157,7 +149,7 @@ options:
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.pos-$version.jar eval -m test-pos.bin -l en -t test.data
+java -jar target/ixa.pipe.pos-$version.jar eval -c pos -m test-pos.bin -l en -t test.data
 ````
 
 ## API
@@ -169,7 +161,7 @@ this dependency to your pom.xml:
 <dependency>
     <groupId>eus.ixa</groupId>
     <artifactId>ixa-pipe-pos</artifactId>
-    <version>1.4.6</version>
+    <version>1.5.0</version>
 </dependency>
 ````
 
@@ -270,10 +262,10 @@ Download the resources and untar the archive into the src/main/resources directo
 
 ````shell
 cd ixa-pipe-pos/src/main/resources
-wget http://ixa2.si.ehu.es/ixa-pipes/models/pos-resources.tgz
+wget http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz
 tar xvzf pos-resources.tgz
 ````
-The pos-resources contains the required dictionaries for ixa-pipe-pos to run.
+The lemmatizer-dicts contains the required dictionaries to help the statistical lemmatization.
 
 ### 5. Compile
 
