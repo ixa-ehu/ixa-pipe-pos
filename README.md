@@ -123,9 +123,17 @@ There are several options to tag with ixa-pipe-pos:
 
 **Tagging Example**:
 
+[Download](http://ixa2.si.ehu.es/ixa-pipes/models/guardian.txt) or create a plain text file and use it like this:
+
 ````shell
 cat file.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l eu | java -jar ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
 ````
+**Remember to download the some models from the distributed packages!!**
++ Universal Dependencies Models: Basque, English and Italian.
+  + [ud-morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/ud-morph-models-1.5.0.tar.gz).
++ Language Specific Models: Dutch, English, French, Galician, German, Spanish.
+  + [morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/morph-models-1.5.0.tar.gz)
+
 ### Training
 
 To train a new model, you just need to pass a training parameters file as an
