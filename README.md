@@ -51,7 +51,7 @@ To avoid duplication of efforts, we use and contribute to the machine learning A
 
 **The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos before compilation.
 
-The following resources **include lemmatization and multiword dictionaries**, and are available in the [pos-resources.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz)
+The following resources **include lemmatization and multiword dictionaries**, and are available in the [lemmatizer-dicts.tar.gz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz)
 package. Note that the dictionaries come with their own licences, please do comply with them:
 
 + **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming):
