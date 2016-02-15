@@ -62,22 +62,23 @@ public class Resources {
    */
   public final URL getBinaryDict(final String lang) {
     URL dictURL = null;
-    if (lang.equalsIgnoreCase("en")) {
-      dictURL = getClass().getResource(
-          "/lemmatizer-dicts/language-tool/english.dict");
-    }
-    if (lang.equalsIgnoreCase("es")) {
-      dictURL = getClass().getResource(
-          "/lemmatizer-dicts/freeling/spanish.dict");
-    }
-    if (lang.equalsIgnoreCase("eu")) {
+    
+    if (lang.equalsIgnoreCase("de")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/de/german.dict");
+    } else if (lang.equalsIgnoreCase("en")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/language-tool/english.dict");
+    } else if (lang.equalsIgnoreCase("es")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/freeling/spanish.dict");
+    } else if (lang.equalsIgnoreCase("eu")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/eu/basque.dict");
-    }
-    if (lang.equalsIgnoreCase("gl")) {
-      dictURL = getClass().getResource("/lemmatizer-dicts/ctag/galician.dict");
-    }
-    if (lang.equalsIgnoreCase("fr")) {
+    } else if (lang.equalsIgnoreCase("fr")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/fr/french.dict");
+    } else if (lang.equalsIgnoreCase("gl")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/ctag/galician.dict");
+    } else if (lang.equalsIgnoreCase("it")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/it/italian.dict");
+    } else if (lang.equalsIgnoreCase("nl")) {
+      dictURL = getClass().getResource("/lemmatizer-dicts/nl/dutch.dict");
     }
     return dictURL;
   }
