@@ -67,8 +67,10 @@ package. Note that the dictionaries come with their own licences, please do comp
 
 ### Models
 
-+ Latest models: [pos-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.5.0.tar.gz).
-
++ Universal Dependencies Models: Basque, English and Italian.
+  + [ud-morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.5.0.tar.gz).
++ Language Specific Models: Dutch, English, French, Galician, German, Spanish.
+  + [morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/pos-models-1.5.0.tar.gz)
 Remember that for Galician and Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag** CLI option.
 
 ## USAGE
