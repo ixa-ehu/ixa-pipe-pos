@@ -102,37 +102,4 @@ public class Resources {
     return dictURL;
   }
 
-  /**
-   * Ad-hoc assignment of constant tags, typically proper names.
-   * 
-   * @param lang
-   *          the language
-   * @param postag
-   *          the tag
-   * @return the constant tag
-   */
-  public final String setTagConstant(final String lang, final String postag) {
-    String constantTag = null;
-    if (lang.equalsIgnoreCase("en")) {
-      if (postag.equalsIgnoreCase("NNP")) {
-        constantTag = "NNP";
-      }
-    }
-    if (lang.equalsIgnoreCase("es")) {
-      if (postag.startsWith("NP")) {
-        constantTag = "NP00000";
-      }
-    }
-    if (lang.equalsIgnoreCase("gl")) {
-      if (postag.startsWith("NP")) {
-        constantTag = "NP000";
-      }
-    }
-    if (lang.equalsIgnoreCase("fr")) {
-      if (postag.equalsIgnoreCase("NPP")) {
-        constantTag = "NPP";
-      }
-    }
-    return constantTag;
-  }
 }

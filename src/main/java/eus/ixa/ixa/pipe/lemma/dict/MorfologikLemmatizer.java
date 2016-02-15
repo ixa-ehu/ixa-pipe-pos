@@ -28,7 +28,6 @@ import morfologik.stemming.DictionaryLookup;
 import morfologik.stemming.IStemmer;
 import morfologik.stemming.WordData;
 import eus.ixa.ixa.pipe.lemma.Lemmatizer;
-import eus.ixa.ixa.pipe.pos.Resources;
 
 /**
  * Lemmatizer based on Morfologik Stemming library. It requires a FSA Morfologik
@@ -44,31 +43,21 @@ public class MorfologikLemmatizer implements Lemmatizer {
    * The Morfologik steamer to perform lemmatization with FSA dictionaries.
    */
   private final IStemmer dictLookup;
-  /**
-   * The class dealing with loading the default dictionaries.
-   */
-  private final Resources tagRetriever = new Resources();
-  /**
-   * The language.
-   */
-  private final String lang;
 
   /**
    * Reads a dictionary in morfologik FSA format.
    * 
    * @param dictURL
    *          the URL containing the dictionary
-   * @param aLang
    *          the language
    * @throws IllegalArgumentException
    *           if an exception is illegal
    * @throws IOException
    *           throws an exception if dictionary path is not correct
    */
-  public MorfologikLemmatizer(final URL dictURL, final String aLang)
+  public MorfologikLemmatizer(final URL dictURL)
       throws IOException {
     this.dictLookup = new DictionaryLookup(Dictionary.read(dictURL));
-    this.lang = aLang;
   }
 
   /**
@@ -102,13 +91,7 @@ public class MorfologikLemmatizer implements Lemmatizer {
    */
   private List<String> getDictKeys(final String word, final String postag) {
     final List<String> keys = new ArrayList<String>();
-    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
-        postag);
-    if (postag.startsWith(String.valueOf(constantTag))) {
-      keys.addAll(Arrays.asList(word, postag));
-    } else {
-      keys.addAll(Arrays.asList(word.toLowerCase(), postag));
-    }
+    keys.addAll(Arrays.asList(word.toLowerCase(), postag));
     return keys;
   }
 
@@ -124,13 +107,7 @@ public class MorfologikLemmatizer implements Lemmatizer {
   private HashMap<List<String>, String> getDictMap(final String word,
       final String postag) {
     HashMap<List<String>, String> dictMap = new HashMap<List<String>, String>();
-    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
-        postag);
-    if (postag.startsWith(String.valueOf(constantTag))) {
-      dictMap = this.getLemmaTagsDict(word);
-    } else {
-      dictMap = this.getLemmaTagsDict(word.toLowerCase());
-    }
+    dictMap = this.getLemmaTagsDict(word.toLowerCase());
     return dictMap;
   }
   
@@ -145,23 +122,22 @@ public class MorfologikLemmatizer implements Lemmatizer {
     return lemmas.toArray(new String[lemmas.size()]);
   }
 
-  public String apply(final String word, final String postag) {
+  /**
+   * Looks-up the lemma in a dictionary. Outputs "O" if not found.
+ * @param word the token
+ * @param postag the postag
+ * @return the lemma
+ */
+public String apply(final String word, final String postag) {
     String lemma = null;
     final List<String> keys = this.getDictKeys(word, postag);
     final HashMap<List<String>, String> dictMap = this.getDictMap(word, postag);
     // lookup lemma as value of the map
     final String keyValue = dictMap.get(keys);
-    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
-        postag);
     if (keyValue != null) {
       lemma = keyValue;
-    } else if (keyValue == null
-        && postag.startsWith(String.valueOf(constantTag))) {
-      lemma = word;
-    } else if (keyValue == null && word.toUpperCase().equals(word)) {
-      lemma = word;
     } else {
-      lemma = word.toLowerCase();
+      lemma = "O";
     }
     return lemma;
   }

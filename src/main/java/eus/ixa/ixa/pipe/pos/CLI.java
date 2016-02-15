@@ -226,7 +226,7 @@ public class CLI {
       lang = this.parsedArguments.getString("language");
       if (!kaf.getLang().equalsIgnoreCase(lang)) {
         System.err.println("Language parameter in NAF and CLI do not match!!");
-        System.exit(1);
+        //System.exit(1);
       }
     } else {
       lang = kaf.getLang();

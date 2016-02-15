@@ -81,7 +81,7 @@ public class LemmatizerME implements Lemmatizer {
     }
   }
   
-  public String[] lemmatize(String[] toks, String[] tags) {
+public String[] lemmatize(String[] toks, String[] tags) {
     bestSequence = model.bestSequence(toks, new Object[] {tags}, contextGenerator, sequenceValidator);
     List<String> c = bestSequence.getOutcomes();
     return c.toArray(new String[c.size()]);

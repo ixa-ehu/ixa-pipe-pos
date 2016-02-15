@@ -251,7 +251,15 @@ public final class StringUtils {
     return distance;
   }
   
-  public static void computeShortestEditScript(String wordForm, String lemma, int[][] distance, StringBuffer permutations) {
+  /**
+   * Computes the Shortest Edit Script (SES) to convert a word into its lemma.
+   * This is based on Chrupala's PhD thesis (2007).
+ * @param wordForm the token
+ * @param lemma the target lemma
+ * @param distance the levenshtein distance
+ * @param permutations the number of permutations
+ */
+public static void computeShortestEditScript(String wordForm, String lemma, int[][] distance, StringBuffer permutations) {
     
     int n = distance.length;
     int m = distance[0].length;

@@ -116,16 +116,16 @@ public class Annotate {
     final URL binLemmatizerURL = resources.getBinaryDict(this.lang);
     if (binLemmatizerURL == null) {
       System.err
-          .println("ERROR: No binary lemmatizer dictionary available for language "
-              + this.lang + " in src/main/resources!!");
-      System.exit(1);
+          .println("WARNING: No lemmatizer dictionary available for language "
+              + this.lang + " in src/main/resources!");
+    } else {
+    	try {
+    	      this.dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL);
+    	    } catch (final IOException e) {
+    	      e.printStackTrace();
+    	   }
     }
-    try {
-      this.dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL,
-          this.lang);
-    } catch (final IOException e) {
-      e.printStackTrace();
-    }
+    
   }
 
   // TODO static loading of postag dictionaries
@@ -364,10 +364,10 @@ public class Annotate {
         final String posId = this.getKafTagSet(morphemes.get(i).getTag());
         final String type = this.setTermType(posId);
         //dictionary lemmatizer overwrites probabilistic predictions if
-        //lemma is not equal to word
+        //lemma is not equal to "O"
         final String lemma = this.dictLemmatizer.apply(morphemes.get(i)
             .getWord(), morphemes.get(i).getTag());
-        if (!lemma.equalsIgnoreCase(morphemes.get(i).getWord())) {
+        if (!lemma.equalsIgnoreCase("O")) {
           morphemes.get(i).setLemma(lemma);
         }
         term.setType(type);
@@ -460,7 +460,7 @@ public class Annotate {
         //if lemma is not equal to word
         final String lemma = this.dictLemmatizer.apply(word,
             morphemes.get(i).getTag());
-        if (!lemma.equalsIgnoreCase(word)) {
+        if (!lemma.equalsIgnoreCase("O")) {
           morphemes.get(i).setLemma(lemma);
         }
         sb.append(word).append("\t").append(morphemes.get(i).getLemma()).append("\t")

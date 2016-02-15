@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import eus.ixa.ixa.pipe.lemma.Lemmatizer;
-import eus.ixa.ixa.pipe.pos.Resources;
 
 /**
  * Lemmatize by simple dictionary lookup into a hashmap built from a file
@@ -41,14 +40,6 @@ public class DictionaryLemmatizer implements Lemmatizer {
    * The hashmap containing the dictionary.
    */
   private final HashMap<List<String>, String> dictMap;
-  /**
-   * The class dealing with loading the proper dictionary.
-   */
-  private final Resources tagRetriever = new Resources();
-  /**
-   * The language.
-   */
-  private final String lang;
 
   /**
    * Construct a hashmap from the input tab separated dictionary.
@@ -57,10 +48,8 @@ public class DictionaryLemmatizer implements Lemmatizer {
    * 
    * @param dictionary
    *          the input dictionary via inputstream
-   * @param aLang
-   *          the language
    */
-  public DictionaryLemmatizer(final InputStream dictionary, final String aLang) {
+  public DictionaryLemmatizer(final InputStream dictionary) {
     this.dictMap = new HashMap<List<String>, String>();
     final BufferedReader breader = new BufferedReader(new InputStreamReader(
         dictionary));
@@ -73,7 +62,6 @@ public class DictionaryLemmatizer implements Lemmatizer {
     } catch (final IOException e) {
       e.printStackTrace();
     }
-    this.lang = aLang;
   }
 
   /**
@@ -95,14 +83,8 @@ public class DictionaryLemmatizer implements Lemmatizer {
    * @return returns the dictionary keys
    */
   private List<String> getDictKeys(final String word, final String postag) {
-    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
-        postag);
     final List<String> keys = new ArrayList<String>();
-    if (postag.startsWith(String.valueOf(constantTag))) {
-      keys.addAll(Arrays.asList(word, postag));
-    } else {
-      keys.addAll(Arrays.asList(word.toLowerCase(), postag));
-    }
+    keys.addAll(Arrays.asList(word.toLowerCase(), postag));
     return keys;
   }
   
@@ -118,27 +100,20 @@ public class DictionaryLemmatizer implements Lemmatizer {
   }
 
   /**
-   * Lookup lemma in a dictionary.
+   * Lookup lemma in a dictionary. Outputs "O" if not found.
    * @param word the token
    * @param postag the postag
    * @return the lemma
    */
   public String apply(final String word, final String postag) {
     String lemma = null;
-    final String constantTag = this.tagRetriever.setTagConstant(this.lang,
-        postag);
     final List<String> keys = this.getDictKeys(word, postag);
     // lookup lemma as value of the map
     final String keyValue = this.dictMap.get(keys);
     if (keyValue != null) {
       lemma = keyValue;
-    } else if (keyValue == null
-        && postag.startsWith(String.valueOf(constantTag))) {
-      lemma = word;
-    } else if (keyValue == null && word.toUpperCase().equals(word)) {
-      lemma = word;
     } else {
-      lemma = word.toLowerCase();
+      lemma = "O";
     }
     return lemma;
   }
