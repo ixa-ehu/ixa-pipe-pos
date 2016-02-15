@@ -39,7 +39,10 @@ import opennlp.tools.util.TrainingParameters;
 
 /**
  * A probabilistic lemmatizer.  Tries to predict the induced permutation class
- * for each word depending on its surrounding context.
+ * for each word depending on its surrounding context. Based on
+ * Grzegorz Chrupała. 2008. Towards a Machine-Learning Architecture 
+ * for Lexical Functional Grammar Parsing. PhD dissertation, Dublin City University. 
+ * http://grzegorz.chrupala.me/papers/phd-single.pdf
  */
 public class LemmatizerME implements Lemmatizer {
   

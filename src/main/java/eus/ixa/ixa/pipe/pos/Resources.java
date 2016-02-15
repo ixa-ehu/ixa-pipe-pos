@@ -331,6 +331,7 @@ public class Resources {
    * 
    * @param postag
    *          the postag
+   * @param lang the language
    * @return the mapped tag
    */
   public static String getKafTagSet(final String postag, final String lang) {
