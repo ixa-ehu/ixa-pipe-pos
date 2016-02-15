@@ -119,13 +119,13 @@ public class Annotate {
           .println("WARNING: No lemmatizer dictionary available for language "
               + this.lang + " in src/main/resources!");
     } else {
-    	try {
-    	      this.dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL);
-    	    } catch (final IOException e) {
-    	      e.printStackTrace();
-    	   }
+      try {
+        this.dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL);
+      } catch (final IOException e) {
+        e.printStackTrace();
+      }
     }
-    
+
   }
 
   // TODO static loading of postag dictionaries
@@ -146,183 +146,14 @@ public class Annotate {
       System.exit(1);
     }
     try {
-      this.dictMorphoTagger = new MorfologikTagger(
-          binDictMorphoTaggerURL, this.lang);
+      this.dictMorphoTagger = new MorfologikTagger(binDictMorphoTaggerURL,
+          this.lang);
     } catch (final IOException e) {
       e.printStackTrace();
     }
   }
 
-  //TODO mappings from UD
-  /**
-   * Mapping between Penn Treebank tagset and KAF tagset.
-   * 
-   * @param postag
-   *          treebank postag
-   * @return kaf POS tag
-   */
-  private String mapEnglishTagSetToKaf(final String postag) {
-    if (postag.startsWith("RB")) {
-      return "A"; // adverb
-    } else if (postag.equalsIgnoreCase("CC")) {
-      return "C"; // conjunction
-    } else if (postag.startsWith("D") || postag.equalsIgnoreCase("PDT")) {
-      return "D"; // determiner and predeterminer
-    } else if (postag.startsWith("J")) {
-      return "G"; // adjective
-    } else if (postag.equalsIgnoreCase("NN") || postag.equalsIgnoreCase("NNS")) {
-      return "N"; // common noun
-    } else if (postag.startsWith("NNP")) {
-      return "R"; // proper noun
-    } else if (postag.equalsIgnoreCase("TO") || postag.equalsIgnoreCase("IN")) {
-      return "P"; // preposition
-    } else if (postag.startsWith("PRP") || postag.startsWith("WP")) {
-      return "Q"; // pronoun
-    } else if (postag.startsWith("V")) {
-      return "V"; // verb
-    } else {
-      return "O"; // other
-    }
-  }
-
-  /**
-   * Mapping between EAGLES PAROLE tagset and NAF.
-   * 
-   * @param postag
-   *          the postag
-   * @return the mapping to NAF pos tagset
-   */
-  private String mapSpanishTagSetToKaf(final String postag) {
-    if (postag.equalsIgnoreCase("RG") || postag.equalsIgnoreCase("RN")) {
-      return "A"; // adverb
-    } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
-      return "C"; // conjunction
-    } else if (postag.startsWith("D")) {
-      return "D"; // det predeterminer
-    } else if (postag.startsWith("A")) {
-      return "G"; // adjective
-    } else if (postag.startsWith("NC")) {
-      return "N"; // common noun
-    } else if (postag.startsWith("NP")) {
-      return "R"; // proper noun
-    } else if (postag.startsWith("SP")) {
-      return "P"; // preposition
-    } else if (postag.startsWith("P")) {
-      return "Q"; // pronoun
-    } else if (postag.startsWith("V")) {
-      return "V"; // verb
-    } else {
-      return "O"; // other
-    }
-  }
-
-  /**
-   * Mapping between CTAG tagset and NAF.
-   * 
-   * @param postag
-   *          the postag
-   * @return the mapping to NAF pos tagset
-   */
-  private String mapGalicianTagSetToKaf(final String postag) {
-    if (postag.startsWith("R")) {
-      return "A"; // adverb
-    } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
-      return "C"; // conjunction
-    } else if (postag.startsWith("D") || postag.startsWith("G")
-        || postag.startsWith("X") || postag.startsWith("Q")
-        || postag.startsWith("T") || postag.startsWith("I")
-        || postag.startsWith("M")) {
-      return "D"; // det predeterminer
-    } else if (postag.startsWith("A")) {
-      return "G"; // adjective
-    } else if (postag.startsWith("NC")) {
-      return "N"; // common noun
-    } else if (postag.startsWith("NP")) {
-      return "R"; // proper noun
-    } else if (postag.startsWith("S")) {
-      return "P"; // preposition9434233199310741
-    } else if (postag.startsWith("P")) {
-      return "Q"; // pronoun
-    } else if (postag.startsWith("V")) {
-      return "V"; // verb
-    } else {
-      return "O"; // other
-    }
-  }
-  
-  /**
-   * Mapping between CC tagset and NAF.
-   * 
-   * @param postag
-   *          the postag
-   * @return the mapping to NAF pos tagset
-   */
-  private String mapFrenchTagSetToKaf(final String postag) {
-    if (postag.startsWith("ADV")) {
-      return "A"; // adverb
-    } else if (postag.equalsIgnoreCase("CC") || postag.equalsIgnoreCase("CS")) {
-      return "C"; // conjunction
-    } else if (postag.startsWith("D") || postag.startsWith("I")) {
-      return "D"; // det predeterminer
-    } else if (postag.startsWith("ADJ")) {
-      return "G"; // adjective
-    } else if (postag.startsWith("NC")) {
-      return "N"; // common noun
-    } else if (postag.startsWith("NPP")) {
-      return "R"; // proper noun
-    } else if (postag.startsWith("PRO") || postag.startsWith("CL")) {
-      return "Q"; // pronoun
-    } else if (postag.equalsIgnoreCase("P") || postag.equalsIgnoreCase("P+D") || postag.equalsIgnoreCase("P+PRO")) {
-      return "P"; // preposition
-    } else if (postag.startsWith("V")) {
-      return "V"; // verb
-    } else {
-      return "O"; // other
-    }
-  }
-
-  /**
-   * Obtain the appropriate tagset according to language and postag.
-   * 
-   * @param postag
-   *          the postag
-   * @return the mapped tag
-   */
-  private String getKafTagSet(final String postag) {
-    String tag = null;
-    if (this.lang.equalsIgnoreCase("en")) {
-      tag = this.mapEnglishTagSetToKaf(postag);
-    }
-    if (this.lang.equalsIgnoreCase("es")) {
-      tag = this.mapSpanishTagSetToKaf(postag);
-    }
-    if (this.lang.equalsIgnoreCase("eu")) {
-      tag = this.mapEnglishTagSetToKaf(postag);
-    }
-    if (this.lang.equalsIgnoreCase("gl")) {
-      tag = this.mapGalicianTagSetToKaf(postag);
-    }
-    if  (this.lang.equalsIgnoreCase("fr")) {
-      tag = this.mapFrenchTagSetToKaf(postag);
-    }
-    return tag;
-  }
-
-  /**
-   * Set the term type attribute based on the pos value.
-   * 
-   * @param postag
-   *          the postag
-   * @return the type
-   */
-  private String setTermType(final String postag) {
-    if (postag.startsWith("N") || postag.startsWith("V")
-        || postag.startsWith("G") || postag.startsWith("A")) {
-      return "open";
-    } else {
-      return "close";
-    }
-  }
+ 
 
   /**
    * Annotate morphological information into a NAF document.
@@ -361,14 +192,16 @@ public class Annotate {
               .getWord(), morphemes.get(i).getTag());
           morphemes.get(i).setTag(dictPosTag);
         }
-        final String posId = this.getKafTagSet(morphemes.get(i).getTag());
-        final String type = this.setTermType(posId);
-        //dictionary lemmatizer overwrites probabilistic predictions if
-        //lemma is not equal to "O"
-        final String lemma = this.dictLemmatizer.apply(morphemes.get(i)
-            .getWord(), morphemes.get(i).getTag());
-        if (!lemma.equalsIgnoreCase("O")) {
-          morphemes.get(i).setLemma(lemma);
+        final String posId = Resources.getKafTagSet(morphemes.get(i).getTag(), lang);
+        final String type = Resources.setTermType(posId);
+        // dictionary lemmatizer overwrites probabilistic predictions if
+        // lemma is not equal to "O"
+        if (this.dictLemmatizer != null) {
+          final String lemma = this.dictLemmatizer.apply(morphemes.get(i)
+              .getWord(), morphemes.get(i).getTag());
+          if (!lemma.equalsIgnoreCase("O")) {
+            morphemes.get(i).setLemma(lemma);
+          }
         }
         term.setType(type);
         term.setLemma(morphemes.get(i).getLemma());
@@ -448,7 +281,7 @@ public class Annotate {
         String[] posTagsArray = new String[posTags.size()];
         posTagsArray = posTags.toArray(posTagsArray);
         morphemes = this.lemmatizer.getMorphemes(tokens, posTagsArray);
-      }        
+      }
       for (int i = 0; i < morphemes.size(); i++) {
         final String posTag = morphemes.get(i).getTag();
         final String word = morphemes.get(i).getWord();
@@ -456,15 +289,17 @@ public class Annotate {
           final String dictPosTag = this.dictMorphoTagger.tag(word, posTag);
           morphemes.get(i).setTag(dictPosTag);
         }
-        //dictionary lemmatizer overwrites probabilistic predictions
-        //if lemma is not equal to word
-        final String lemma = this.dictLemmatizer.apply(word,
-            morphemes.get(i).getTag());
-        if (!lemma.equalsIgnoreCase("O")) {
-          morphemes.get(i).setLemma(lemma);
+        // dictionary lemmatizer overwrites probabilistic predictions
+        // if lemma is not equal to word
+        if (this.dictLemmatizer != null) {
+          final String lemma = this.dictLemmatizer.apply(word, morphemes.get(i)
+              .getTag());
+          if (!lemma.equalsIgnoreCase("O")) {
+            morphemes.get(i).setLemma(lemma);
+          }
         }
-        sb.append(word).append("\t").append(morphemes.get(i).getLemma()).append("\t")
-            .append(morphemes.get(i).getTag()).append("\n");
+        sb.append(word).append("\t").append(morphemes.get(i).getLemma())
+            .append("\t").append(morphemes.get(i).getTag()).append("\n");
       }
       sb.append("\n");
     }
