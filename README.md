@@ -265,7 +265,7 @@ Download the resources and untar the archive into the src/main/resources directo
 ````shell
 cd ixa-pipe-pos/src/main/resources
 wget http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz
-tar xvzf pos-resources.tgz
+tar xvzf lemmatizer-dicts.tar.gz
 ````
 The lemmatizer-dicts contains the required dictionaries to help the statistical lemmatization.
 
