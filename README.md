@@ -296,7 +296,7 @@ mvn clean install
 
 To add your language to ixa-pipe-pos the following steps are required:
 
-+ Create lemmatizer and (if required) multiword and monosemic dictionaries following the format of those distributed in **pos-resources.tgz**.
++ Create lemmatizer and (if required) multiword and monosemic dictionaries following the format of those distributed in **lemmatizer-dicts.tar.gz**.
   + **Create binary dictionaries (FSA):** Starting from the plain text tabulated dictionaries, do the following steps:
     + Get Morfologik standalone binary: http://sourceforge.net/projects/morfologik/files/morfologik-stemming/
     + java -jar morfologik-tools-1.6.0-standalone.jar tab2morph --annotation "*" -i
