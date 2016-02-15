@@ -29,17 +29,17 @@ the [installation instructions](#installation).
 ## OVERVIEW
 
 ixa-pipe-pos provides statistical POS tagging and lemmatization several languages. We
-provide Perceptron (Collins 2002) and Maximum Entropy (Ratnapharki 1999) POS tagging and Lemmatization models.
+provide Perceptron (Collins 2002) and Maximum Entropy (Ratnapharki 1999) POS tagging and Lemmatization models trained on the following data for each language:
 
-+ **POS tagging and Lemmatization models**:
-  + Basque: Universal Dependencies corpus.
-  + Dutch: Alpino corpus.
-  + English: CoNLL 2009 corpus.
-  + French: Sequoia corpus.
-  + Galician: [CTAG corpus](http://sli.uvigo.es/CTAG/) via 10-fold cross-validation.
-  + German: CoNLL 2009 corpus.
-  + Italian: Universal Dependencies.
-  + Spanish: [Ancora corpus](http://clic.ub.edu/corpus/ancora) via 10-fold cross-validation.
++ **Training data for POS tagging and Lemmatization models**:
+  + Basque: [Universal Dependencies corpus](http://universaldependencies.org/).
+  + Dutch: [Alpino corpus CoNLL X corpus](http://ilk.uvt.nl/conll/)
+  + English: [CoNLL 2009 corpus](http://ufal.mff.cuni.cz/conll2009-st/)
+  + French: [Sequoia corpus](https://www.rocq.inria.fr/alpage-wiki/tiki-index.php?page=CorpusSequoia)
+  + Galician: [CTAG corpus](http://sli.uvigo.es/CTAG/).
+  + German: [CoNLL 2009 corpus](http://ufal.mff.cuni.cz/conll2009-st/)
+  + Italian: [Universal Dependencies corpus](http://universaldependencies.org/).
+  + Spanish: [Ancora corpus](http://clic.ub.edu/corpus/ancora).
 + **Multiword detection** for Spanish and Galician.
 + **Post-processing** of probabilistic model pos tags using monosemic dictionaries (Spanish and Galician).
 
@@ -75,15 +75,17 @@ Remember that for Galician and Spanish the output of the statistical models can 
 
 ## USAGE
 
-ixa-pipe-pos provides 4 basic functionalities:
+ixa-pipe-pos provides the following functionalities:
 
-1. **tag**: reads a NAF document containing *wf* elements and creates *term* elements with the morphological information.
+1. **server**: starts a TCP service loading the model and required resources.
+2. **client**: sends a NAF document to a running TCP server.
+3. **tag**: reads a NAF document containing *wf* elements and creates *term* elements with the morphological information.
 2. **train**: trains new models for with several options
    available (read trainParams.properties file for details).
 3. **eval**: evaluates a trained model with a given test set.
 4. **cross**: perform cross-validation evaluation.
 
-Each of these functionalities are accessible by adding (tag|train|eval|cross) as a
+Each of these functionalities are accessible by adding (tag|train|eval|cross|server|client) as a
 subcommand to ixa-pipe-pos-$version.jar. Please read below and check the -help
 parameter ($version refers to the current ixa-pipe-pos version).
 
@@ -96,7 +98,7 @@ java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval|cross|server|client) 
 If you are in hurry, just execute:
 
 ````shell
-cat file.txt | java -jar $PATH/ixa-pipe-tok/ixa-pipe-tok-1.8.4.jar tok -l eu | java -jar $PATH/target/ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
+cat file.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l eu | ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
 ````
 
 If you want to know more, please follow reading.
@@ -112,7 +114,7 @@ You can get the necessary input for ixa-pipe-pos by piping it with
 There are several options to tag with ixa-pipe-pos:
 
 + **model**: it is **required** to provide the model to do the tagging.
-+ **lemmatizerModel**: it is **required to provide the lemmatizer model.
++ **lemmatizerModel**: it is **required** to provide the lemmatizer model.
 + **lang**: choose between en and es. If no language is chosen, the one specified
   in the NAF header will be used.
 + **multiwords**: activates the multiword detection option.
@@ -122,7 +124,7 @@ There are several options to tag with ixa-pipe-pos:
 **Tagging Example**:
 
 ````shell
-cat file.txt | java -jar $PATH/ixa-pipe-tok/ixa-pipe-tok-1.8.4.jar tok -l eu | java -jar $PATH/target/ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
+cat file.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l eu | java -jar ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
 ````
 ### Training
 
