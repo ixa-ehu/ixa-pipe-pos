@@ -93,7 +93,7 @@ subcommand to ixa-pipe-pos-$version.jar. Please read below and check the -help
 parameter ($version refers to the current ixa-pipe-pos version).
 
 ````shell
-java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval|cross|server|client) -help
+java -jar target/ixa-pipe-pos-1.5.0.jar (tag|train|eval|cross|server|client) -help
 ````
 
 ### Tagging
@@ -101,7 +101,7 @@ java -jar target/ixa-pipe-pos-$version.jar (tag|train|eval|cross|server|client) 
 If you are in hurry, [Download](http://ixa2.si.ehu.es/ixa-pipes/models/guardian.txt) or create a plain text file and use it like this:
 
 ````shell
-cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l eu | ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
+cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | ixa-pipe-pos-1.5.0.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
 ````
 
 If you want to know more, please follow reading.
