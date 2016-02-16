@@ -16,10 +16,11 @@ the [installation instructions](#installation).
 ## TABLE OF CONTENTS
 
 1. [Overview of ixa-pipe-pos](#overview)
-  + [Distributed resources](#resources)
   + [Distributed models](#models)
+  + [Distributed resources](#resources)
 2. [Usage of ixa-pipe-pos](#usage)
   + [POS tagging/lemmatizing](#tagging)
+  + [Server mode](#server)
   + [Training your own models](#training)
   + [Evaluation](#evaluation)
 3. [API via Maven Dependency](#api)
@@ -41,29 +42,12 @@ provide Perceptron (Collins 2002) and Maximum Entropy (Ratnapharki 1999) POS tag
   + Italian: [Universal Dependencies corpus](http://universaldependencies.org/).
   + Spanish: [Ancora corpus](http://clic.ub.edu/corpus/ancora).
 + **Multiword detection** for Spanish and Galician.
++ **Post-processing** of statistical lemmatization via dictionaries.
 + **Post-processing** of probabilistic model pos tags using monosemic dictionaries (Spanish and Galician).
 
 To avoid duplication of efforts, we use and contribute to the machine learning API provided by the [Apache OpenNLP project](http://opennlp.apache.org). Additionally, we have added other features such as dictionary-based lemmatization, multiword and clitic pronoun treatment, post-processing via tag dictionaries, etc., as described below.
 
 **ixa-pipe-pos is distributed under Apache License version 2.0 (see LICENSE.txt for details)**.
-
-### Resources
-
-**The contents of this package are required for compilation**. Therefore, please get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos before compilation.
-
-The following resources **include lemmatization and multiword dictionaries**, and are available in the [lemmatizer-dicts.tar.gz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz)
-package. Note that the dictionaries come with their own licences, please do comply with them:
-
-+ **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the  [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming):
-  + english.dict, galician.dict, spanish.dict. Via API you can also pass a plain text dictionary of the same tabulated format.
-
-+ **Multiword Dictionaries**: "multi#word\tab\multi#lemma\tab\postag\tabambiguity" dictionaries to detect multiword expressions. Currently vailable:
-  + es-locutions.dict for **Spanish** and gl-locutions.dict in **Galician**.
-
-+ **Monosemic Tag Dictionaries**: the monosemic versions of the lemmatizer dictionaries. This is used for post-processing the results of the POS tagger if and when the option **--dictag** is activated in CLI. Currently available:
-  + spanish-monosemic.dict, galician-monosemic.dict.
-
-**It is required before compilation** to download the package, copy it and untar it into the src/main/resources directory.
 
 ### Models
 
@@ -71,7 +55,26 @@ package. Note that the dictionaries come with their own licences, please do comp
   + [ud-morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/ud-morph-models-1.5.0.tar.gz).
 + Language Specific Models: Dutch, English, French, Galician, German, Spanish.
   + [morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/morph-models-1.5.0.tar.gz)
+
 Remember that for Galician and Spanish the output of the statistical models can be post-processed using the monosemic dictionaries provided via the **--dictag** CLI option.
+
+### Resources
+
+We provide some dictionaries to modify the output of the statistical tagger and lemmatizer. To use them, pllease get and **unpack** the contents of this tarball in the **src/main/resources/** directory inside ixa-pipe-pos **before compilation**: 
+
++ [lemmatizer-dicts.tar.gz](http://ixa2.si.ehu.es/ixa-pipes/models/lemmatizer-dicts.tar.gz)
+package. Note that the dictionaries come with their own licences, please do comply with them:
+
+  + **Lemmatizer Dictionaries**: "word\tablemma\tabpostag" dictionaries binarized as Finite State Automata using the [morfologik-stemming project](https://github.com/morfologik/morfologik-stemming):
+    + english.dict, galician.dict, spanish.dict. Via API you can also pass a plain text dictionary of the same tabulated format.
+
+  + **Multiword Dictionaries**: "multi#word\tab\multi#lemma\tab\postag\tabambiguity" dictionaries to detect multiword expressions. Currently vailable:
+    + es-locutions.dict for **Spanish** and gl-locutions.dict in **Galician**.
+
+  + **Monosemic Tag Dictionaries**: the monosemic versions of the lemmatizer dictionaries. This is used for post-processing the results of the POS tagger if and when the option **--dictag** is activated in CLI. Currently available:
+    + spanish-monosemic.dict, galician-monosemic.dict.
+
+To use them, to download the package, copy it and untar it into the src/main/resources directory **before compilation**.
 
 ## USAGE
 
@@ -126,13 +129,26 @@ There are several options to tag with ixa-pipe-pos:
 [Download](http://ixa2.si.ehu.es/ixa-pipes/models/guardian.txt) or create a plain text file and use it like this:
 
 ````shell
-cat file.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l eu | java -jar ixa-pipe-pos-1.5.0.jar tag -m eu-pos-perceptron-ud.bin -lm eu-lemma-perceptron-ud.bin
+cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | java -jar ixa-pipe-pos-1.5.0.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
 ````
-**Remember to download the some models from the distributed packages!!**
+**Remember to download some models from the distributed packages!!**
 + Universal Dependencies Models: Basque, English and Italian.
   + [ud-morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/ud-morph-models-1.5.0.tar.gz).
 + Language Specific Models: Dutch, English, French, Galician, German, Spanish.
   + [morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/morph-models-1.5.0.tar.gz)
+
+### Server
+
+We can start the TCP server as follows:
+
+````shell
+java -jar target/ixa-pipe-pos-1.5.0.jar server -l en --port 2040 -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
+````
+Once the server is running we can send NAF documents containing (at least) the text layer like this:
+
+````shell
+ cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | java -jar target/ixa-pipe-pos-1.5.0.jar client -p 2040
+````
 
 ### Training
 
@@ -208,14 +224,15 @@ directly. Otherwise, follow these steps:
 If you do not install JDK 1.7+ in a default location, you will probably need to configure the PATH in .bashrc or .bash_profile:
 
 ````shell
-export JAVA_HOME=/yourpath/local/java8
+export JAVA_HOME=$pwd/java8
 export PATH=${JAVA_HOME}/bin:${PATH}
 ````
+Replacing $pwd with the full path given by typing the **pwd** inside the java directory.
 
 If you use tcsh you will need to specify it in your .login as follows:
 
 ````shell
-setenv JAVA_HOME /usr/java/java8
+setenv JAVA_HOME $pwd/java8
 setenv PATH ${JAVA_HOME}/bin:${PATH}
 ````
 
@@ -238,14 +255,15 @@ wget http://apache.rediris.es/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bi
 Now you need to configure the PATH. For Bash Shell:
 
 ````shell
-export MAVEN_HOME=/home/ragerri/local/apache-maven-3.0.5
+export MAVEN_HOME=$pwd/apache-maven-3.0.5
 export PATH=${MAVEN_HOME}/bin:${PATH}
 ````
+Replacing $pwd with the full path given by typing the **pwd** inside the apache maven directory.
 
 For tcsh shell:
 
 ````shell
-setenv MAVEN3_HOME ~/local/apache-maven-3.0.5
+setenv MAVEN3_HOME $pwd/apache-maven-3.0.5
 setenv PATH ${MAVEN3}/bin:{PATH}
 ````
 
@@ -265,10 +283,18 @@ If you must get the module source code from here do this:
 git clone https://github.com/ixa-ehu/ixa-pipe-pos
 ````
 
-### 4. Download the Resources
+### 4. Download the Resources and Models
 
-You will need to download the resources and copy them to ixa-pipe-pos/src/main/resources/
-for the module to work properly:
+Download the POS tagging and lemmatization models:
+
++ Universal Dependencies Models: Basque, English and Italian.
+  + [ud-morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/ud-morph-models-1.5.0.tar.gz).
++ Language Specific Models: Dutch, English, French, Galician, German, Spanish.
+  + [morph-models-1.5.0](http://ixa2.si.ehu.es/ixa-pipes/models/morph-models-1.5.0.tar.gz)
+
+Additionally, we distribute dictionaries to correct the output of the statistical lemmatization.
+To use them, you will need to download the resources and copy them to ixa-pipe-pos/src/main/resources/
+**before compilation** for the module to use:
 
 Download the resources and untar the archive into the src/main/resources directory:
 
