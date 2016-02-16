@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * Simple feature generator for learning statistical lemmatizers.
+ * @author ragerri
+ * @version 2016-02-15
+ */
 public class DefaultLemmatizerContextGenerator implements LemmatizerContextGenerator {
   
   private static final int PREFIX_LENGTH = 5;

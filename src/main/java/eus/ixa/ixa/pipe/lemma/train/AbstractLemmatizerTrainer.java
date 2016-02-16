@@ -102,8 +102,8 @@ public abstract class AbstractLemmatizerTrainer implements LemmatizerTrainer {
   }
 
   /**
-   * Get the posTaggerFactory. Every extension of this class must provide an
-   * implementation of the posTaggerFactory.
+   * Get the lemmatizerFactory. Every extension of this class must provide an
+   * implementation of the lemmatizerFactory.
    * 
    * @return the lemmatizerFactory
    */
@@ -112,7 +112,7 @@ public abstract class AbstractLemmatizerTrainer implements LemmatizerTrainer {
   }
 
   /**
-   * Set/implement the posTaggerFactory to be used in the pos tagger training.
+   * Set/implement the lemmatizerFactory to be used in the lemmatizer training.
    * 
    * @param aLemmatizerFactory
    *          the Lemmatizer factory implemented

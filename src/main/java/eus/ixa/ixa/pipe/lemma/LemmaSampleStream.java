@@ -25,6 +25,12 @@ import opennlp.tools.util.FilterObjectStream;
 import opennlp.tools.util.ObjectStream;
 
 
+/**
+ * Reads data for training and testing. The format consists of:
+ * word\tabpostag\tablemma.
+ * @author ragerri
+ * @version 2016-02-16
+ */
 public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
 
   public LemmaSampleStream(ObjectStream<String> samples) {

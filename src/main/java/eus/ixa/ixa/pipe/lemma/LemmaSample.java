@@ -32,7 +32,13 @@ public class LemmaSample {
   
   private final List<String> lemmas;
 
-  public LemmaSample(String[] tokens, String[] tags, String[] lemmas) {
+  /**
+   * Represents one lemma sample.
+ * @param tokens the token
+ * @param tags the postags
+ * @param lemmas the lemmas
+ */
+public LemmaSample(String[] tokens, String[] tags, String[] lemmas) {
 
     validateArguments(tokens.length, tags.length, lemmas.length);
 

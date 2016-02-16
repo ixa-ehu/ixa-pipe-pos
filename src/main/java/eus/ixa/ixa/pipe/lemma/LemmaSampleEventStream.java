@@ -40,30 +40,6 @@ public class LemmaSampleEventStream extends AbstractEventStream<LemmaSample> {
     super(d);
     this.contextGenerator = cg;
   }
-
- 
-  /*@Override
-  protected Iterator<Event> createEvents(LemmaSample sample) {
-
-    String[] toksArray = sample.getTokens();
-    String[] tagsArray = sample.getTags();
-    String[] predsArray = sample.getLemmas();
-    List<Event> events = generateEvents(toksArray, tagsArray, predsArray, contextGenerator);
-    return events.iterator();
-  }
-  
-  public static List<Event> generateEvents(String[] sentence, String[] tags,
-      String[] lemmas, LemmatizerContextGenerator cg) {
-    
-    List<Event> events = new ArrayList<Event>(sentence.length);
-    for (int i=0; i < sentence.length; i++) {
-      // it is safe to pass the tags as previous tags because
-      // the context generator does not look for non predicted tags
-      String[] context = cg.getContext(i, sentence, tags, lemmas);
-      events.add(new Event(tags[i], context));
-    }
-    return events;
-  }*/
   
   protected Iterator<Event> createEvents(LemmaSample sample) {
 

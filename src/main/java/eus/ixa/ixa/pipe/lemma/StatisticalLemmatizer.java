@@ -134,7 +134,7 @@ public class StatisticalLemmatizer {
    *          the language
    * @param model
    *          the model to be loaded
-   * @return the model as a {@link POSModel} object
+   * @return the model as a {@link LemmatizerModel} object
    */
   private LemmatizerModel loadModel(final String lang, final String model) {
     final long lStartTime = new Date().getTime();
