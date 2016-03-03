@@ -20,9 +20,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 
 import eus.ixa.ixa.pipe.pos.Morpheme;
 import eus.ixa.ixa.pipe.pos.MorphoFactory;
@@ -124,6 +131,26 @@ public class StatisticalLemmatizer {
       morphemes.add(morpheme);
     }
     return morphemes;
+  }
+  
+  /**
+   * Takes a sentence with multiple tags alternatives for each word and produces
+   * a lemma for each of the word-tag combinations.
+   * @param tokens the sentence tokens
+   * @param posTags the alternative postags
+   * @return the ordered map containing all the possible tag#lemma values for token
+   */
+  public ListMultimap<String, String> getMultipleLemmas(String[] tokens, String[][] posTags) {
+    
+    ListMultimap<String, String> morphMap = ArrayListMultimap.create();
+    for (int i = 0; i < posTags.length; i++) {
+      String[] rowLemmas = this.lemmatizer.lemmatize(tokens, posTags[i]);
+      String[] decodedLemmas = this.lemmatizer.decodeLemmas(tokens, rowLemmas);
+      for (int j = 0; j < decodedLemmas.length; j++) {
+        morphMap.put(tokens[j], posTags[i][j] + "#" + decodedLemmas[j]);
+      }
+    }
+    return morphMap;
   }
 
   /**

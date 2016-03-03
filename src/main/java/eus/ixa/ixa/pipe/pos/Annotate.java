@@ -23,8 +23,12 @@ import ixa.kaflib.WF;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
+
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 
 import opennlp.tools.util.Span;
 import eus.ixa.ixa.pipe.lemma.StatisticalLemmatizer;
@@ -304,6 +308,35 @@ public class Annotate {
       sb.append("\n");
     }
     return sb.toString();
+  }
+  
+  public final void getAllTagsLemmasToNAF(final KAFDocument kaf) {
+    final List<List<WF>> sentences = kaf.getSentences();
+    for (final List<WF> wfs : sentences) {
+
+      final List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
+      final String[] tokens = new String[wfs.size()];
+      for (int i = 0; i < wfs.size(); i++) {
+        tokens[i] = wfs.get(i).getForm();
+        final List<WF> wfTarget = new ArrayList<WF>();
+        wfTarget.add(wfs.get(i));
+        tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
+      }
+      
+      String[][] posTags = this.posTagger.getAllPosTags(tokens);
+      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(tokens, posTags);
+      
+      for (int i = 0; i < posTags.length; i++) {
+        final Term term = kaf.newTerm(tokenSpans.get(i));
+        List<String> posLemmaValues = morphMap.get(tokens[i]);
+        final String posId = Resources.getKafTagSet(morphemes.get(i).getTag(), lang);
+        final String type = Resources.setTermType(posId);
+        term.setType(type);
+        term.setLemma(morphemes.get(i).getLemma());
+        term.setPos(posId);
+        term.setMorphofeat(morphemes.get(i).getTag());
+      }
+    }
   }
 
 }

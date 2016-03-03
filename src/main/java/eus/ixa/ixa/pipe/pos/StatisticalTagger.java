@@ -106,6 +106,17 @@ public class StatisticalTagger {
         Arrays.asList(annotatedText));
     return posTags;
   }
+  
+  /**
+   * Produces a multidimensional array containing all the tagging
+   * possible for a given sentence.
+   * @param tokens the tokens
+   * @return the array containing for each row the tags
+   */
+  public final String[][] getAllPosTags(final String[] tokens) {
+    final String[][] allPosTags = this.posTagger.tag(13, tokens);
+    return allPosTags;
+  }
 
   /**
    * Create {@code Morpheme} objects from the output of posAnnotate.
