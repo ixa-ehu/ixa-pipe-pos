@@ -332,11 +332,14 @@ public class Annotate {
       for (int i = 0; i < tokens.length; i++) {
         final Term term = kaf.newTerm(tokenSpans.get(i));
         List<String> posLemmaValues = morphMap.get(tokens[i]);
+        if (this.dictLemmatizer != null) {
+          dictLemmatizer.getAllPosLemmas(tokens[i], posLemmaValues);
+        }
         String allPosLemmasSet = StringUtils.getSetStringFromList(posLemmaValues);
         final String posId = Resources.getKafTagSet(allPosTags[0][i], lang);
         final String type = Resources.setTermType(posId);
         term.setType(type);
-        term.setLemma(allPosLemmasSet.split("#")[1]);
+        term.setLemma(posLemmaValues.get(0).split("#")[1]);
         term.setPos(posId);
         term.setMorphofeat(allPosLemmasSet);
       }
@@ -364,9 +367,11 @@ public class Annotate {
       
       String[][] allPosTags = this.posTagger.getAllPosTags(tokens);
       ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(tokens, allPosTags);
-      
       for (int i = 0; i < tokens.length; i++) {
         List<String> posLemmaValues = morphMap.get(tokens[i]);
+        if (this.dictLemmatizer != null) {
+          dictLemmatizer.getAllPosLemmas(tokens[i], posLemmaValues);
+        }
         String allPosLemmasSet = StringUtils.getSetStringFromList(posLemmaValues);
         sb.append(tokens[i]).append("\t").append(allPosLemmasSet).append("\n");
       }

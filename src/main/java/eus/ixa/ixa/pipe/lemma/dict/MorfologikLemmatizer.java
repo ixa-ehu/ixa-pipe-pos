@@ -79,6 +79,13 @@ public class MorfologikLemmatizer implements Lemmatizer {
     }
     return dictMap;
   }
+  
+  public final void getAllPosLemmas(final String word, List<String> posLemmaValues) {
+    final List<WordData> wdList = this.dictLookup.lookup(word);
+    for (final WordData wd : wdList) {
+      posLemmaValues.add(wd.getTag().toString() + "#" + wd.getStem().toString());
+    }
+  }
 
   /**
    * Generate the dictionary keys (word, postag).
