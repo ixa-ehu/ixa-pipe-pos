@@ -18,6 +18,8 @@ package eus.ixa.ixa.pipe.pos;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import opennlp.tools.util.Span;
@@ -161,6 +163,15 @@ public final class StringUtils {
   public static String getStringFromTokens(final String[] tokens) {
     final StringBuilder sb = new StringBuilder();
     for (final String tok : tokens) {
+      sb.append(tok).append(" ");
+    }
+    return sb.toString().trim();
+  }
+  
+  public static String getSetStringFromList(List<String> posLemmaValues) {
+    final StringBuilder sb = new StringBuilder();
+    HashSet<String> posLemmaSet = new LinkedHashSet<String>(posLemmaValues);
+    for (final String tok : posLemmaSet) {
       sb.append(tok).append(" ");
     }
     return sb.toString().trim();

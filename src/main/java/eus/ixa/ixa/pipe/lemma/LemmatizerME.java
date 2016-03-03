@@ -88,7 +88,7 @@ public class LemmatizerME implements Lemmatizer {
   /**
    * Retrieves an array of all possible automatically induced lemma classes from
    * the lemmatizer.
-   * @return
+   * @return all the possible lemma classes
    */
   public String[] getAllLemmaClasses() {
     return model.getOutcomes();

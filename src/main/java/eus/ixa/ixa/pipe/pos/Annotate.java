@@ -23,14 +23,13 @@ import ixa.kaflib.WF;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-
 import opennlp.tools.util.Span;
+
+import com.google.common.collect.ListMultimap;
+
 import eus.ixa.ixa.pipe.lemma.StatisticalLemmatizer;
 import eus.ixa.ixa.pipe.lemma.dict.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
@@ -310,6 +309,10 @@ public class Annotate {
     return sb.toString();
   }
   
+  /**
+   * Add all postags and lemmas to morphofeat attribute.
+   * @param kaf the NAF document
+   */
   public final void getAllTagsLemmasToNAF(final KAFDocument kaf) {
     final List<List<WF>> sentences = kaf.getSentences();
     for (final List<WF> wfs : sentences) {
@@ -323,20 +326,53 @@ public class Annotate {
         tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
       
-      String[][] posTags = this.posTagger.getAllPosTags(tokens);
-      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(tokens, posTags);
+      String[][] allPosTags = this.posTagger.getAllPosTags(tokens);
+      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(tokens, allPosTags);
       
-      for (int i = 0; i < posTags.length; i++) {
+      for (int i = 0; i < tokens.length; i++) {
         final Term term = kaf.newTerm(tokenSpans.get(i));
         List<String> posLemmaValues = morphMap.get(tokens[i]);
-        final String posId = Resources.getKafTagSet(morphemes.get(i).getTag(), lang);
+        String allPosLemmasSet = StringUtils.getSetStringFromList(posLemmaValues);
+        final String posId = Resources.getKafTagSet(allPosTags[0][i], lang);
         final String type = Resources.setTermType(posId);
         term.setType(type);
-        term.setLemma(morphemes.get(i).getLemma());
+        term.setLemma(allPosLemmasSet.split("#")[1]);
         term.setPos(posId);
-        term.setMorphofeat(morphemes.get(i).getTag());
+        term.setMorphofeat(allPosLemmasSet);
       }
     }
+  }
+  
+  /**
+   * Give all lemmas and tags possible for a sentence in conll tabulated format.
+   * @param kaf the NAF document
+   * @return the output in tabulated format
+   */
+  public final String getAllTagsLemmasToCoNLL(final KAFDocument kaf) {
+    final StringBuilder sb = new StringBuilder();
+    final List<List<WF>> sentences = kaf.getSentences();
+    for (final List<WF> wfs : sentences) {
+
+      final List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
+      final String[] tokens = new String[wfs.size()];
+      for (int i = 0; i < wfs.size(); i++) {
+        tokens[i] = wfs.get(i).getForm();
+        final List<WF> wfTarget = new ArrayList<WF>();
+        wfTarget.add(wfs.get(i));
+        tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
+      }
+      
+      String[][] allPosTags = this.posTagger.getAllPosTags(tokens);
+      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(tokens, allPosTags);
+      
+      for (int i = 0; i < tokens.length; i++) {
+        List<String> posLemmaValues = morphMap.get(tokens[i]);
+        String allPosLemmasSet = StringUtils.getSetStringFromList(posLemmaValues);
+        sb.append(tokens[i]).append("\t").append(allPosLemmasSet).append("\n");
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
   }
 
 }

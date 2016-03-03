@@ -195,6 +195,7 @@ public class CLI {
   /**
    * Main entry point for annotation. Takes system.in as input and outputs
    * annotated text via system.out.
+   * 
    * @param inputStream
    *          the input stream
    * @param outputStream
@@ -208,7 +209,10 @@ public class CLI {
       final OutputStream outputStream) throws IOException, JDOMException {
 
     final String model = this.parsedArguments.getString("model");
-    final String lemmatizerModel = this.parsedArguments.getString("lemmatizerModel");
+    final String lemmatizerModel = this.parsedArguments
+        .getString("lemmatizerModel");
+    final String allMorphology = this.parsedArguments
+        .getString("allMorphology");
     final String multiwords = Boolean.toString(this.parsedArguments
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
@@ -226,25 +230,35 @@ public class CLI {
       lang = this.parsedArguments.getString("language");
       if (!kaf.getLang().equalsIgnoreCase(lang)) {
         System.err.println("Language parameter in NAF and CLI do not match!!");
-        //System.exit(1);
+        // System.exit(1);
       }
     } else {
       lang = kaf.getLang();
     }
-    final Properties properties = setAnnotateProperties(model, lemmatizerModel, lang,
-        multiwords, dictag);
+    final Properties properties = setAnnotateProperties(model, lemmatizerModel,
+        lang, multiwords, dictag);
     final Annotate annotator = new Annotate(properties);
-    
-    if (outputFormat.equalsIgnoreCase("conll")) {
-      bwriter.write(annotator.annotatePOSToCoNLL(kaf));
+    final KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
+        "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model),
+        this.version + "-" + this.commit);
+    newLp.setBeginTimestamp();
+
+    if (allMorphology.equalsIgnoreCase("all")) {
+      if (outputFormat.equalsIgnoreCase("conll")) {
+        bwriter.write(annotator.getAllTagsLemmasToCoNLL(kaf));
+      } else {
+        annotator.getAllTagsLemmasToNAF(kaf);
+        newLp.setEndTimestamp();
+        bwriter.write(kaf.toString());
+      }
     } else {
-      final KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
-          "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model),
-          this.version + "-" + this.commit);
-      newLp.setBeginTimestamp();
-      annotator.annotatePOSToKAF(kaf);
-      newLp.setEndTimestamp();
-      bwriter.write(kaf.toString());
+      if (outputFormat.equalsIgnoreCase("conll")) {
+        bwriter.write(annotator.annotatePOSToCoNLL(kaf));
+      } else {
+        annotator.annotatePOSToKAF(kaf);
+        newLp.setEndTimestamp();
+        bwriter.write(kaf.toString());
+      }
     }
     bwriter.close();
     breader.close();
@@ -280,6 +294,11 @@ public class CLI {
     this.annotateParser.addArgument("-d", "--dictag")
         .action(Arguments.storeTrue())
         .help("Post process POS tagger output with a monosemic dictionary.\n");
+    this.annotateParser.addArgument("-a","--allMorphology")
+        .required(false)
+        .choices("one","all")
+        .setDefault("disambiguate")
+        .help("Choose to print all the POS tags and lemmas before disambiguation.\n");
   }
 
   /**
