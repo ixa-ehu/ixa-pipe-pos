@@ -53,6 +53,10 @@ public class StatisticalTaggerServer {
    * The annotation output format, one of NAF (default) or tabulated.
    */
   private String outputFormat = null;
+  /**
+   * Whether to just print all pos tags and lemmas, before disambiguation.
+   */
+  private final Boolean allMorphology;
   
   /**
    * Construct a MorphoTagger server.
@@ -65,6 +69,7 @@ public class StatisticalTaggerServer {
     Integer port = Integer.parseInt(properties.getProperty("port"));
     model = properties.getProperty("model");
     outputFormat = properties.getProperty("outputFormat");
+    allMorphology = Boolean.valueOf(properties.getProperty("allMorphology"));
     
     String kafToString;
     ServerSocket socketServer = null;
@@ -165,17 +170,27 @@ public class StatisticalTaggerServer {
   //get a breader from the string coming from the client
     BufferedReader clientReader = new BufferedReader(new StringReader(stringFromClient));
     KAFDocument kaf = KAFDocument.createFromStream(clientReader);
+    final KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
+        "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model),
+        this.version + "-" + this.commit);
+    newLp.setBeginTimestamp();
     String kafToString = null;
-    if (outputFormat.equalsIgnoreCase("conll")) {
-      kafToString = annotator.annotatePOSToCoNLL(kaf);
+    if (allMorphology) {
+      if (outputFormat.equalsIgnoreCase("conll")) {
+        kafToString = annotator.getAllTagsLemmasToCoNLL(kaf);
+      } else {
+        annotator.getAllTagsLemmasToNAF(kaf);
+        newLp.setEndTimestamp();
+        kafToString = kaf.toString();
+      }
     } else {
-      final KAFDocument.LinguisticProcessor newLp = kaf.addLinguisticProcessor(
-          "terms", "ixa-pipe-pos-" + Files.getNameWithoutExtension(model),
-          this.version + "-" + this.commit);
-      newLp.setBeginTimestamp();
-      annotator.annotatePOSToKAF(kaf);
-      newLp.setEndTimestamp();
-      kafToString = kaf.toString();
+      if (outputFormat.equalsIgnoreCase("conll")) {
+        kafToString = annotator.annotatePOSToCoNLL(kaf);
+      } else {
+        annotator.annotatePOSToKAF(kaf);
+        newLp.setEndTimestamp();
+        kafToString = kaf.toString();
+      }
     }
     return kafToString;
   }

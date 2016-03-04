@@ -211,8 +211,8 @@ public class CLI {
     final String model = this.parsedArguments.getString("model");
     final String lemmatizerModel = this.parsedArguments
         .getString("lemmatizerModel");
-    final String allMorphology = this.parsedArguments
-        .getString("allMorphology");
+    final boolean allMorphology = this.parsedArguments
+        .getBoolean("allMorphology");
     final String multiwords = Boolean.toString(this.parsedArguments
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
@@ -243,7 +243,7 @@ public class CLI {
         this.version + "-" + this.commit);
     newLp.setBeginTimestamp();
 
-    if (allMorphology.equalsIgnoreCase("all")) {
+    if (allMorphology) {
       if (outputFormat.equalsIgnoreCase("conll")) {
         bwriter.write(annotator.getAllTagsLemmasToCoNLL(kaf));
       } else {
@@ -295,10 +295,8 @@ public class CLI {
         .action(Arguments.storeTrue())
         .help("Post process POS tagger output with a monosemic dictionary.\n");
     this.annotateParser.addArgument("-a","--allMorphology")
-        .required(false)
-        .choices("one","all")
-        .setDefault("disambiguate")
-        .help("Choose to print all the POS tags and lemmas before disambiguation.\n");
+        .action(Arguments.storeTrue())
+        .help("Print all the POS tags and lemmas before disambiguation.\n");
   }
 
   /**
@@ -381,6 +379,7 @@ public class CLI {
     String port = parsedArguments.getString("port");
     String model = parsedArguments.getString("model");
     String lemmatizerModel = parsedArguments.getString("lemmatizerModel");
+    final String allMorphology = Boolean.toString(this.parsedArguments.getBoolean("allMorphology"));
     final String multiwords = Boolean.toString(this.parsedArguments
         .getBoolean("multiwords"));
     final String dictag = Boolean.toString(this.parsedArguments
@@ -388,7 +387,7 @@ public class CLI {
     String outputFormat = parsedArguments.getString("outputFormat");
     // language parameter
     String lang = parsedArguments.getString("language");
-    Properties serverproperties = setServerProperties(port, model, lemmatizerModel, lang, multiwords, dictag, outputFormat);
+    Properties serverproperties = setServerProperties(port, model, lemmatizerModel, lang, multiwords, dictag, outputFormat, allMorphology);
     new StatisticalTaggerServer(serverproperties);
   }
   
@@ -508,7 +507,8 @@ public class CLI {
         .setDefault(DEFAULT_BEAM_SIZE)
         .help("Choose beam size for decoding, it defaults to 3.");
     serverParser.addArgument("-o", "--outputFormat").required(false)
-        .choices("naf", "tabulated").setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
+        .choices("naf", "conll")
+        .setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
         .help("Choose output format; it defaults to NAF.\n");
     serverParser.addArgument("-mw", "--multiwords")
         .action(Arguments.storeTrue())
@@ -516,6 +516,9 @@ public class CLI {
     serverParser.addArgument("-d", "--dictag")
         .action(Arguments.storeTrue())
         .help("Post process POS tagger output with a monosemic dictionary.\n");
+    serverParser.addArgument("-a","--allMorphology")
+        .action(Arguments.storeTrue())
+        .help("Print all the POS tags and lemmas before disambiguation.\n");
   }
   
   private void loadClientParameters() {
@@ -549,7 +552,7 @@ public class CLI {
     return annotateProperties;
   }
   
-  private Properties setServerProperties(String port, String model, String lemmatizerModel, String language, String multiwords, String dictag, String outputFormat) {
+  private Properties setServerProperties(String port, String model, String lemmatizerModel, String language, String multiwords, String dictag, String outputFormat, String allMorphology) {
     Properties serverProperties = new Properties();
     serverProperties.setProperty("port", port);
     serverProperties.setProperty("model", model);
@@ -558,6 +561,7 @@ public class CLI {
     serverProperties.setProperty("ruleBasedOption", multiwords);
     serverProperties.setProperty("dictTag", dictag);
     serverProperties.setProperty("outputFormat", outputFormat);
+    serverProperties.setProperty("allMorphology", allMorphology);
     return serverProperties;
   }
 
