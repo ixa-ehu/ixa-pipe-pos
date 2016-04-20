@@ -21,20 +21,20 @@ import ixa.kaflib.Term;
 import ixa.kaflib.WF;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import opennlp.tools.util.Span;
-
 import com.google.common.collect.ListMultimap;
 
 import eus.ixa.ixa.pipe.lemma.StatisticalLemmatizer;
-import eus.ixa.ixa.pipe.lemma.dict.MorfologikLemmatizer;
+import eus.ixa.ixa.pipe.ml.lemma.MorfologikLemmatizer;
+import eus.ixa.ixa.pipe.ml.pos.MultiWordMatcher;
+import eus.ixa.ixa.pipe.ml.utils.Span;
 import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
 import eus.ixa.ixa.pipe.pos.dict.MorfologikTagger;
-import eus.ixa.ixa.pipe.pos.dict.MultiWordMatcher;
 
 /**
  * Example annotation class of ixa-pipe-pos. Check this class for examples using
@@ -95,7 +95,7 @@ public class Annotate {
     this.multiwords = Boolean.valueOf(properties.getProperty("multiwords"));
     this.dictag = Boolean.valueOf(properties.getProperty("dictag"));
     if (this.multiwords) {
-      this.multiWordMatcher = new MultiWordMatcher(properties);
+      loadMultiWordDicts(properties);
     }
     if (this.dictag) {
       loadMorphoTaggerDicts(properties);
@@ -107,6 +107,31 @@ public class Annotate {
   }
 
   // TODO static loading of lemmatizer dictionaries
+  
+//TODO static loading of postag dictionaries
+ /**
+  * Load the pos tagger dictionaries by language and format. Exits if no pos
+  * tagger dictionary (binary) is available for the input language.
+  * 
+  * @param props
+  *          the props object
+  */
+ private void loadMultiWordDicts(final Properties props) {
+   final Resources resources = new Resources();
+   final InputStream multiWordDict = resources.getMultiWordDict(this.lang);
+   if (multiWordDict == null) {
+     System.err
+         .println("ERROR: No multiword dictionary available for language "
+             + this.lang + " in src/main/resources!!");
+     System.exit(1);
+   }
+   try {
+     this.multiWordMatcher = new MultiWordMatcher(multiWordDict);
+   } catch (final IOException e) {
+     e.printStackTrace();
+   }
+ }
+
   /**
    * Load the binary lemmatizer dictionaries by language. Exits if no lemmatizer
    * dictionary (binary) is available for the input language.

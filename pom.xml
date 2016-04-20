@@ -4,7 +4,6 @@
 	<groupId>eus.ixa</groupId>
 	<artifactId>ixa-pipe-pos</artifactId>
 	<packaging>jar</packaging>
-	<version>1.5.1</version>
 	<name>ixa-pipe-pos</name>
 	<description>POS tagger and lemmatizer of ixa pipes (ixa2.si.ehu.es/ixa-pipes)</description>
 	<licenses>
@@ -35,7 +34,7 @@
 		<dependency>
 			<groupId>com.github.ixa-ehu</groupId>
 			<artifactId>kaflib-naf</artifactId>
-			<version>1.1.12</version>
+			<version>1.1.14</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -63,6 +62,11 @@
 			<artifactId>opennlp-tools</artifactId>
 			<version>1.6.0</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>eus.ixa</groupId>
+			<artifactId>ixa-pipe-ml</artifactId>
+			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
 
@@ -183,6 +187,8 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+						<shadedArtifactAttached>true</shadedArtifactAttached>
+						<shadedClassifierName>exec</shadedClassifierName>
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -213,4 +219,5 @@
 		<connection>scm:git:git@github.com:ixa-ehu/ixa-pipe-pos.git</connection>
 		<developerConnection>scm:git:git@github.com:ixa-ehu/ixa-pipe-pos.git</developerConnection>
 	</scm>
+	<version>2.0.0</version>
 </project>

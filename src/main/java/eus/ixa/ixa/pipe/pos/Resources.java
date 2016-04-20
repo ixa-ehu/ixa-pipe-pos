@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * Class to load the appropriate lemmatization dictionaries according to the
+ * Class to load the appropriate dictionaries according to the
  * input language.
  * 
  * @author ragerri
@@ -101,6 +101,31 @@ public class Resources {
           "/lemmatizer-dicts/ctag/galician-monosemic.dict");
     }
     return dictURL;
+  }
+  
+  /**
+   * Get the dictionary for the {@code MultiWordMatcher}.
+   * 
+   * @param lang
+   *          the language
+   * @return the inputstream of the dictionary
+   */
+  public final InputStream getMultiWordDict(final String lang) {
+    InputStream dict = null;
+    // TODO complete locutions dictionary and binarize
+    if (lang.equalsIgnoreCase("en")) {
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/freeling/en-locutions-extended.txt");
+    }
+    if (lang.equalsIgnoreCase("es")) {
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/freeling/es-locutions.txt");
+    }
+    if (lang.equalsIgnoreCase("gl")) {
+      dict = getClass().getResourceAsStream(
+          "/lemmatizer-dicts/ctag/gl-locutions.txt");
+    }
+    return dict;
   }
   
   /**
