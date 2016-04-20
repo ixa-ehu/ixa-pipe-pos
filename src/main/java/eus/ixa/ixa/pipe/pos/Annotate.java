@@ -33,8 +33,9 @@ import eus.ixa.ixa.pipe.lemma.StatisticalLemmatizer;
 import eus.ixa.ixa.pipe.ml.lemma.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.ml.pos.MultiWordMatcher;
 import eus.ixa.ixa.pipe.ml.utils.Span;
-import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
-import eus.ixa.ixa.pipe.pos.dict.MorfologikTagger;
+import eus.ixa.ixa.pipe.ml.utils.StringUtils;
+import eus.ixa.ixa.pipe.ml.pos.DictionaryTagger;
+import eus.ixa.ixa.pipe.ml.pos.MorfologikTagger;
 
 /**
  * Example annotation class of ixa-pipe-pos. Check this class for examples using

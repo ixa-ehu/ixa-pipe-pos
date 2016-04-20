@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import eus.ixa.ixa.pipe.pos.StringUtils;
+import eus.ixa.ixa.pipe.ml.utils.StringUtils;
 
 import opennlp.tools.util.FilterObjectStream;
 import opennlp.tools.util.ObjectStream;

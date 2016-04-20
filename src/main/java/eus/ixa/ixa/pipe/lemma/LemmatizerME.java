@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import eus.ixa.ixa.pipe.pos.StringUtils;
+import eus.ixa.ixa.pipe.ml.utils.StringUtils;
 
 import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.EventModelSequenceTrainer;
