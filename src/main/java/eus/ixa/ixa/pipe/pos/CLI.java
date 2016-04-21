@@ -20,7 +20,6 @@ import ixa.kaflib.KAFDocument;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,25 +37,12 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;
-import opennlp.tools.cmdline.CmdLineUtil;
-import opennlp.tools.postag.POSModel;
-import opennlp.tools.util.TrainingParameters;
 
 import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
 
-import eus.ixa.ixa.pipe.lemma.LemmatizerModel;
-import eus.ixa.ixa.pipe.lemma.eval.LemmaEvaluate;
-import eus.ixa.ixa.pipe.lemma.train.LemmatizerFixedTrainer;
-import eus.ixa.ixa.pipe.lemma.train.LemmatizerTrainer;
-import eus.ixa.ixa.pipe.pos.eval.POSCrossValidator;
-import eus.ixa.ixa.pipe.pos.eval.Evaluate;
-import eus.ixa.ixa.pipe.pos.eval.POSEvaluate;
-import eus.ixa.ixa.pipe.pos.train.FixedTrainer;
-import eus.ixa.ixa.pipe.pos.train.Flags;
-import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
-import eus.ixa.ixa.pipe.pos.train.TaggerTrainer;
+import eus.ixa.ixa.pipe.ml.utils.Flags;
 
 /**
  * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes
@@ -100,18 +86,6 @@ public class CLI {
    */
   private final Subparser annotateParser;
   /**
-   * The parser that manages the training sub-command.
-   */
-  private final Subparser trainParser;
-  /**
-   * The parser that manages the evaluation sub-command.
-   */
-  private final Subparser evalParser;
-  /**
-   * The parser that manages the cross validation sub-command.
-   */
-  private final Subparser crossValidateParser;
-  /**
    * Parser to start TCP socket for server-client functionality.
    */
   private Subparser serverParser;
@@ -131,13 +105,6 @@ public class CLI {
   public CLI() {
     this.annotateParser = this.subParsers.addParser("tag").help("Tagging CLI");
     loadAnnotateParameters();
-    this.trainParser = this.subParsers.addParser("train").help("Training CLI");
-    loadTrainingParameters();
-    this.evalParser = this.subParsers.addParser("eval").help("Evaluation CLI");
-    loadEvalParameters();
-    this.crossValidateParser = this.subParsers.addParser("cross").help(
-        "Cross validation CLI");
-    loadCrossValidateParameters();
     serverParser = subParsers.addParser("server").help("Start TCP socket server");
     loadServerParameters();
     clientParser = subParsers.addParser("client").help("Send queries to the TCP socket server");
@@ -173,12 +140,6 @@ public class CLI {
       System.err.println("CLI options: " + this.parsedArguments);
       if (args[0].equals("tag")) {
         annotate(System.in, System.out);
-      } else if (args[0].equals("eval")) {
-        eval();
-      } else if (args[0].equals("train")) {
-        train();
-      } else if (args[0].equals("cross")) {
-        crossValidate();
       } else if (args[0].equals("server")) {
         server();
       } else if (args[0].equals("client")) {
@@ -187,7 +148,7 @@ public class CLI {
     } catch (final ArgumentParserException e) {
       this.argParser.handleError(e);
       System.out.println("Run java -jar target/ixa-pipe-pos-" + this.version
-          + ".jar (tag|train|eval|cross|server|client) -help for details");
+          + "-exec.jar (tag|server|client) -help for details");
       System.exit(1);
     }
   }
@@ -286,7 +247,7 @@ public class CLI {
     annotateParser.addArgument("-o", "--outputFormat")
         .required(false)
         .choices("naf", "conll")
-        .setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
+        .setDefault("naf")
         .help("Choose output format; it defaults to NAF.\n");
     this.annotateParser.addArgument("-mw", "--multiwords")
         .action(Arguments.storeTrue())
@@ -297,77 +258,6 @@ public class CLI {
     this.annotateParser.addArgument("-a","--allMorphology")
         .action(Arguments.storeTrue())
         .help("Print all the POS tags and lemmas before disambiguation.\n");
-  }
-
-  /**
-   * Main entry point for training.
-   * @throws IOException
-   *           throws an exception if errors in the various file inputs.
-   */
-  public final void train() throws IOException {
-    // load training parameters file
-    final String paramFile = this.parsedArguments.getString("params");
-    final TrainingParameters params = InputOutputUtils
-        .loadTrainingParameters(paramFile);
-    String outModel = null;
-    if (params.getSettings().get("OutputModel") == null
-        || params.getSettings().get("OutputModel").length() == 0) {
-      outModel = Files.getNameWithoutExtension(paramFile) + ".bin";
-      params.put("OutputModel", outModel);
-    } else {
-      outModel = Flags.getModel(params);
-    }
-    String component = Flags.getComponent(params);
-    if (component.equalsIgnoreCase("POS")) {
-      final TaggerTrainer posTaggerTrainer = new FixedTrainer(params);
-      final POSModel trainedModel = posTaggerTrainer.train(params);
-      CmdLineUtil.writeModel("ixa-pipe-pos", new File(outModel), trainedModel);
-    } else if (component.equalsIgnoreCase("Lemma")) {
-      final LemmatizerTrainer lemmatizerTrainer = new LemmatizerFixedTrainer(params);
-      final LemmatizerModel trainedModel = lemmatizerTrainer.train(params);
-      CmdLineUtil.writeModel("ixa-pipe-lemma", new File(outModel), trainedModel);
-    }
-  }
-
-  /**
-   * Loads the parameters for the training CLI.
-   */
-  private void loadTrainingParameters() {
-    this.trainParser.addArgument("-p", "--params").required(true)
-        .help("Load the training parameters file\n");
-  }
-
-  /**
-   * Main entry point for evaluation.
-   * @throws IOException
-   *           the io exception thrown if errors with paths are present
-   */
-  public final void eval() throws IOException {
-    final String component = this.parsedArguments.getString("component");
-    final String testFile = this.parsedArguments.getString("testSet");
-    final String model = this.parsedArguments.getString("model");
-    Evaluate evaluator = null;
-
-    if (component.equalsIgnoreCase("pos")) {
-      evaluator = new POSEvaluate(testFile, model);
-    } else {
-      evaluator = new LemmaEvaluate(testFile, model);
-    }
-    if (this.parsedArguments.getString("evalReport") != null) {
-      if (this.parsedArguments.getString("evalReport").equalsIgnoreCase(
-          "detailed")) {
-        evaluator.detailEvaluate();
-      } else if (this.parsedArguments.getString("evalReport").equalsIgnoreCase(
-          "error")) {
-        evaluator.evalError();
-      } else if (this.parsedArguments.getString("evalReport").equalsIgnoreCase(
-          "brief")) {
-        evaluator.evaluate();
-      }
-    } else {
-      evaluator.evaluate();
-    }
-   
   }
   
   /**
@@ -443,48 +333,6 @@ public class CLI {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * Load the evaluation parameters of the CLI.
-   */
-  private void loadEvalParameters() {
-    this.evalParser.addArgument("-c","--component")
-         .required(true)
-         .choices("pos","lemma")
-         .help("Choose component for evaluation");
-    this.evalParser.addArgument("-m", "--model")
-        .required(true)
-        .help("Choose model");
-    this.evalParser.addArgument("-t", "--testSet")
-        .required(true)
-        .help("Input testset for evaluation");
-    this.evalParser.addArgument("--evalReport")
-        .required(false)
-        .choices("brief", "detailed", "error")
-        .help("Choose type of evaluation report; defaults to brief");
-  }
-
-  /**
-   * Main access to the cross validation.
-   * @throws IOException
-   *           input output exception if problems with corpora
-   */
-  public final void crossValidate() throws IOException {
-
-    final String paramFile = this.parsedArguments.getString("params");
-    final TrainingParameters params = InputOutputUtils
-        .loadTrainingParameters(paramFile);
-    final POSCrossValidator crossValidator = new POSCrossValidator(params);
-    crossValidator.crossValidate(params);
-  }
-
-  /**
-   * Create the main parameters available for training NERC models.
-   */
-  private void loadCrossValidateParameters() {
-    this.crossValidateParser.addArgument("-p", "--params").required(true)
-        .help("Load the Cross validation parameters file\n");
   }
   
   /**
