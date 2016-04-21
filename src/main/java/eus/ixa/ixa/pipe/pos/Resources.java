@@ -24,7 +24,7 @@ import java.net.URL;
  * input language.
  * 
  * @author ragerri
- * @version 2014-07-08
+ * @version 2016-04-20
  * 
  */
 public class Resources {

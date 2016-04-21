@@ -200,7 +200,7 @@ public class Annotate {
 
       final List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
       List<Sequence> posTags = null;
-      Span[] lemmas = null;
+      List<Sequence> lemmas = null;
       final String[] tokens = new String[wfs.size()];
       for (int i = 0; i < wfs.size(); i++) {
         tokens[i] = wfs.get(i).getForm();
@@ -212,11 +212,11 @@ public class Annotate {
         final String[] multiWordTokens = this.multiWordMatcher
             .getTokensWithMultiWords(tokens);
         posTags = this.posTagger.getSequences(multiWordTokens);
-        lemmas = this.lemmatizer.lemmatizeToSpans(multiWordTokens);
+        lemmas = this.lemmatizer.getLemmaSequences(multiWordTokens);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
         posTags = this.posTagger.getSequences(tokens);
-        lemmas = this.lemmatizer.lemmatizeToSpans(tokens);
+        lemmas = this.lemmatizer.getLemmaSequences(tokens);
       }
       for (int i = 0; i < posTags.size(); i++) {
         final Term term = kaf.newTerm(tokenSpans.get(i));
@@ -233,11 +233,11 @@ public class Annotate {
           final String lemma = this.dictLemmatizer.apply(posTags.get(i)
               .getString(), posTags.get(i).getType());
           if (!lemma.equalsIgnoreCase("O")) {
-            lemmas[i].setType(lemma);
+            lemmas.get(i).setType(lemma);
           }
         }
         term.setType(type);
-        term.setLemma(lemmas[i].getType());
+        term.setLemma(lemmas.get(i).getType());
         term.setPos(posId);
         term.setMorphofeat(posTags.get(i).getType());
       }
