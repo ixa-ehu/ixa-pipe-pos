@@ -146,7 +146,7 @@ public class StatisticalTaggerServer {
           break;
         }
       }
-    }catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     }
     return stringFromClient.toString();
