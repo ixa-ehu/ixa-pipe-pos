@@ -230,14 +230,9 @@ public class CLI {
          .required(true)
          .help("It is required to provide a lemmatizer model.");
     this.annotateParser.addArgument("-l", "--language")
-        .choices("de", "en", "es", "eu", "fr", "gl", "it", "nl")
+        .choices("ca", "de", "en", "es", "eu", "fr", "gl", "it", "nl", "pt", "ru")
         .required(false)
         .help("Choose a language.");
-
-    this.annotateParser.addArgument("--beamSize")
-        .required(false)
-        .setDefault(Flags.DEFAULT_BEAM_SIZE)
-        .help("Choose beam size for decoding, it defaults to 3.");
     annotateParser.addArgument("-o", "--outputFormat")
         .required(false)
         .choices("naf", "conll")
@@ -341,13 +336,9 @@ public class CLI {
         .required(true)
         .help("It is required to provide a lemmatizer model.");
     serverParser.addArgument("-l", "--language")
-        .choices("de", "en", "es", "eu", "fr", "gl", "it", "nl")
+        .choices("ca", "de", "en", "es", "eu", "fr", "gl", "it", "nl", "pt", "ru")
         .required(true)
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
-
-    serverParser.addArgument("--beamSize").required(false)
-        .setDefault(Flags.DEFAULT_BEAM_SIZE)
-        .help("Choose beam size for decoding, it defaults to 3.");
     serverParser.addArgument("-o", "--outputFormat").required(false)
         .choices("naf", "conll")
         .setDefault(Flags.DEFAULT_OUTPUT_FORMAT)
