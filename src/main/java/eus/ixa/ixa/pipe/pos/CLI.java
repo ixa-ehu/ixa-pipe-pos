@@ -45,12 +45,11 @@ import com.google.common.io.Files;
 import eus.ixa.ixa.pipe.ml.utils.Flags;
 
 /**
- * Main class of ixa-pipe-pos, the pos tagger of ixa-pipes
- * (ixa2.si.ehu.es/ixa-pipes). The annotate method is the main entry point.
+ * Main class of ixa-pipe-pos which uses the ixa-pipe-ml API for POS tagging
+ * and lemmatization. The annotate method is the main entry point.
  * @author ragerri
- * @version 2014-11-30
+ * @version 2016-04-22
  */
-
 public class CLI {
 
   /**
@@ -73,9 +72,9 @@ public class CLI {
    * The argument parser.
    */
   private final ArgumentParser argParser = ArgumentParsers.newArgumentParser(
-      "ixa-pipe-pos-" + this.version + ".jar").description(
+      "ixa-pipe-pos-" + this.version + "-exec.jar").description(
       "ixa-pipe-pos-" + this.version
-          + " is a multilingual POS tagger developed by IXA NLP Group.\n");
+          + " is a multilingual POS tagger and Lemmatizer developed by IXA NLP Group.\n");
   /**
    * Sub parser instance.
    */
@@ -93,10 +92,6 @@ public class CLI {
    * Sends queries to the serverParser for annotation.
    */
   private Subparser clientParser;
-  /**
-   * Default beam size for decoding.
-   */
-  public static final String DEFAULT_BEAM_SIZE = "3";
 
   /**
    * Construct a CLI object with the three sub-parsers to manage the command
@@ -154,8 +149,8 @@ public class CLI {
   }
 
   /**
-   * Main entry point for annotation. Takes system.in as input and outputs
-   * annotated text via system.out.
+   * Main entry point for annotation. Takes system in as input and outputs
+   * annotated text via system out.
    * 
    * @param inputStream
    *          the input stream
@@ -191,7 +186,6 @@ public class CLI {
       lang = this.parsedArguments.getString("language");
       if (!kaf.getLang().equalsIgnoreCase(lang)) {
         System.err.println("Language parameter in NAF and CLI do not match!!");
-        // System.exit(1);
       }
     } else {
       lang = kaf.getLang();
@@ -242,7 +236,7 @@ public class CLI {
 
     this.annotateParser.addArgument("--beamSize")
         .required(false)
-        .setDefault(DEFAULT_BEAM_SIZE)
+        .setDefault(Flags.DEFAULT_BEAM_SIZE)
         .help("Choose beam size for decoding, it defaults to 3.");
     annotateParser.addArgument("-o", "--outputFormat")
         .required(false)
@@ -352,7 +346,7 @@ public class CLI {
         .help("Choose a language to perform annotation with ixa-pipe-pos.");
 
     serverParser.addArgument("--beamSize").required(false)
-        .setDefault(DEFAULT_BEAM_SIZE)
+        .setDefault(Flags.DEFAULT_BEAM_SIZE)
         .help("Choose beam size for decoding, it defaults to 3.");
     serverParser.addArgument("-o", "--outputFormat").required(false)
         .choices("naf", "conll")
