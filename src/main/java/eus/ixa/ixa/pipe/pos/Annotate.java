@@ -32,8 +32,8 @@ import com.google.common.collect.ListMultimap;
 import eus.ixa.ixa.pipe.ml.StatisticalSequenceLabeler;
 import eus.ixa.ixa.pipe.ml.lemma.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.ml.pos.MultiWordMatcher;
-import eus.ixa.ixa.pipe.ml.sequence.Sequence;
-import eus.ixa.ixa.pipe.ml.sequence.SequenceFactory;
+import eus.ixa.ixa.pipe.ml.sequence.SequenceLabel;
+import eus.ixa.ixa.pipe.ml.sequence.SequenceLabelFactory;
 import eus.ixa.ixa.pipe.ml.utils.Span;
 import eus.ixa.ixa.pipe.ml.utils.StringUtils;
 import eus.ixa.ixa.pipe.ml.pos.DictionaryTagger;
@@ -64,7 +64,7 @@ public class Annotate {
   /**
    * The factory to build morpheme objects.
    */
-  private final SequenceFactory morphoFactory;
+  private final SequenceLabelFactory morphoFactory;
   /**
    * The dictionary lemmatizer.
    */
@@ -107,7 +107,7 @@ public class Annotate {
       loadMorphoTaggerDicts(properties);
     }
     loadLemmatizerDicts(properties);
-    this.morphoFactory = new SequenceFactory();
+    this.morphoFactory = new SequenceLabelFactory();
     this.posTagger = new StatisticalSequenceLabeler(posModel, lang,
         this.morphoFactory);
     this.lemmatizer = new StatisticalSequenceLabeler(lemmaModel, lang,
@@ -198,8 +198,8 @@ public class Annotate {
     for (final List<WF> wfs : sentences) {
 
       final List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
-      List<Sequence> posTags = null;
-      List<Sequence> lemmas = null;
+      List<SequenceLabel> posTags = null;
+      List<SequenceLabel> lemmas = null;
       final String[] tokens = new String[wfs.size()];
       for (int i = 0; i < wfs.size(); i++) {
         tokens[i] = wfs.get(i).getForm();
@@ -295,7 +295,7 @@ public class Annotate {
     for (final List<WF> wfs : sentences) {
 
       final List<ixa.kaflib.Span<WF>> tokenSpans = new ArrayList<ixa.kaflib.Span<WF>>();
-      List<Sequence> posTags = null;
+      List<SequenceLabel> posTags = null;
       Span[] lemmas = null;
       // Get an array of token forms from a list of WF objects.
       final String[] tokens = new String[wfs.size()];
