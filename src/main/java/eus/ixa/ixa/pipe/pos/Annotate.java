@@ -34,6 +34,7 @@ import eus.ixa.ixa.pipe.ml.lemma.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.ml.pos.DictionaryTagger;
 import eus.ixa.ixa.pipe.ml.pos.MorfologikTagger;
 import eus.ixa.ixa.pipe.ml.pos.MultiWordMatcher;
+import eus.ixa.ixa.pipe.ml.pos.TagSetMappingsToNAF;
 import eus.ixa.ixa.pipe.ml.sequence.SequenceLabel;
 import eus.ixa.ixa.pipe.ml.sequence.SequenceLabelFactory;
 import eus.ixa.ixa.pipe.ml.utils.Span;
@@ -41,7 +42,7 @@ import eus.ixa.ixa.pipe.ml.utils.StringUtils;
 
 /**
  * Example annotation class of ixa-pipe-pos. Check this class for examples using
- * ixa-pipe-ml API.
+ * ixa-pipe-ml API for POS tagging and Lemmatization.
  * 
  * @author ragerri
  * @version 2016-04-21
@@ -94,8 +95,8 @@ public class Annotate {
    *           io exception if model not properly loaded
    */
   public Annotate(final Properties properties) throws IOException {
-    String posModel = properties.getProperty("model");
-    String lemmaModel = properties.getProperty("lemmatizerModel");
+    final String posModel = properties.getProperty("model");
+    final String lemmaModel = properties.getProperty("lemmatizerModel");
     this.lang = properties.getProperty("language");
     this.multiwords = Boolean.valueOf(properties.getProperty("multiwords"));
     this.dictag = Boolean.valueOf(properties.getProperty("dictag"));
@@ -111,31 +112,29 @@ public class Annotate {
     this.lemmatizer = new StatisticalSequenceLabeler(lemmaModel, lang, this.morphoFactory);
   }
 
-  // TODO static loading of lemmatizer dictionaries
-  
-//TODO static loading of postag dictionaries
- /**
-  * Load the pos tagger dictionaries by language and format. Exits if no pos
-  * tagger dictionary (binary) is available for the input language.
-  * 
-  * @param props
-  *          the props object
-  */
- private void loadMultiWordDicts(final Properties props) {
-   final Resources resources = new Resources();
-   final InputStream multiWordDict = resources.getMultiWordDict(this.lang);
-   if (multiWordDict == null) {
-     System.err
-         .println("ERROR: No multiword dictionary available for language "
-             + this.lang + " in src/main/resources!!");
-     System.exit(1);
-   }
-   try {
-     this.multiWordMatcher = new MultiWordMatcher(multiWordDict);
-   } catch (final IOException e) {
-     e.printStackTrace();
-   }
- }
+  // TODO static loading of postag dictionaries
+  /**
+   * Load the pos tagger dictionaries by language and format. Exits if no pos
+   * tagger dictionary (binary) is available for the input language.
+   * 
+   * @param props
+   *          the props object
+   */
+  private void loadMultiWordDicts(final Properties props) {
+    final Resources resources = new Resources();
+    final InputStream multiWordDict = resources.getMultiWordDict(this.lang);
+    if (multiWordDict == null) {
+      System.err
+          .println("ERROR: No multiword dictionary available for language "
+              + this.lang + " in src/main/resources!!");
+      System.exit(1);
+    }
+    try {
+      this.multiWordMatcher = new MultiWordMatcher(multiWordDict);
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+  }
 
   /**
    * Load the binary lemmatizer dictionaries by language. Exits if no lemmatizer
@@ -186,8 +185,6 @@ public class Annotate {
     }
   }
 
- 
-
   /**
    * Annotate morphological information into a NAF document.
    * 
@@ -225,8 +222,9 @@ public class Annotate {
               .getString(), posTags.get(i).getType());
           posTags.get(i).setType(dictPosTag);
         }
-        final String posId = Resources.getKafTagSet(posTags.get(i).getType(), lang);
-        final String type = Resources.setTermType(posId);
+        final String posId = TagSetMappingsToNAF.getNAFTagSet(posTags.get(i)
+            .getType(), lang);
+        final String type = TagSetMappingsToNAF.setTermTypeNAF(posId);
         // dictionary lemmatizer overwrites probabilistic predictions if
         // lemma is not equal to "O"
         if (this.dictLemmatizer != null) {
@@ -331,17 +329,19 @@ public class Annotate {
             lemmas[i].setType(lemma);
           }
         }
-        sb.append(word).append("\t").append(lemmas[i].getType())
-            .append("\t").append(posTags.get(i).getType()).append("\n");
+        sb.append(word).append("\t").append(lemmas[i].getType()).append("\t")
+            .append(posTags.get(i).getType()).append("\n");
       }
       sb.append("\n");
     }
     return sb.toString();
   }
-  
+
   /**
    * Add all postags and lemmas to morphofeat attribute.
-   * @param kaf the NAF document
+   * 
+   * @param kaf
+   *          the NAF document
    */
   public final void getAllTagsLemmasToNAF(final KAFDocument kaf) {
     final List<List<WF>> sentences = kaf.getSentences();
@@ -355,19 +355,22 @@ public class Annotate {
         wfTarget.add(wfs.get(i));
         tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
-      
+
       Span[][] allPosTags = this.posTagger.getAllTags(tokens);
-      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(tokens, allPosTags);
-      
+      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(
+          tokens, allPosTags);
+
       for (int i = 0; i < tokens.length; i++) {
         final Term term = kaf.newTerm(tokenSpans.get(i));
         List<String> posLemmaValues = morphMap.get(tokens[i]);
         if (this.dictLemmatizer != null) {
           dictLemmatizer.getAllPosLemmas(tokens[i], posLemmaValues);
         }
-        String allPosLemmasSet = StringUtils.getSetStringFromList(posLemmaValues);
-        final String posId = Resources.getKafTagSet(allPosTags[0][i].getType(), lang);
-        final String type = Resources.setTermType(posId);
+        String allPosLemmasSet = StringUtils
+            .getSetStringFromList(posLemmaValues);
+        final String posId = TagSetMappingsToNAF.getNAFTagSet(
+            allPosTags[0][i].getType(), lang);
+        final String type = TagSetMappingsToNAF.setTermTypeNAF(posId);
         term.setType(type);
         term.setLemma(posLemmaValues.get(0).split("#")[1]);
         term.setPos(posId);
@@ -375,10 +378,12 @@ public class Annotate {
       }
     }
   }
-  
+
   /**
    * Give all lemmas and tags possible for a sentence in conll tabulated format.
-   * @param kaf the NAF document
+   * 
+   * @param kaf
+   *          the NAF document
    * @return the output in tabulated format
    */
   public final String getAllTagsLemmasToCoNLL(final KAFDocument kaf) {
@@ -394,15 +399,17 @@ public class Annotate {
         wfTarget.add(wfs.get(i));
         tokenSpans.add(KAFDocument.newWFSpan(wfTarget));
       }
-      
+
       Span[][] allPosTags = this.posTagger.getAllTags(tokens);
-      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(tokens, allPosTags);
+      ListMultimap<String, String> morphMap = lemmatizer.getMultipleLemmas(
+          tokens, allPosTags);
       for (int i = 0; i < tokens.length; i++) {
         List<String> posLemmaValues = morphMap.get(tokens[i]);
         if (this.dictLemmatizer != null) {
           dictLemmatizer.getAllPosLemmas(tokens[i], posLemmaValues);
         }
-        String allPosLemmasSet = StringUtils.getSetStringFromList(posLemmaValues);
+        String allPosLemmasSet = StringUtils
+            .getSetStringFromList(posLemmaValues);
         sb.append(tokens[i]).append("\t").append(allPosLemmasSet).append("\n");
       }
       sb.append("\n");

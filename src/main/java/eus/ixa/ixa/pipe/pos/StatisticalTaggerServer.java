@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015 Rodrigo Agerri
+ *  Copyright 2016 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -33,6 +33,11 @@ import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
 
+/**
+ * TCP server for POS tagger and lemmatizer.
+ * @author ragerri
+ * @version 2016-04-22
+ */
 public class StatisticalTaggerServer {
   
   /**
@@ -59,7 +64,7 @@ public class StatisticalTaggerServer {
   private final Boolean allMorphology;
   
   /**
-   * Construct a MorphoTagger server.
+   * Construct a StatisticalTagger server.
    * 
    * @param properties
    *          the properties
@@ -141,7 +146,7 @@ public class StatisticalTaggerServer {
           break;
         }
       }
-    }catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     }
     return stringFromClient.toString();
