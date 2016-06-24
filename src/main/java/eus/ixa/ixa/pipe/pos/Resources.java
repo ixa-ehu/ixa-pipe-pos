@@ -40,13 +40,11 @@ public class Resources {
     InputStream dict = null;
     if (lang.equalsIgnoreCase("en")) {
       dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/language-tool/en-lemmatizer.txt");
-    }
-    if (lang.equalsIgnoreCase("es")) {
+          "/lemmatizer-dicts/languagetool/en-lemmatizer.txt");
+    } else if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-lemmatizer.txt");
-    }
-    if (lang.equalsIgnoreCase("gl")) {
+    } else if (lang.equalsIgnoreCase("gl")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/ctag/gl-lemmatizer.txt");
     }
@@ -66,7 +64,7 @@ public class Resources {
     if (lang.equalsIgnoreCase("de")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/de/german.dict");
     } else if (lang.equalsIgnoreCase("en")) {
-      dictURL = getClass().getResource("/lemmatizer-dicts/language-tool/english.dict");
+      dictURL = getClass().getResource("/lemmatizer-dicts/languagetool/english.dict");
     } else if (lang.equalsIgnoreCase("es")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/freeling/spanish.dict");
     } else if (lang.equalsIgnoreCase("eu")) {
@@ -92,11 +90,12 @@ public class Resources {
    */
   public final URL getBinaryTaggerDict(final String lang) {
     URL dictURL = null;
-    if (lang.equalsIgnoreCase("es")) {
+    if (lang.equalsIgnoreCase("en")) {
+      dictURL = getClass().getResource("lemmatizer-dicts/freeling/english-monosemic.dict");
+    } else if (lang.equalsIgnoreCase("es")) {
       dictURL = getClass().getResource(
           "/lemmatizer-dicts/freeling/spanish-monosemic.dict");
-    }
-    if (lang.equalsIgnoreCase("gl")) {
+    } else if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource(
           "/lemmatizer-dicts/ctag/galician-monosemic.dict");
     }
@@ -116,12 +115,10 @@ public class Resources {
     if (lang.equalsIgnoreCase("en")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/en-locutions-extended.txt");
-    }
-    if (lang.equalsIgnoreCase("es")) {
+    } else if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/freeling/es-locutions.txt");
-    }
-    if (lang.equalsIgnoreCase("gl")) {
+    } else if (lang.equalsIgnoreCase("gl")) {
       dict = getClass().getResourceAsStream(
           "/lemmatizer-dicts/ctag/gl-locutions.txt");
     }
