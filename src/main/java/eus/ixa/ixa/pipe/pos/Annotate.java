@@ -31,14 +31,14 @@ import com.google.common.collect.ListMultimap;
 
 import eus.ixa.ixa.pipe.ml.StatisticalSequenceLabeler;
 import eus.ixa.ixa.pipe.ml.lemma.MorfologikLemmatizer;
+import eus.ixa.ixa.pipe.ml.pos.DictionaryTagger;
+import eus.ixa.ixa.pipe.ml.pos.MorfologikTagger;
 import eus.ixa.ixa.pipe.ml.pos.MultiWordMatcher;
+import eus.ixa.ixa.pipe.ml.pos.TagSetMappingsToNAF;
 import eus.ixa.ixa.pipe.ml.sequence.SequenceLabel;
 import eus.ixa.ixa.pipe.ml.sequence.SequenceLabelFactory;
 import eus.ixa.ixa.pipe.ml.utils.Span;
 import eus.ixa.ixa.pipe.ml.utils.StringUtils;
-import eus.ixa.ixa.pipe.ml.pos.DictionaryTagger;
-import eus.ixa.ixa.pipe.ml.pos.MorfologikTagger;
-import eus.ixa.ixa.pipe.ml.pos.TagSetMappingsToNAF;
 
 /**
  * Example annotation class of ixa-pipe-pos. Check this class for examples using
