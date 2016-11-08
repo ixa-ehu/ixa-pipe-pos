@@ -2,7 +2,7 @@
 ixa-pipe-pos
 ============
 
-ixa-pipe-pos is a multilingual Part of Speech tagger and Lemmatizer, currently offering pre-trained models for eight languages: Basque, Dutch, English, French, Galician, German, Italian, and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.5.0**.
+ixa-pipe-pos is a multilingual Part of Speech tagger and Lemmatizer, currently offering pre-trained models for eight languages: Basque, Dutch, English, French, Galician, German, Italian, and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.5.1**.
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
 pipes tools but also for **official releases, including source code and binary
@@ -93,7 +93,7 @@ subcommand to ixa-pipe-pos-$version.jar. Please read below and check the -help
 parameter ($version refers to the current ixa-pipe-pos version).
 
 ````shell
-java -jar target/ixa-pipe-pos-1.5.0.jar (tag|train|eval|cross|server|client) -help
+java -jar target/ixa-pipe-pos-1.5.1-exec.jar (tag|train|eval|cross|server|client) -help
 ````
 
 ### Tagging
@@ -101,7 +101,7 @@ java -jar target/ixa-pipe-pos-1.5.0.jar (tag|train|eval|cross|server|client) -he
 If you are in hurry, [Download](http://ixa2.si.ehu.es/ixa-pipes/models/guardian.txt) or create a plain text file and use it like this:
 
 ````shell
-cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | ixa-pipe-pos-1.5.0.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
+cat guardian.txt | java -jar ixa-pipe-tok-1.8.4-exec.jar tok -l en | ixa-pipe-pos-1.5.0-exec.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
 ````
 
 If you want to know more, please follow reading.
@@ -142,12 +142,12 @@ cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | java -jar ixa-pi
 We can start the TCP server as follows:
 
 ````shell
-java -jar target/ixa-pipe-pos-1.5.0.jar server -l en --port 2040 -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
+java -jar target/ixa-pipe-pos-1.5.1-exec.jar server -l en --port 2040 -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
 ````
 Once the server is running we can send NAF documents containing (at least) the text layer like this:
 
 ````shell
- cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | java -jar target/ixa-pipe-pos-1.5.0.jar client -p 2040
+ cat guardian.txt | java -jar ixa-pipe-tok-1.8.4-exec.jar tok -l en | java -jar target/ixa-pipe-pos-1.5.1-exec.jar client -p 2040
 ````
 
 ### Training
@@ -158,7 +158,7 @@ argument. Every training option is documented in the template trainParams.proper
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.pos-$version.jar train -p trainParams.properties
+java -jar target/ixa.pipe.pos-$version-exec.jar train -p trainParams.properties
 ````
 
 ### Evaluation
@@ -177,7 +177,7 @@ options:
 **Example**:
 
 ````shell
-java -jar target/ixa.pipe.pos-$version.jar eval -c pos -m test-pos.bin -l en -t test.data
+java -jar target/ixa.pipe.pos-$version-exec.jar eval -c pos -m test-pos.bin -l en -t test.data
 ````
 
 ## API
@@ -315,7 +315,7 @@ mvn clean package
 This step will create a directory called target/ which contains various directories and files.
 Most importantly, there you will find the module executable:
 
-ixa-pipe-pos-$version.jar
+ixa-pipe-pos-$version-exec.jar
 
 This executable contains every dependency the module needs, so it is completely portable as long
 as you have a JVM 1.7 or newer installed.
