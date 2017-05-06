@@ -16,6 +16,9 @@
 package eus.ixa.ixa.pipe.pos.dict;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -75,10 +78,12 @@ public class MultiWordMatcher {
   private void loadDictionary(final Properties props) throws IOException {
     dictionary = new HashMap<String, String>();
     final String lang = props.getProperty("language");
-    final InputStream dictInputStream = getMultiWordDict(lang);
+    final String resourcesDirectory = props.getProperty("resourcesDirectory");
+    final InputStream dictInputStream = getMultiWordDict(lang, resourcesDirectory);
     if (dictInputStream == null) {
+      final String resourcesLocation = resourcesDirectory == null ? "src/main/resources" : resourcesDirectory;
       System.err.println("ERROR: Not multiword dictionary for language " + lang
-          + " in src/main/resources!!");
+          + " in " + resourcesLocation + "!!");
       System.exit(1);
     }
     final BufferedReader breader = new BufferedReader(new InputStreamReader(
@@ -102,9 +107,18 @@ public class MultiWordMatcher {
    * 
    * @param lang
    *          the language
+   * @param resourcesDirectory
+   *          the directory where the dictionary can be found.
+   *          If {@code null}, load from package resources.
    * @return the inputstream of the dictionary
    */
-  private final InputStream getMultiWordDict(final String lang) {
+  private final InputStream getMultiWordDict(final String lang, final String resourcesDirectory) {
+    return resourcesDirectory == null
+      ? getMultiWordDictFromResources(lang)
+      : getMultiWordDictFromDirectory(lang, resourcesDirectory);
+  }
+
+  private final InputStream getMultiWordDictFromResources(final String lang) {
     InputStream dict = null;
     // TODO complete locutions dictionary and binarize
     if (lang.equalsIgnoreCase("en")) {
@@ -120,6 +134,14 @@ public class MultiWordMatcher {
           "/lemmatizer-dicts/ctag/gl-locutions.txt");
     }
     return dict;
+  }
+
+  private final InputStream getMultiWordDictFromDirectory(final String lang, final String resourcesDirectory) {
+    try {
+      return new FileInputStream(new File(resourcesDirectory, lang.toLowerCase() + "-locutions.txt"));
+    } catch (FileNotFoundException ex) {
+      return null;
+    }
   }
 
   /**

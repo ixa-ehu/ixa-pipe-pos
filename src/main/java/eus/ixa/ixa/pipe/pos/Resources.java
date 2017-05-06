@@ -16,8 +16,11 @@
 
 package eus.ixa.ixa.pipe.pos;
 
+import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 
 /**
  * Class to load the appropriate lemmatization dictionaries according to the
@@ -28,7 +31,6 @@ import java.net.URL;
  * 
  */
 public class Resources {
-
   /**
    * Get the dictionary for the {@code SimpleLemmatizer}.
    * 
@@ -58,11 +60,20 @@ public class Resources {
    * 
    * @param lang
    *          the language
+   * @param resourcesDirectory
+   *          the directory where the dictionary can be found.
+   *          If {@code null}, load from package resources.
    * @return the URL of the dictonary
    */
-  public final URL getBinaryDict(final String lang) {
+  public final URL getBinaryDict(final String lang, final String resourcesDirectory) {
+    return resourcesDirectory == null
+      ? getBinaryDictFromResources(lang)
+      : getBinaryDictFromDirectory(lang, resourcesDirectory);
+  }
+
+  private final URL getBinaryDictFromResources(final String lang) {
     URL dictURL = null;
-    
+
     if (lang.equalsIgnoreCase("de")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/de/german.dict");
     } else if (lang.equalsIgnoreCase("en")) {
@@ -83,14 +94,34 @@ public class Resources {
     return dictURL;
   }
 
+  private final URL getBinaryDictFromDirectory(final String lang, final String resourcesDirectory) {
+    File file = new File(resourcesDirectory, lang.toLowerCase() + "-lemmatizer.dict");
+    try {
+      return file.exists()
+        ? file.toURI().toURL()
+        : null;
+    } catch (MalformedURLException ex) {
+      return null;
+    }
+  }
+
   /**
    * The the dictionary for the {@code MorfologikMorphoTagger}.
    * 
    * @param lang
    *          the language
+   * @param resourcesDirectory
+   *          the directory where the dictionary can be found.
+   *          If {@code null}, load from package resources.
    * @return the URL of the dictionary
    */
-  public final URL getBinaryTaggerDict(final String lang) {
+  public final URL getBinaryTaggerDict(final String lang, final String resourcesDirectory) {
+    return resourcesDirectory == null
+      ? getBinaryTaggerDictFromResources(lang)
+      : getBinaryTaggerDictFromDirectory(lang, resourcesDirectory);
+  }
+
+  private final URL getBinaryTaggerDictFromResources(final String lang) {
     URL dictURL = null;
     if (lang.equalsIgnoreCase("es")) {
       dictURL = getClass().getResource(
@@ -102,7 +133,18 @@ public class Resources {
     }
     return dictURL;
   }
-  
+
+  private final URL getBinaryTaggerDictFromDirectory(final String lang, final String resourcesDirectory) {
+    File file = new File(resourcesDirectory, lang.toLowerCase() + "-monosemic.dict");
+    try {
+      return file.exists()
+        ? file.toURI().toURL()
+        : null;
+    } catch (MalformedURLException ex) {
+      return null;
+    }
+  }
+
   /**
    * Mapping between CoNLL 2009 German tagset and KAF tagset.
    * Based on the Stuttgart-Tuebingen tagset.
