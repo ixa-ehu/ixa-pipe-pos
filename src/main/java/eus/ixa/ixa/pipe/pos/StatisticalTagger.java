@@ -44,7 +44,7 @@ public class StatisticalTagger {
    * The models to use for every language. The keys of the hashmap are the language
    * codes, the values the models.
    */
-  private static ConcurrentHashMap<String, POSModel> posModels = new ConcurrentHashMap<String, POSModel>();
+  private final static ConcurrentHashMap<String, POSModel> posModels = new ConcurrentHashMap<String, POSModel>();
   /**
    * The morpho factory.
    */

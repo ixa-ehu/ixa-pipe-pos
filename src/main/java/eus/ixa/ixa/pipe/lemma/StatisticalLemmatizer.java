@@ -47,7 +47,7 @@ public class StatisticalLemmatizer {
    * The models to use for every language. The keys of the hashmap are the language
    * codes, the values the models.
    */
-  private static ConcurrentHashMap<String, LemmatizerModel> lemmaModels = new ConcurrentHashMap<String, LemmatizerModel>();
+  private final static ConcurrentHashMap<String, LemmatizerModel> lemmaModels = new ConcurrentHashMap<String, LemmatizerModel>();
   /**
    * The morpho factory.
    */
