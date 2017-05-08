@@ -4,7 +4,7 @@
 	<groupId>eus.ixa</groupId>
 	<artifactId>ixa-pipe-pos</artifactId>
 	<packaging>jar</packaging>
-	<version>1.5.1</version>
+	<version>1.5.2</version>
 	<name>ixa-pipe-pos</name>
 	<description>POS tagger and lemmatizer of ixa pipes (ixa2.si.ehu.es/ixa-pipes)</description>
 	<licenses>
@@ -175,7 +175,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
+				<version>2.4</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
