@@ -152,16 +152,16 @@ public class StatisticalLemmatizer {
    * 
    * @param lang
    *          the language
-   * @param model
+   * @param modelName
    *          the model to be loaded
    * @return the model as a {@link LemmatizerModel} object
    */
-  private LemmatizerModel loadModel(final String lang, final String model) {
+  private LemmatizerModel loadModel(final String lang, final String modelName) {
     final long lStartTime = new Date().getTime();
     try {
       synchronized (lemmaModels) {
         if (!lemmaModels.containsKey(lang)) {
-          lemmaModels.put(lang, new LemmatizerModel(new FileInputStream(model)));
+          lemmaModels.put(lang, new LemmatizerModel(new FileInputStream(modelName)));
         }
       }
     } catch (final IOException e) {

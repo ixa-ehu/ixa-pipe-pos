@@ -142,16 +142,16 @@ public class StatisticalTagger {
    * 
    * @param lang
    *          the language
-   * @param model
+   * @param modelName
    *          the model to be loaded
    * @return the model as a {@link POSModel} object
    */
-  private POSModel loadModel(final String lang, final String model) {
+  private POSModel loadModel(final String lang, final String modelName) {
     final long lStartTime = new Date().getTime();
     try {
       synchronized (posModels) {
         if (!posModels.containsKey(lang)) {
-          posModels.put(lang, new POSModel(new FileInputStream(model)));
+          posModels.put(lang, new POSModel(new FileInputStream(modelName)));
         }
       }
     } catch (final IOException e) {
