@@ -57,10 +57,7 @@ public class StatisticalTagger {
    *          the properties object
    */
   public StatisticalTagger(final Properties props) {
-    final String lang = props.getProperty("language");
-    final String model = props.getProperty("model");
-    final POSModel posModel = loadModel(lang, model);
-    this.posTagger = new POSTaggerME(posModel);
+    this(props, null);
   }
 
   /**

@@ -60,10 +60,7 @@ public class StatisticalLemmatizer {
    *          the properties object
    */
   public StatisticalLemmatizer(final Properties props) {
-    final String lang = props.getProperty("language");
-    final String model = props.getProperty("lemmatizerModel");
-    final LemmatizerModel lemmatizerModel = loadModel(lang, model);
-    this.lemmatizer = new LemmatizerME(lemmatizerModel);
+    this(props, null);
   }
 
   /**
