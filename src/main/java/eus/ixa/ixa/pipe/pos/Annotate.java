@@ -115,12 +115,14 @@ public class Annotate {
    *          the props object
    */
   private void loadLemmatizerDicts(final Properties props) {
+    final String resourcesDirectory = props.getProperty("resourcesDirectory");
     final Resources resources = new Resources();
-    final URL binLemmatizerURL = resources.getBinaryDict(this.lang);
+    final URL binLemmatizerURL = resources.getBinaryDict(this.lang, resourcesDirectory);
     if (binLemmatizerURL == null) {
+      final String resourcesLocation = resourcesDirectory == null ? "src/main/resources" : resourcesDirectory;
       System.err
           .println("WARNING: No lemmatizer dictionary available for language "
-              + this.lang + " in src/main/resources!");
+              + this.lang + " in " + resourcesLocation + "!");
     } else {
       try {
         this.dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL);
@@ -140,12 +142,14 @@ public class Annotate {
    *          the props object
    */
   private void loadMorphoTaggerDicts(final Properties props) {
+    final String resourcesDirectory = props.getProperty("resourcesDirectory");
     final Resources resources = new Resources();
-    final URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(this.lang);
+    final URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(this.lang, resourcesDirectory);
     if (binDictMorphoTaggerURL == null) {
+      final String resourcesLocation = resourcesDirectory == null ? "src/main/resources" : resourcesDirectory;
       System.err
           .println("ERROR: No binary POS tagger dictionary available for language "
-              + this.lang + " in src/main/resources!!");
+              + this.lang + " in " + resourcesLocation + "!!");
       System.exit(1);
     }
     try {
