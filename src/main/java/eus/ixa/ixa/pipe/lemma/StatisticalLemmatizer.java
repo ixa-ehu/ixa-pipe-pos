@@ -74,7 +74,8 @@ public class StatisticalLemmatizer {
   public StatisticalLemmatizer(final Properties props, final MorphoFactory aMorphoFactory) {
     final String lang = props.getProperty("language");
     final String model = props.getProperty("lemmatizerModel");
-    final LemmatizerModel posModel = loadModel(lang, model);
+    final Boolean useModelCache = Boolean.valueOf(props.getProperty("useModelCache", "true"));
+    final LemmatizerModel posModel = loadModel(lang, model, useModelCache);
     this.lemmatizer = new LemmatizerME(posModel);
     this.morphoFactory = aMorphoFactory;
   }
@@ -154,15 +155,23 @@ public class StatisticalLemmatizer {
    *          the language
    * @param modelName
    *          the model to be loaded
+   * @param useModelCache
+   *          whether to cache the model in memory
    * @return the model as a {@link LemmatizerModel} object
    */
-  private LemmatizerModel loadModel(final String lang, final String modelName) {
+  private LemmatizerModel loadModel(final String lang, final String modelName, final Boolean useModelCache) {
     final long lStartTime = new Date().getTime();
+    LemmatizerModel model = null;
     try {
-      synchronized (lemmaModels) {
-        if (!lemmaModels.containsKey(lang)) {
-          lemmaModels.put(lang, new LemmatizerModel(new FileInputStream(modelName)));
+      if (useModelCache) {
+        synchronized (lemmaModels) {
+          if (!lemmaModels.containsKey(lang)) {
+            model = new LemmatizerModel(new FileInputStream(modelName));
+            lemmaModels.put(lang, model);
+          }
         }
+      } else {
+        model = new LemmatizerModel(new FileInputStream(modelName));
       }
     } catch (final IOException e) {
       e.printStackTrace();
@@ -171,7 +180,7 @@ public class StatisticalLemmatizer {
     final long difference = lEndTime - lStartTime;
     System.err.println("ixa-pipe-lemma model loaded in: " + difference
         + " miliseconds ... [DONE]");
-    return lemmaModels.get(lang);
+    return model;
   }
 
 }
