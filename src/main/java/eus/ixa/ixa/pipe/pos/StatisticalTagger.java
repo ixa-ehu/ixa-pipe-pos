@@ -44,7 +44,7 @@ public class StatisticalTagger {
    * The models to use for every language. The keys of the hashmap are the language
    * codes, the values the models.
    */
-  private static ConcurrentHashMap<String, POSModel> posModels = new ConcurrentHashMap<String, POSModel>();
+  private final static ConcurrentHashMap<String, POSModel> posModels = new ConcurrentHashMap<String, POSModel>();
   /**
    * The morpho factory.
    */
@@ -57,10 +57,7 @@ public class StatisticalTagger {
    *          the properties object
    */
   public StatisticalTagger(final Properties props) {
-    final String lang = props.getProperty("language");
-    final String model = props.getProperty("model");
-    final POSModel posModel = loadModel(lang, model);
-    this.posTagger = new POSTaggerME(posModel);
+    this(props, null);
   }
 
   /**
@@ -74,7 +71,8 @@ public class StatisticalTagger {
   public StatisticalTagger(final Properties props, final MorphoFactory aMorphoFactory) {
     final String lang = props.getProperty("language");
     final String model = props.getProperty("model");
-    final POSModel posModel = loadModel(lang, model);
+    final Boolean useModelCache = Boolean.valueOf(props.getProperty("useModelCache", "true"));
+    final POSModel posModel = loadModel(lang, model, useModelCache);
     this.posTagger = new POSTaggerME(posModel);
     this.morphoFactory = aMorphoFactory;
   }
@@ -145,17 +143,25 @@ public class StatisticalTagger {
    * 
    * @param lang
    *          the language
-   * @param model
+   * @param modelName
    *          the model to be loaded
+   * @param useModelCache
+   *          whether to cache the model in memory
    * @return the model as a {@link POSModel} object
    */
-  private POSModel loadModel(final String lang, final String model) {
+  private POSModel loadModel(final String lang, final String modelName, final Boolean useModelCache) {
     final long lStartTime = new Date().getTime();
+    POSModel model = null;
     try {
-      synchronized (posModels) {
-        if (!posModels.containsKey(lang)) {
-          posModels.put(lang, new POSModel(new FileInputStream(model)));
+      if (useModelCache) {
+        synchronized (posModels) {
+          if (!posModels.containsKey(lang)) {
+            model = new POSModel(new FileInputStream(modelName));
+            posModels.put(lang, model);
+          }
         }
+      } else {
+        model = new POSModel(new FileInputStream(modelName));
       }
     } catch (final IOException e) {
       e.printStackTrace();
@@ -164,7 +170,7 @@ public class StatisticalTagger {
     final long difference = lEndTime - lStartTime;
     System.err.println("ixa-pipe-pos model loaded in: " + difference
         + " miliseconds ... [DONE]");
-    return posModels.get(lang);
+    return model;
   }
 
 }

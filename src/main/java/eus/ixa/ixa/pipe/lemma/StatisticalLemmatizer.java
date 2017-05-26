@@ -47,7 +47,7 @@ public class StatisticalLemmatizer {
    * The models to use for every language. The keys of the hashmap are the language
    * codes, the values the models.
    */
-  private static ConcurrentHashMap<String, LemmatizerModel> lemmaModels = new ConcurrentHashMap<String, LemmatizerModel>();
+  private final static ConcurrentHashMap<String, LemmatizerModel> lemmaModels = new ConcurrentHashMap<String, LemmatizerModel>();
   /**
    * The morpho factory.
    */
@@ -60,10 +60,7 @@ public class StatisticalLemmatizer {
    *          the properties object
    */
   public StatisticalLemmatizer(final Properties props) {
-    final String lang = props.getProperty("language");
-    final String model = props.getProperty("lemmatizerModel");
-    final LemmatizerModel lemmatizerModel = loadModel(lang, model);
-    this.lemmatizer = new LemmatizerME(lemmatizerModel);
+    this(props, null);
   }
 
   /**
@@ -77,7 +74,8 @@ public class StatisticalLemmatizer {
   public StatisticalLemmatizer(final Properties props, final MorphoFactory aMorphoFactory) {
     final String lang = props.getProperty("language");
     final String model = props.getProperty("lemmatizerModel");
-    final LemmatizerModel posModel = loadModel(lang, model);
+    final Boolean useModelCache = Boolean.valueOf(props.getProperty("useModelCache", "true"));
+    final LemmatizerModel posModel = loadModel(lang, model, useModelCache);
     this.lemmatizer = new LemmatizerME(posModel);
     this.morphoFactory = aMorphoFactory;
   }
@@ -155,17 +153,25 @@ public class StatisticalLemmatizer {
    * 
    * @param lang
    *          the language
-   * @param model
+   * @param modelName
    *          the model to be loaded
+   * @param useModelCache
+   *          whether to cache the model in memory
    * @return the model as a {@link LemmatizerModel} object
    */
-  private LemmatizerModel loadModel(final String lang, final String model) {
+  private LemmatizerModel loadModel(final String lang, final String modelName, final Boolean useModelCache) {
     final long lStartTime = new Date().getTime();
+    LemmatizerModel model = null;
     try {
-      synchronized (lemmaModels) {
-        if (!lemmaModels.containsKey(lang)) {
-          lemmaModels.put(lang, new LemmatizerModel(new FileInputStream(model)));
+      if (useModelCache) {
+        synchronized (lemmaModels) {
+          if (!lemmaModels.containsKey(lang)) {
+            model = new LemmatizerModel(new FileInputStream(modelName));
+            lemmaModels.put(lang, model);
+          }
         }
+      } else {
+        model = new LemmatizerModel(new FileInputStream(modelName));
       }
     } catch (final IOException e) {
       e.printStackTrace();
@@ -174,7 +180,7 @@ public class StatisticalLemmatizer {
     final long difference = lEndTime - lStartTime;
     System.err.println("ixa-pipe-lemma model loaded in: " + difference
         + " miliseconds ... [DONE]");
-    return lemmaModels.get(lang);
+    return model;
   }
 
 }
