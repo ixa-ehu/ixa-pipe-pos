@@ -241,6 +241,9 @@ public class CLI {
     this.annotateParser.addArgument("-mw", "--multiwords")
         .action(Arguments.storeTrue())
         .help("Use to detect and process multiwords.\n");
+    this.annotateParser.addArgument("-c","--clitics")
+         .action(Arguments.storeTrue())
+         .help("Detect and analyze clitic pronouns and contractions.\n");
     this.annotateParser.addArgument("-d", "--dictag")
         .action(Arguments.storeTrue())
         .help("Post process POS tagger output with a monosemic dictionary.\n");
