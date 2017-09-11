@@ -96,6 +96,7 @@ public class Annotate {
     this.dictag = Boolean.valueOf(properties.getProperty("dictag"));
     if (this.multiwords) {
       this.multiWordMatcher = new MultiWordMatcher(properties);
+      loadMorphoTaggerDicts(properties);
     }
     if (this.dictag) {
       loadMorphoTaggerDicts(properties);
@@ -184,7 +185,10 @@ public class Annotate {
       if (this.multiwords) {
         final String[] multiWordTokens = this.multiWordMatcher
             .getTokensWithMultiWords(tokens);
-        morphemes = this.posTagger.getMorphemes(multiWordTokens);
+        List<String> posTags = this.posTagger.posAnnotate(multiWordTokens);
+        String[] posTagsArray = new String[posTags.size()];
+        posTagsArray = posTags.toArray(posTagsArray);
+        morphemes = this.lemmatizer.getMorphemes(multiWordTokens, posTagsArray);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
         List<String> posTags = this.posTagger.posAnnotate(tokens);
@@ -194,7 +198,7 @@ public class Annotate {
       }
       for (int i = 0; i < morphemes.size(); i++) {
         final Term term = kaf.newTerm(tokenSpans.get(i));
-        if (this.dictag) {
+        if (this.dictag || multiwords) {
           final String dictPosTag = this.dictMorphoTagger.tag(morphemes.get(i)
               .getWord(), morphemes.get(i).getTag());
           morphemes.get(i).setTag(dictPosTag);
@@ -281,7 +285,10 @@ public class Annotate {
       if (this.multiwords) {
         final String[] multiWordTokens = this.multiWordMatcher
             .getTokensWithMultiWords(tokens);
-        morphemes = this.posTagger.getMorphemes(multiWordTokens);
+        List<String> posTags = this.posTagger.posAnnotate(multiWordTokens);
+        String[] posTagsArray = new String[posTags.size()];
+        posTagsArray = posTags.toArray(posTagsArray);
+        morphemes = this.lemmatizer.getMorphemes(multiWordTokens, posTagsArray);
         getMultiWordSpans(tokens, wfs, tokenSpans);
       } else {
         List<String> posTags = this.posTagger.posAnnotate(tokens);
@@ -292,7 +299,7 @@ public class Annotate {
       for (int i = 0; i < morphemes.size(); i++) {
         final String posTag = morphemes.get(i).getTag();
         final String word = morphemes.get(i).getWord();
-        if (this.dictag) {
+        if (this.dictag || this.multiwords) {
           final String dictPosTag = this.dictMorphoTagger.tag(word, posTag);
           morphemes.get(i).setTag(dictPosTag);
         }
