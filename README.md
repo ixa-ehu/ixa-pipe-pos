@@ -2,7 +2,7 @@
 ixa-pipe-pos
 ============
 
-ixa-pipe-pos is a multilingual Part of Speech tagger and Lemmatizer, currently offering pre-trained models for eight languages: Basque, Dutch, English, French, Galician, German, Italian, and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.5.1**.
+ixa-pipe-pos is a multilingual Part of Speech tagger and Lemmatizer, currently offering pre-trained models for eight languages: Basque, Dutch, English, French, Galician, German, Italian, and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.5.2**.
 
 Please go to [http://ixa2.si.ehu.es/ixa-pipes] for general information about the IXA
 pipes tools but also for **official releases, including source code and binary
@@ -93,7 +93,7 @@ subcommand to ixa-pipe-pos-$version.jar. Please read below and check the -help
 parameter ($version refers to the current ixa-pipe-pos version).
 
 ````shell
-java -jar target/ixa-pipe-pos-1.5.1-exec.jar (tag|train|eval|cross|server|client) -help
+java -jar target/ixa-pipe-pos-1.5.2-exec.jar (tag|train|eval|cross|server|client) -help
 ````
 
 ### Tagging
@@ -101,7 +101,7 @@ java -jar target/ixa-pipe-pos-1.5.1-exec.jar (tag|train|eval|cross|server|client
 If you are in hurry, [Download](http://ixa2.si.ehu.es/ixa-pipes/models/guardian.txt) or create a plain text file and use it like this:
 
 ````shell
-cat guardian.txt | java -jar ixa-pipe-tok-1.8.4-exec.jar tok -l en | ixa-pipe-pos-1.5.0-exec.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
+cat guardian.txt | java -jar ixa-pipe-tok-1.8.5-exec.jar tok -l en | java -jar ixa-pipe-pos-1.5.2-exec.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
 ````
 
 If you want to know more, please follow reading.
@@ -129,7 +129,7 @@ There are several options to tag with ixa-pipe-pos:
 [Download](http://ixa2.si.ehu.es/ixa-pipes/models/guardian.txt) or create a plain text file and use it like this:
 
 ````shell
-cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | java -jar ixa-pipe-pos-1.5.0.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
+cat guardian.txt | java -jar ixa-pipe-tok-1.8.5.jar tok -l en | java -jar ixa-pipe-pos-1.5.2.jar tag -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
 ````
 **Remember to download some models from the distributed packages!!**
 + Universal Dependencies Models: Basque, English and Italian.
@@ -142,12 +142,12 @@ cat guardian.txt | java -jar ixa-pipe-tok-1.8.4.jar tok -l en | java -jar ixa-pi
 We can start the TCP server as follows:
 
 ````shell
-java -jar target/ixa-pipe-pos-1.5.1-exec.jar server -l en --port 2040 -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
+java -jar target/ixa-pipe-pos-1.5.2-exec.jar server -l en --port 2040 -m en-pos-perceptron-autodict01-conll09.bin -lm en-lemma-perceptron-conll09.bin
 ````
 Once the server is running we can send NAF documents containing (at least) the text layer like this:
 
 ````shell
- cat guardian.txt | java -jar ixa-pipe-tok-1.8.4-exec.jar tok -l en | java -jar target/ixa-pipe-pos-1.5.1-exec.jar client -p 2040
+ cat guardian.txt | java -jar ixa-pipe-tok-1.8.5-exec.jar tok -l en | java -jar ixa-pipe-pos-1.5.2-exec.jar client -p 2040
 ````
 
 ### Training
@@ -189,7 +189,7 @@ this dependency to your pom.xml:
 <dependency>
     <groupId>eus.ixa</groupId>
     <artifactId>ixa-pipe-pos</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.2</version>
 </dependency>
 ````
 
@@ -216,10 +216,10 @@ The contents of the module are the following:
 
 Installing the ixa-pipe-pos requires the following steps:
 
-If you already have installed in your machine the Java 1.7+ and MAVEN 3, please go to step 3
+If you already have installed in your machine the Java 1.8+ and MAVEN 3, please go to step 3
 directly. Otherwise, follow these steps:
 
-### 1. Install JDK 1.7 or JDK 1.8
+### 1. Install JDK 1.8
 
 If you do not install JDK 1.7+ in a default location, you will probably need to configure the PATH in .bashrc or .bash_profile:
 
