@@ -1,6 +1,8 @@
 
 ixa-pipe-pos
 ============
+[![Build Status](https://travis-ci.org/ixa-ehu/ixa-pipe-pos.svg?branch=master)](https://travis-ci.org/ixa-ehu/ixa-pipe-pos)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 
 ixa-pipe-pos is a multilingual Part of Speech tagger and Lemmatizer, currently offering pre-trained models for eight languages: Basque, Dutch, English, French, Galician, German, Italian, and Spanish. ixa-pipe-pos is part of IXA pipes, a multilingual set of NLP tools developed by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes]. **Current version is 1.5.2**.
 
