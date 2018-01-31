@@ -558,7 +558,7 @@ public class CLI {
     serverProperties.setProperty("model", model);
     serverProperties.setProperty("lemmatizerModel", lemmatizerModel);
     serverProperties.setProperty("language", language);
-    serverProperties.setProperty("ruleBasedOption", multiwords);
+    serverProperties.setProperty("multiwords", multiwords);
     serverProperties.setProperty("dictTag", dictag);
     serverProperties.setProperty("outputFormat", outputFormat);
     serverProperties.setProperty("allMorphology", allMorphology);
