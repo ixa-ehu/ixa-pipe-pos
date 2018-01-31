@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
 
 /**
  * Class to load the appropriate lemmatization dictionaries according to the
@@ -42,7 +41,7 @@ public class Resources {
     InputStream dict = null;
     if (lang.equalsIgnoreCase("en")) {
       dict = getClass().getResourceAsStream(
-          "/lemmatizer-dicts/language-tool/en-lemmatizer.txt");
+          "/lemmatizer-dicts/languagetool/en-lemmatizer.txt");
     }
     if (lang.equalsIgnoreCase("es")) {
       dict = getClass().getResourceAsStream(
@@ -77,7 +76,7 @@ public class Resources {
     if (lang.equalsIgnoreCase("de")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/de/german.dict");
     } else if (lang.equalsIgnoreCase("en")) {
-      dictURL = getClass().getResource("/lemmatizer-dicts/language-tool/english.dict");
+      dictURL = getClass().getResource("/lemmatizer-dicts/languagetool/english.dict");
     } else if (lang.equalsIgnoreCase("es")) {
       dictURL = getClass().getResource("/lemmatizer-dicts/freeling/spanish.dict");
     } else if (lang.equalsIgnoreCase("eu")) {
@@ -130,6 +129,10 @@ public class Resources {
     if (lang.equalsIgnoreCase("gl")) {
       dictURL = getClass().getResource(
           "/lemmatizer-dicts/ctag/galician-monosemic.dict");
+    }
+    if (lang.equalsIgnoreCase("en")) {
+      dictURL = getClass().getResource(
+          "/lemmatizer-dicts/languagetool/english-monosemic.dict");
     }
     return dictURL;
   }
