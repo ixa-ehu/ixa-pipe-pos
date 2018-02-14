@@ -108,10 +108,8 @@ public class Annotate {
     }
     loadLemmatizerDicts(properties);
     this.morphoFactory = new SequenceLabelFactory();
-    this.posTagger = new StatisticalSequenceLabeler(posModel, lang,
-        this.morphoFactory);
-    this.lemmatizer = new StatisticalSequenceLabeler(lemmaModel, lang,
-        this.morphoFactory);
+    this.posTagger = new StatisticalSequenceLabeler(posModel, lang);
+    this.lemmatizer = new StatisticalSequenceLabeler(lemmaModel, lang);
   }
 
   // TODO static loading of postag dictionaries
