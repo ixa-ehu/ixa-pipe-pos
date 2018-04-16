@@ -134,8 +134,6 @@ public class LemmatizerME implements Lemmatizer {
     for (int i = 0; i < toks.length; i++) {
       String lemma = StringUtils.decodeShortestEditScript(
           toks[i].toLowerCase(), preds[i]);
-      // System.err.println("-> DEBUG: " + toks[i].toLowerCase() + " " +
-      // preds[i] + " " + lemma);
       if (lemma.length() == 0) {
         lemma = "_";
       }

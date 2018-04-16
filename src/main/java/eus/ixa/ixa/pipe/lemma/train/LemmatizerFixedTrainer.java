@@ -17,6 +17,8 @@ package eus.ixa.ixa.pipe.lemma.train;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import eus.ixa.ixa.pipe.lemma.LemmatizerFactory;
 import eus.ixa.ixa.pipe.pos.train.Flags;
 
@@ -30,6 +32,8 @@ import opennlp.tools.util.TrainingParameters;
  * @version 2016-01-28
  */
 public class LemmatizerFixedTrainer extends AbstractLemmatizerTrainer {
+
+  private static final Logger LOG = LogManager.getLogger(LemmatizerFixedTrainer.class);
 
   /**
    * Extends the {@code AbstractLemmatizerTrainer} providing some {@code LemmatizerFactory}
@@ -53,8 +57,7 @@ public class LemmatizerFixedTrainer extends AbstractLemmatizerTrainer {
    *          the training parameters
    * @return the factory
    */
-  private final LemmatizerFactory getTrainerFactory(
-      final TrainingParameters params) {
+  private final LemmatizerFactory getTrainerFactory(final TrainingParameters params) {
     LemmatizerFactory lemmatizerFactory = null;
     final String featureSet = Flags.getFeatureSet(params);
     if (featureSet.equalsIgnoreCase("chunk")) {
@@ -62,18 +65,17 @@ public class LemmatizerFixedTrainer extends AbstractLemmatizerTrainer {
         lemmatizerFactory = LemmatizerFactory.create(
             LemmatizerFactory.class.getName());
       } catch (final InvalidFormatException e) {
-        e.printStackTrace();
+        LOG.error("Exception", e);
       }
     } else {
       try {
         lemmatizerFactory = LemmatizerFactory.create(
             LemmatizerFactory.class.getName());
       } catch (final InvalidFormatException e) {
-        e.printStackTrace();
+        LOG.error("Exception", e);
       }
     }
     return lemmatizerFactory;
   }
-
 }
 

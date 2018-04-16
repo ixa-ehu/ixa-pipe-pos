@@ -37,6 +37,8 @@ import opennlp.tools.util.Span;
 
 import com.google.common.base.Joiner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import eus.ixa.ixa.pipe.pos.StringUtils;
 
 /**
@@ -48,6 +50,8 @@ import eus.ixa.ixa.pipe.pos.StringUtils;
  * 
  */
 public class MultiWordMatcher {
+
+  private static final Logger LOG = LogManager.getLogger(MultiWordMatcher.class);
 
   private static final Pattern tabPattern = Pattern.compile("\t");
   private static final Pattern linePattern = Pattern.compile("#");
@@ -82,8 +86,7 @@ public class MultiWordMatcher {
     final InputStream dictInputStream = getMultiWordDict(lang, resourcesDirectory);
     if (dictInputStream == null) {
       final String resourcesLocation = resourcesDirectory == null ? "src/main/resources" : resourcesDirectory;
-      System.err.println("ERROR: Not multiword dictionary for language " + lang
-          + " in " + resourcesLocation + "!!");
+      LOG.error("ERROR: Not multiword dictionary for language {} in {}!!",lang, resourcesLocation);
       System.exit(1);
     }
     final BufferedReader breader = new BufferedReader(new InputStreamReader(
@@ -96,8 +99,7 @@ public class MultiWordMatcher {
             .toLowerCase());
         dictionary.put(lineMatcher.replaceAll(" "), lineArray[2]);
       } else {
-        System.err.println("WARNING: line starting with " + lineArray[0]
-            + " is not well-formed; skipping!!");
+        LOG.warn("WARNING: line starting with {} is not well-formed; skipping!!",lineArray[0]);
       }
     }
   }
