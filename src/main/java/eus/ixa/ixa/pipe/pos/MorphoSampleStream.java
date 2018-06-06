@@ -18,8 +18,7 @@ package eus.ixa.ixa.pipe.pos;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import opennlp.tools.postag.POSSample;
 import opennlp.tools.util.FilterObjectStream;
 import opennlp.tools.util.ObjectStream;
@@ -29,8 +28,6 @@ import opennlp.tools.util.ObjectStream;
  * words and tags in word_tag format and outputs a {@link POSSample} objects.
  */
 public class MorphoSampleStream extends FilterObjectStream<String, POSSample> {
-
-  private static final Logger LOG = LogManager.getLogger(MorphoSampleStream.class);
 
   public MorphoSampleStream(ObjectStream<String> samples) {
     super(samples);
@@ -54,7 +51,7 @@ public class MorphoSampleStream extends FilterObjectStream<String, POSSample> {
     for (String line = samples.read(); line != null && !line.equals(""); line = samples.read()) {
       String[] parts = line.split("\t");
       if (parts.length != 3) {
-        LOG.error("Skipping corrupt line: {}", line);
+        System.err.println("Skipping corrupt line: " + line);
       }
       else {
         toks.add(parts[0]);
@@ -63,6 +60,7 @@ public class MorphoSampleStream extends FilterObjectStream<String, POSSample> {
     }
     if (toks.size() > 0) {
       POSSample posSample = new POSSample(toks.toArray(new String[toks.size()]), tags.toArray(new String[tags.size()]));
+      //System.err.println(posSample.toString());
       return posSample;
     }
     else {

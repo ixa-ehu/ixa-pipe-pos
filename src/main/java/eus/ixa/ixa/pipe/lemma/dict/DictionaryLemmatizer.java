@@ -25,8 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import eus.ixa.ixa.pipe.lemma.Lemmatizer;
 
 /**
@@ -37,8 +35,6 @@ import eus.ixa.ixa.pipe.lemma.Lemmatizer;
  * @version 2014-07-08
  */
 public class DictionaryLemmatizer implements Lemmatizer {
-
-  private static final Logger LOG = LogManager.getLogger(DictionaryLemmatizer.class);
 
   /**
    * The hashmap containing the dictionary.
@@ -64,7 +60,7 @@ public class DictionaryLemmatizer implements Lemmatizer {
         this.dictMap.put(Arrays.asList(elems[0], elems[2]), elems[1]);
       }
     } catch (final IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
   }
 

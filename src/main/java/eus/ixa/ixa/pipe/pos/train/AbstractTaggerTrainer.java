@@ -17,9 +17,9 @@ package eus.ixa.ixa.pipe.pos.train;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import eus.ixa.ixa.pipe.pos.MorphoSampleStream;
+
 import opennlp.tools.cmdline.TerminateToolException;
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.postag.MutableTagDictionary;
@@ -40,8 +40,6 @@ import opennlp.tools.util.TrainingParameters;
  */
 
 public abstract class AbstractTaggerTrainer implements TaggerTrainer {
-
-  private static final Logger LOG = LogManager.getLogger(AbstractTaggerTrainer.class);
 
   /**
    * The language.
@@ -125,10 +123,11 @@ public abstract class AbstractTaggerTrainer implements TaggerTrainer {
       posEvaluator = new POSEvaluator(posTagger);
       posEvaluator.evaluate(this.testSamples);
     } catch (final IOException e) {
-      LOG.error("IO error while loading training and test sets!", e);
+      System.err.println("IO error while loading training and test sets!");
+      e.printStackTrace();
       System.exit(1);
     }
-    LOG.info("Final result: " + posEvaluator.getWordAccuracy());
+    System.out.println("Final result: " + posEvaluator.getWordAccuracy());
     return trainedModel;
   }
 
@@ -196,7 +195,7 @@ public abstract class AbstractTaggerTrainer implements TaggerTrainer {
       final ObjectStream<POSSample> aDictSamples, final int aNgramCutoff) {
     Dictionary ngramDict = null;
     if (aNgramCutoff != Flags.DEFAULT_DICT_CUTOFF) {
-      LOG.error("Building ngram dictionary ... ");
+      System.err.print("Building ngram dictionary ... ");
       try {
         ngramDict = POSTaggerME
             .buildNGramDictionary(aDictSamples, aNgramCutoff);
@@ -205,7 +204,7 @@ public abstract class AbstractTaggerTrainer implements TaggerTrainer {
         throw new TerminateToolException(-1,
             "IO error while building NGram Dictionary: " + e.getMessage(), e);
       }
-      LOG.info("done");
+      System.err.println("done");
     }
     return ngramDict;
   }

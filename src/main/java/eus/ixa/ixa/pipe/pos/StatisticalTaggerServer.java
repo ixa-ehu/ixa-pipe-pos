@@ -29,15 +29,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
 
 public class StatisticalTaggerServer {
-
-  private static final Logger LOG = LogManager.getLogger(StatisticalTaggerServer.class);
   
   /**
    * Get dynamically the version of ixa-pipe-pos by looking at the MANIFEST
@@ -83,9 +79,9 @@ public class StatisticalTaggerServer {
 
     try {
       Annotate annotator = new Annotate(properties);
-      LOG.info("-> Trying to listen port... {}", port);
+      System.out.println("-> Trying to listen port... " + port);
       socketServer = new ServerSocket(port);
-      LOG.info("-> Connected and listening to port {}", port);
+      System.out.println("-> Connected and listening to port " + port);
       while (true) {
         try {
           activeSocket = socketServer.accept();
@@ -115,13 +111,14 @@ public class StatisticalTaggerServer {
         activeSocket.close();
       } //end of processing block
     } catch (IOException e) {
-      LOG.error("-> IOException due to failing to create the TCP socket or to wrongly provided model path.", e);
+      e.printStackTrace();
+      System.err.println("-> IOException due to failing to create the TCP socket or to wrongly provided model path.");
     } finally {
-      LOG.info("closing tcp socket...");
+      System.out.println("closing tcp socket...");
       try {
         socketServer.close();
       } catch (IOException e) {
-        LOG.error("Exception", e);
+        e.printStackTrace();
       }
     }
   }
@@ -145,7 +142,7 @@ public class StatisticalTaggerServer {
         }
       }
     }catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
     return stringFromClient.toString();
   }

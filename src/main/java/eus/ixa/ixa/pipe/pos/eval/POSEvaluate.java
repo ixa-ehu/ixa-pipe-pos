@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2018 Rodrigo Agerri
+ * Copyright 2014 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import eus.ixa.ixa.pipe.pos.MorphoSampleStream;
-import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
+
 import opennlp.tools.cmdline.postag.POSEvaluationErrorListener;
 import opennlp.tools.cmdline.postag.POSTaggerFineGrainedReportListener;
 import opennlp.tools.postag.POSEvaluator;
@@ -32,8 +29,10 @@ import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSSample;
 import opennlp.tools.postag.POSTaggerEvaluationMonitor;
 import opennlp.tools.postag.POSTaggerME;
+import eus.ixa.ixa.pipe.pos.MorphoSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.eval.EvaluationMonitor;
+import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
 
 /**
  * Evaluation class mostly inspired by {@link POSEvaluator}.
@@ -42,8 +41,6 @@ import opennlp.tools.util.eval.EvaluationMonitor;
  * @version 2014-07-08
  */
 public class POSEvaluate implements Evaluate {
-
-  private static final Logger LOG = LogManager.getLogger(POSEvaluate.class);
 
   /**
    * The reference corpus to evaluate against.
@@ -80,13 +77,13 @@ public class POSEvaluate implements Evaluate {
         posModel = new POSModel(trainedModelInputStream);
       }
     } catch (final IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     } finally {
       if (trainedModelInputStream != null) {
         try {
           trainedModelInputStream.close();
         } catch (final IOException e) {
-          LOG.error("Could not load model!");
+          System.err.println("Could not load model!");
         }
       }
     }
@@ -101,9 +98,9 @@ public class POSEvaluate implements Evaluate {
     try {
       evaluator.evaluate(this.testSamples);
     } catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
-    LOG.info(evaluator.getWordAccuracy());
+    System.out.println(evaluator.getWordAccuracy());
   }
 
   /**
@@ -119,7 +116,7 @@ public class POSEvaluate implements Evaluate {
     try {
       evaluator.evaluate(this.testSamples);
     } catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
     detailedFListener.writeReport();
   }
@@ -135,8 +132,9 @@ public class POSEvaluate implements Evaluate {
     try {
       evaluator.evaluate(this.testSamples);
     } catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
-    LOG.info(evaluator.getWordAccuracy());
+    System.out.println(evaluator.getWordAccuracy());
   }
+
 }
