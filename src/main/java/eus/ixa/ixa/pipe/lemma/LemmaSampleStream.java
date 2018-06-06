@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Rodrigo Agerri
+ * Copyright 2016, 2018 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package eus.ixa.ixa.pipe.lemma;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import eus.ixa.ixa.pipe.pos.StringUtils;
-
 import opennlp.tools.util.FilterObjectStream;
 import opennlp.tools.util.ObjectStream;
 
@@ -32,6 +32,8 @@ import opennlp.tools.util.ObjectStream;
  * @version 2016-02-16
  */
 public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
+
+  private static final Logger LOG = LogManager.getLogger(LemmaSampleStream.class);
 
   public LemmaSampleStream(ObjectStream<String> samples) {
     super(samples);
@@ -46,7 +48,7 @@ public class LemmaSampleStream extends FilterObjectStream<String, LemmaSample> {
     for (String line = samples.read(); line != null && !line.equals(""); line = samples.read()) {
       String[] parts = line.split("\t");
       if (parts.length != 3) {
-        System.err.println("Skipping corrupt line: " + line);
+        LOG.error("Skipping corrupt line: {}", line);
       }
       else {
         toks.add(parts[0]);

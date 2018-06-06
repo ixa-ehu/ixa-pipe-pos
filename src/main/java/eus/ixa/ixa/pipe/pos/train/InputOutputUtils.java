@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import opennlp.tools.cmdline.CmdLineUtil;
 import opennlp.tools.cmdline.TerminateToolException;
 import opennlp.tools.ml.TrainerFactory;
@@ -39,6 +41,8 @@ import opennlp.tools.util.TrainingParameters;
  * 
  */
 public final class InputOutputUtils {
+
+  private static final Logger LOG = LogManager.getLogger(InputOutputUtils.class);
 
   /**
    * Private constructor. This class should only be used statically.
@@ -116,7 +120,7 @@ public final class InputOutputUtils {
             paramsIn.close();
           }
         } catch (final IOException e) {
-          System.err.println("Error closing the input stream");
+          LOG.error("Error closing the input stream");
         }
       }
 
@@ -143,7 +147,7 @@ public final class InputOutputUtils {
     try {
       inputStreamFactory = new MarkableFileInputStreamFactory(new File(infile));
     } catch (final FileNotFoundException e) {
-      e.printStackTrace();
+      LOG.error("Exception", e);
     }
     ObjectStream<String> lineStream = null;
     try {
@@ -153,5 +157,4 @@ public final class InputOutputUtils {
     }
     return lineStream;
   }
-
 }

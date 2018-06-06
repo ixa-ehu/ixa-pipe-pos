@@ -17,6 +17,8 @@ package eus.ixa.ixa.pipe.pos.train;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.postag.POSTaggerFactory;
 import opennlp.tools.util.InvalidFormatException;
@@ -29,6 +31,8 @@ import opennlp.tools.util.TrainingParameters;
  * @version 2014-11-26
  */
 public class FixedTrainer extends AbstractTaggerTrainer {
+
+  private static final Logger LOG = LogManager.getLogger(FixedTrainer.class);
 
   /**
    * Extends the {@code AbstractTrainer} providing some {@code POSTaggerFactory}
@@ -71,17 +75,16 @@ public class FixedTrainer extends AbstractTaggerTrainer {
         posTaggerFactory = POSTaggerFactory.create(
             POSTaggerFactory.class.getName(), ngramDictionary, null);
       } catch (final InvalidFormatException e) {
-        e.printStackTrace();
+        LOG.error("Exception", e);
       }
     } else {
       try {
         posTaggerFactory = POSTaggerFactory.create(
             BaselineFactory.class.getName(), ngramDictionary, null);
       } catch (final InvalidFormatException e) {
-        e.printStackTrace();
+        LOG.error("Exception", e);
       }
     }
     return posTaggerFactory;
   }
-
 }

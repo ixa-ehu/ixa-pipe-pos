@@ -15,12 +15,16 @@
  */
 package eus.ixa.ixa.pipe.lemma;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import opennlp.tools.util.BaseToolFactory;
 import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.util.SequenceValidator;
 import opennlp.tools.util.ext.ExtensionLoader;
 
 public class LemmatizerFactory extends BaseToolFactory {
+
+  private static final Logger LOG = LogManager.getLogger(LemmatizerFactory.class);
 
   /**
    * Creates a {@link LemmatizerFactory} that provides the default implementation
@@ -42,8 +46,7 @@ public class LemmatizerFactory extends BaseToolFactory {
     } catch (Exception e) {
       String msg = "Could not instantiate the " + subclassName
           + ". The initialization throw an exception.";
-      System.err.println(msg);
-      e.printStackTrace();
+      LOG.info(msg, e);
       throw new InvalidFormatException(msg, e);
     }
   }

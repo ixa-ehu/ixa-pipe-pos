@@ -1,4 +1,4 @@
-/*Copyright 2014 Rodrigo Agerri
+/*Copyright 2014, 2018 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 
@@ -35,6 +37,8 @@ import opennlp.tools.postag.POSTaggerME;
  */
 
 public class StatisticalTagger {
+
+  private static final Logger LOG = LogManager.getLogger(StatisticalTagger.class);
 
   /**
    * The morpho tagger.
@@ -164,12 +168,11 @@ public class StatisticalTagger {
         model = new POSModel(new FileInputStream(modelName));
       }
     } catch (final IOException e) {
-      e.printStackTrace();
+        LOG.error("Exception", e);
     }
     final long lEndTime = new Date().getTime();
     final long difference = lEndTime - lStartTime;
-    System.err.println("ixa-pipe-pos model loaded in: " + difference
-        + " miliseconds ... [DONE]");
+    LOG.info("ixa-pipe-pos model loaded in: {} miliseconds ... [DONE]", difference);
     return model;
   }
 
