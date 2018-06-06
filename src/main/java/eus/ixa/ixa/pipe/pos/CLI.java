@@ -42,8 +42,6 @@ import opennlp.tools.cmdline.CmdLineUtil;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.util.TrainingParameters;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
@@ -68,8 +66,6 @@ import eus.ixa.ixa.pipe.pos.train.TaggerTrainer;
  */
 
 public class CLI {
-
-  private static final Logger LOG = LogManager.getLogger(CLI.class);
 
   /**
    * Get dynamically the version of ixa-pipe-pos by looking at the MANIFEST
@@ -174,7 +170,7 @@ public class CLI {
       JDOMException {
     try {
       this.parsedArguments = this.argParser.parseArgs(args);
-      LOG.error("CLI options: {}", this.parsedArguments);
+      System.err.println("CLI options: " + this.parsedArguments);
       if (args[0].equals("tag")) {
         annotate(System.in, System.out);
       } else if (args[0].equals("eval")) {
@@ -233,7 +229,7 @@ public class CLI {
     if (this.parsedArguments.getString("language") != null) {
       lang = this.parsedArguments.getString("language");
       if (!kaf.getLang().equalsIgnoreCase(lang)) {
-        LOG.error("Language parameter in NAF and CLI do not match!!");
+        System.err.println("Language parameter in NAF and CLI do not match!!");
         // System.exit(1);
       }
     } else {
@@ -439,13 +435,13 @@ public class CLI {
       //this cannot happen but...
       throw new AssertionError("UTF-8 not supported");
     } catch (UnknownHostException e) {
-      LOG.error("ERROR: Unknown hostname or IP address!");
+      System.err.println("ERROR: Unknown hostname or IP address!");
       System.exit(1);
     } catch (NumberFormatException e) {
-      LOG.error("Port number not correct!");
+      System.err.println("Port number not correct!");
       System.exit(1);
     } catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
   }
 

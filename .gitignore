@@ -16,4 +16,3 @@ octave-core
 *.checkstyle
 trainParams.txt
 trainMaxent.txt
-.idea

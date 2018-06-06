@@ -30,8 +30,6 @@ import opennlp.tools.util.Span;
 
 import com.google.common.collect.ListMultimap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import eus.ixa.ixa.pipe.lemma.StatisticalLemmatizer;
 import eus.ixa.ixa.pipe.lemma.dict.MorfologikLemmatizer;
 import eus.ixa.ixa.pipe.pos.dict.DictionaryTagger;
@@ -46,8 +44,6 @@ import eus.ixa.ixa.pipe.pos.dict.MultiWordMatcher;
  * @version 2014-12-05
  */
 public class Annotate {
-
-  private static final Logger LOG = LogManager.getLogger(Annotate.class);
 
   /**
    * The morpho tagger.
@@ -125,12 +121,14 @@ public class Annotate {
     final URL binLemmatizerURL = resources.getBinaryDict(this.lang, resourcesDirectory);
     if (binLemmatizerURL == null) {
       final String resourcesLocation = resourcesDirectory == null ? "src/main/resources" : resourcesDirectory;
-      LOG.warn("WARNING: No lemmatizer dictionary available for language {} in {}!", this.lang, resourcesLocation);
+      System.err
+          .println("WARNING: No lemmatizer dictionary available for language "
+              + this.lang + " in " + resourcesLocation + "!");
     } else {
       try {
         this.dictLemmatizer = new MorfologikLemmatizer(binLemmatizerURL);
       } catch (final IOException e) {
-        LOG.error("Exception", e);
+        e.printStackTrace();
       }
     }
 
@@ -150,15 +148,16 @@ public class Annotate {
     final URL binDictMorphoTaggerURL = resources.getBinaryTaggerDict(this.lang, resourcesDirectory);
     if (binDictMorphoTaggerURL == null) {
       final String resourcesLocation = resourcesDirectory == null ? "src/main/resources" : resourcesDirectory;
-      LOG.error("ERROR: No binary POS tagger dictionary available for language {} in {}!!", this.lang,
-                resourcesLocation);
+      System.err
+          .println("ERROR: No binary POS tagger dictionary available for language "
+              + this.lang + " in " + resourcesLocation + "!!");
       System.exit(1);
     }
     try {
       this.dictMorphoTagger = new MorfologikTagger(binDictMorphoTaggerURL,
           this.lang);
     } catch (final IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
   }
 

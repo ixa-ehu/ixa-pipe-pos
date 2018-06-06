@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Rodrigo Agerri
+ * Copyright 2014 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package eus.ixa.ixa.pipe.lemma.eval;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import opennlp.tools.util.ObjectStream;
 import eus.ixa.ixa.pipe.lemma.LemmaSample;
 import eus.ixa.ixa.pipe.lemma.LemmaSampleStream;
 import eus.ixa.ixa.pipe.lemma.LemmatizerEvaluator;
@@ -28,7 +28,6 @@ import eus.ixa.ixa.pipe.lemma.LemmatizerME;
 import eus.ixa.ixa.pipe.lemma.LemmatizerModel;
 import eus.ixa.ixa.pipe.pos.eval.Evaluate;
 import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
-import opennlp.tools.util.ObjectStream;
 
 /**
  * Evaluation class.
@@ -37,8 +36,6 @@ import opennlp.tools.util.ObjectStream;
  * @version 2014-07-08
  */
 public class LemmaEvaluate implements Evaluate {
-
-  private static final Logger LOG = LogManager.getLogger(LemmaEvaluate.class);
 
   /**
    * The reference corpus to evaluate against.
@@ -75,13 +72,13 @@ public class LemmaEvaluate implements Evaluate {
         lemmatizerModel = new LemmatizerModel(trainedModelInputStream);
       }
     } catch (final IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     } finally {
       if (trainedModelInputStream != null) {
         try {
           trainedModelInputStream.close();
         } catch (final IOException e) {
-          LOG.error("Could not load model!", e);
+          System.err.println("Could not load model!");
         }
       }
     }
@@ -96,9 +93,9 @@ public class LemmaEvaluate implements Evaluate {
     try {
       evaluator.evaluate(this.testSamples);
     } catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
-    LOG.info(evaluator.getWordAccuracy());
+    System.out.println(evaluator.getWordAccuracy());
   }
 
   @Override
@@ -108,9 +105,9 @@ public class LemmaEvaluate implements Evaluate {
     try {
       evaluator.evaluate(this.testSamples);
     } catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
-    LOG.info(evaluator.getWordAccuracy());
+    System.out.println(evaluator.getWordAccuracy());
     
   }
 
@@ -121,9 +118,10 @@ public class LemmaEvaluate implements Evaluate {
     try {
       evaluator.evaluate(this.testSamples);
     } catch (IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
-    LOG.info(evaluator.getWordAccuracy());
+    System.out.println(evaluator.getWordAccuracy());
+    
   }
 
   /**

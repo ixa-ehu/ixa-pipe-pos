@@ -19,11 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import eus.ixa.ixa.pipe.pos.train.BaselineFactory;
-import eus.ixa.ixa.pipe.pos.train.Flags;
-import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
+
 import opennlp.tools.cmdline.postag.POSEvaluationErrorListener;
 import opennlp.tools.cmdline.postag.POSTaggerFineGrainedReportListener;
 import opennlp.tools.postag.POSSample;
@@ -34,6 +30,9 @@ import opennlp.tools.postag.WordTagSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 import opennlp.tools.util.eval.EvaluationMonitor;
+import eus.ixa.ixa.pipe.pos.train.BaselineFactory;
+import eus.ixa.ixa.pipe.pos.train.Flags;
+import eus.ixa.ixa.pipe.pos.train.InputOutputUtils;
 
 /**
  * Training POS tagger with Apache OpenNLP Machine Learning API via cross
@@ -44,8 +43,6 @@ import opennlp.tools.util.eval.EvaluationMonitor;
  */
 
 public class POSCrossValidator {
-
-  private static final Logger LOG = LogManager.getLogger(POSCrossValidator.class);
 
   /**
    * The language.
@@ -128,20 +125,21 @@ public class POSCrossValidator {
       validator = getPOSTaggerCrossValidator(params);
       validator.evaluate(this.trainSamples, this.folds);
     } catch (final IOException e) {
-      LOG.error("IO error while loading training set", e);
+      System.err.println("IO error while loading training set!");
+      e.printStackTrace();
       System.exit(1);
     } finally {
       try {
         this.trainSamples.close();
       } catch (final IOException e) {
-        LOG.error("IO error with the train samples!");
+        System.err.println("IO error with the train samples!");
       }
     }
     if (this.detailedListener == null) {
-      LOG.info(validator.getWordAccuracy());
+      System.out.println(validator.getWordAccuracy());
     } else {
       // TODO add detailed evaluation here
-      LOG.info(validator.getWordAccuracy());
+      System.out.println(validator.getWordAccuracy());
     }
   }
 

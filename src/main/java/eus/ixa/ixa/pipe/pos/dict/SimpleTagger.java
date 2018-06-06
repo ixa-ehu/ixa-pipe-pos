@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * POS tag by simple dictionary lookup into a hashmap built from a file
@@ -33,8 +31,6 @@ import org.apache.logging.log4j.Logger;
  * @version 2014-12-05
  */
 public class SimpleTagger implements DictionaryTagger {
-
-  private static final Logger LOG = LogManager.getLogger(SimpleTagger.class);
 
   /**
    * The hashmap containing the dictionary.
@@ -62,7 +58,7 @@ public class SimpleTagger implements DictionaryTagger {
         this.dictMap.put(elems[0], elems[2]);
       }
     } catch (final IOException e) {
-      LOG.error("Exception", e);
+      e.printStackTrace();
     }
   }
 
