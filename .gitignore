@@ -14,5 +14,6 @@ octave-core
 *.pydevproject
 *.settings
 *.checkstyle
+*.idea
 trainParams.txt
 trainMaxent.txt
