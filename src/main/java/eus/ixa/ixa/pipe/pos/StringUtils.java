@@ -383,27 +383,39 @@ public static void computeShortestEditScript(String wordForm, String lemma, int[
     }
     return lemma.reverse().toString();
 }
-  
-  /**
-   * Get the SES required to go from a word to a lemma.
-   * @param wordForm the word
-   * @param lemma the lemma
-   * @return the shortest edit script
-   */
-  public static String getShortestEditScript(String wordForm, String lemma) {
-    String reversedWF = new StringBuffer(wordForm.toLowerCase()).reverse().toString();
-    String reversedLemma = new StringBuffer(lemma.toLowerCase()).reverse().toString();
-    StringBuffer permutations = new StringBuffer();
-    String ses;
-    if (!reversedWF.equals(reversedLemma)) {
-      int[][]levenDistance = StringUtils.levenshteinDistance(reversedWF, reversedLemma);
-      StringUtils.computeShortestEditScript(reversedWF, reversedLemma, levenDistance, permutations);
-      ses = permutations.toString();
-    } else {
-      ses = "O";
-    }
-    return ses;
-  }
 
+    /**
+     * Get the SES required to go from a word to a lemma.
+     *
+     * @param wordForm the word
+     * @param lemma    the lemma
+     * @return the shortest edit script
+     */
+    public static String getShortestEditScript(String wordForm, String lemma) {
+        String reversedWF = new StringBuffer(wordForm.toLowerCase()).reverse()
+            .toString();
+        String reversedLemma = new StringBuffer(lemma.toLowerCase()).reverse()
+            .toString();
+        String reversedOrigLemma = new StringBuffer(lemma).reverse().toString();
+        StringBuffer permutations = new StringBuffer();
+        String ses;
+
+        if (!reversedWF.equals(reversedLemma)) {
+            int[][] levenDistance = StringUtils.levenshteinDistance(reversedWF,
+                reversedLemma);
+            StringUtils.computeShortestEditScript(reversedWF, reversedLemma,
+                levenDistance, permutations);
+            ses = permutations.toString();
+        } else if (Character.isUpperCase(wordForm.charAt(0))
+            && reversedWF.equals(reversedOrigLemma)) {
+            ses = "1";
+        } else {
+            ses = "O";
+        }
+        /** StringBuilder sb = new StringBuilder();
+         sb.append(wordForm).append("\t").append(lemma).append("\t").append(ses);
+         System.out.println(sb.toString());**/
+        return ses;
+    }
 
 }

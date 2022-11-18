@@ -131,14 +131,18 @@ public class LemmatizerME implements Lemmatizer {
    */
   public String[] decodeLemmas(String[] toks, String[] preds) {
     List<String> lemmas = new ArrayList<String>();
+    String lemma = null;
     for (int i = 0; i < toks.length; i++) {
-      String lemma = StringUtils.decodeShortestEditScript(
-          toks[i].toLowerCase(), preds[i]);
+      if (preds[i].equalsIgnoreCase("1")) {
+        lemma = toks[i].toLowerCase();
+      } else {
+        lemma = StringUtils.decodeShortestEditScript(toks[i], preds[i]);
+        if (lemma.length() == 0) {
+          lemma = "_";
+        }
+      }
       // System.err.println("-> DEBUG: " + toks[i].toLowerCase() + " " +
       // preds[i] + " " + lemma);
-      if (lemma.length() == 0) {
-        lemma = "_";
-      }
       lemmas.add(lemma);
     }
     return lemmas.toArray(new String[lemmas.size()]);
