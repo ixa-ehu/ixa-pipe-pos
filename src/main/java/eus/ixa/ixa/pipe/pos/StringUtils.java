@@ -321,7 +321,7 @@ public static void computeShortestEditScript(String wordForm, String lemma, int[
    */
   public static String decodeShortestEditScript(String wordForm, String permutations) {
     
-    StringBuffer lemma = new StringBuffer(wordForm).reverse();
+    StringBuffer lemma = new StringBuffer(wordForm.toLowerCase()).reverse();
     
     int permIndex = 0;
     while(true) {

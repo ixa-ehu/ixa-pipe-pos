@@ -133,8 +133,10 @@ public class LemmatizerME implements Lemmatizer {
     List<String> lemmas = new ArrayList<String>();
     String lemma = null;
     for (int i = 0; i < toks.length; i++) {
-      if (preds[i].equalsIgnoreCase("1")) {
+      if (preds[i].equals("1")) {
         lemma = toks[i].toLowerCase();
+      } else if (preds[i].equals("O")){
+        lemma = toks[i];
       } else {
         lemma = StringUtils.decodeShortestEditScript(toks[i], preds[i]);
         if (lemma.length() == 0) {
